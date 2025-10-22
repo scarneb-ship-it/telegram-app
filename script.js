@@ -1,778 +1,873 @@
-// Games Verse - Enhanced Version with Analytics
-// localStorage keys
-const STORAGE_KEYS = {
-  GAMES: 'gamesverse_games',
-  EXCHANGES: 'gamesverse_exchanges',
-  ANALYTICS: 'gamesverse_analytics',
-  FAVORITES: 'gamesverse_favorites',
-  USER_STATS: 'gamesverse_user_stats',
-  THEME: 'theme',
-  LANGUAGE: 'language'
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBx7h-_X5YJp-5RBFKvN8QKmZ0qN5VQY2A",
+    authDomain: "gamesverse-app.firebaseapp.com",
+    databaseURL: "https://gamesverse-app-default-rtdb.firebaseio.com",
+    projectId: "gamesverse-app",
+    storageBucket: "gamesverse-app.appspot.com",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:abcdef123456"
 };
 
-// Default data
-const DEFAULT_GAMES = [
-  {
-    id: 'hamster-gamedev',
-    name: 'Hamster GameDev',
-    description: 'Создай свою студию',
-    bot: 'hamsterdev_bot',
-    image: 'images/hamster-gamedev.jpg',
-    rating: 4.8,
-    views: 1523,
-    category: 'strategy'
-  },
-  {
-    id: 'hamster-king',
-    name: 'Hamster King',
-    description: 'Стань королем хомяков',
-    bot: 'hamsterking_bot',
-    image: 'images/hamster-king.jpg',
-    rating: 4.7,
-    views: 1234,
-    category: 'adventure'
-  },
-  {
-    id: 'hamster-fightclub',
-    name: 'Hamster Fight Club',
-    description: 'Бойцовский клуб хомяков',
-    bot: 'hamsterfightclub_bot',
-    image: 'images/hamster-fightclub.jpg',
-    rating: 4.6,
-    views: 987,
-    category: 'action'
-  },
-  {
-    id: 'bitquest',
-    name: 'BitQuest',
-    description: 'Приключения в мире крипты',
-    bot: 'bitquest_bot',
-    image: 'images/bitquest.jpg',
-    rating: 4.5,
-    views: 856,
-    category: 'adventure'
-  }
-];
+// Initialize Firebase
+try {
+    firebase.initializeApp(firebaseConfig);
+    var database = firebase.database();
+} catch (error) {
+    console.error('Firebase initialization error:', error);
+}
 
-const DEFAULT_EXCHANGES = [
-  {
-    id: 'bybit',
-    name: 'Bybit',
-    description: 'Продвинутая торговая платформа',
-    url: 'https://www.bybit.com',
-    image: 'images/bybit.jpg',
-    views: 2341
-  },
-  {
-    id: 'bingx',
-    name: 'BingX',
-    description: 'Социальная торговля и копирование',
-    url: 'https://www.bingx.com',
-    image: 'images/bingx.jpg',
-    views: 1876
-  },
-  {
-    id: 'bitget',
-    name: 'Bitget',
-    description: 'Инновационная торговая платформа',
-    url: 'https://www.bitget.com',
-    image: 'images/bitget.jpg',
-    views: 1654
-  },
-  {
-    id: 'mexc',
-    name: 'MEXC',
-    description: 'Глобальная биржа с низкими комиссиями',
-    url: 'https://www.mexc.com',
-    image: 'images/mexc.jpg',
-    views: 1432
-  }
-];
+// Telegram Bot Configuration
+const BOT_TOKEN = '8437291172:AAEeIYl2BoK4OKr7kjulLX_JiQENXff-cMA';
+const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
 // Translations
 const translations = {
-  ru: {
-    appTitle: '🎮 Games Verse',
-    settings: 'Настройки',
-    theme: 'Тема',
-    lightTheme: 'Светлая',
-    darkTheme: 'Темная',
-    language: 'Язык',
-    russian: 'Русский',
-    english: 'English',
-    done: 'Готово',
-    games: 'Игры',
-    bestGames: 'Лучшие игры Telegram',
-    play: 'Играть',
-    exchanges: 'Биржи',
-    exchangesDesc: 'Торгуйте криптовалютами безопасно',
-    user: 'Пользователь',
-    shareWithFriends: 'Поделиться с друзьями',
-    profile: 'Профиль',
-    linkCopied: 'Ссылка скопирована в буфер обмена!',
-    go: 'Перейти',
-    search: 'Поиск игр и бирж...',
-    all: 'Все',
-    favorites: '❤️ Избранное',
-    popular: '🔥 Популярные',
-    noResults: 'Ничего не найдено',
-    gamesPlayed: 'Игр открыто',
-    favoritesCount: 'В избранном'
-  },
-  en: {
-    appTitle: '🎮 Games Verse',
-    settings: 'Settings',
-    theme: 'Theme',
-    lightTheme: 'Light',
-    darkTheme: 'Dark',
-    language: 'Language',
-    russian: 'Russian',
-    english: 'English',
-    done: 'Done',
-    games: 'Games',
-    bestGames: 'Best Telegram Games',
-    play: 'Play',
-    exchanges: 'Exchanges',
-    exchangesDesc: 'Trade cryptocurrencies safely',
-    user: 'User',
-    shareWithFriends: 'Share with friends',
-    profile: 'Profile',
-    linkCopied: 'Link copied to clipboard!',
-    go: 'Go',
-    search: 'Search games and exchanges...',
-    all: 'All',
-    favorites: '❤️ Favorites',
-    popular: '🔥 Popular',
-    noResults: 'No results found',
-    gamesPlayed: 'Games played',
-    favoritesCount: 'Favorites'
-  }
+    ru: {
+        appTitle: "Games Verse",
+        appSubtitle: "Твой игровой мир",
+        notifications: "Уведомления",
+        noNotifications: "Нет новых уведомлений",
+        settings: "Настройки",
+        theme: "Тема",
+        lightTheme: "☀️ Светлая",
+        darkTheme: "🌙 Темная",
+        language: "Язык",
+        russian: "🇷🇺 Русский",
+        english: "🇬🇧 English",
+        done: "Готово",
+        searchPlaceholder: "Поиск игр...",
+        allGames: "Все игры",
+        popular: "🔥 Популярные",
+        new: "✨ Новые",
+        action: "⚔️ Экшн",
+        casual: "🎲 Казуальные",
+        favorites: "❤️ Избранное",
+        games: "Игры",
+        exchanges: "Биржи",
+        exchangesDesc: "Торгуйте криптовалютами безопасно",
+        profile: "Профиль",
+        user: "Пользователь",
+        favoritesCount: "Избранных игр",
+        timeSpent: "Времени в приложении",
+        shareWithFriends: "Поделиться с друзьями",
+        feedback: "Оставить отзыв",
+        play: "Играть",
+        go: "Перейти",
+        linkCopied: "Ссылка скопирована!",
+        addedToFavorites: "Добавлено в избранное",
+        removedFromFavorites: "Удалено из избранного"
+    },
+    en: {
+        appTitle: "Games Verse",
+        appSubtitle: "Your Gaming Universe",
+        notifications: "Notifications",
+        noNotifications: "No new notifications",
+        settings: "Settings",
+        theme: "Theme",
+        lightTheme: "☀️ Light",
+        darkTheme: "🌙 Dark",
+        language: "Language",
+        russian: "🇷🇺 Russian",
+        english: "🇬🇧 English",
+        done: "Done",
+        searchPlaceholder: "Search games...",
+        allGames: "All Games",
+        popular: "🔥 Popular",
+        new: "✨ New",
+        action: "⚔️ Action",
+        casual: "🎲 Casual",
+        favorites: "❤️ Favorites",
+        games: "Games",
+        exchanges: "Exchanges",
+        exchangesDesc: "Trade cryptocurrencies safely",
+        profile: "Profile",
+        user: "User",
+        favoritesCount: "Favorite Games",
+        timeSpent: "Time in App",
+        shareWithFriends: "Share with Friends",
+        feedback: "Leave Feedback",
+        play: "Play",
+        go: "Go",
+        linkCopied: "Link copied!",
+        addedToFavorites: "Added to favorites",
+        removedFromFavorites: "Removed from favorites"
+    }
 };
 
-// State
-let currentFilter = 'all';
-let currentLang = 'ru';
-let games = [];
-let exchanges = [];
-let favorites = [];
-let userStats = { gamesPlayed: 0, favorites: 0 };
+// App State
+let currentUser = null;
+let allGames = [];
+let allExchanges = [];
+let userFavorites = [];
+let currentCategory = 'all';
+let currentLanguage = 'ru';
+let startTime = Date.now();
 
-// Initialize app
+// Initialize App
 document.addEventListener('DOMContentLoaded', function() {
-  initializeData();
-  initializeApp();
+    initializeApp();
 });
 
-function initializeData() {
-  // Load or initialize games
-  const storedGames = localStorage.getItem(STORAGE_KEYS.GAMES);
-  if (storedGames) {
-    games = JSON.parse(storedGames);
-  } else {
-    games = [...DEFAULT_GAMES];
-    localStorage.setItem(STORAGE_KEYS.GAMES, JSON.stringify(games));
-  }
-
-  // Load or initialize exchanges
-  const storedExchanges = localStorage.getItem(STORAGE_KEYS.EXCHANGES);
-  if (storedExchanges) {
-    exchanges = JSON.parse(storedExchanges);
-  } else {
-    exchanges = [...DEFAULT_EXCHANGES];
-    localStorage.setItem(STORAGE_KEYS.EXCHANGES, JSON.stringify(exchanges));
-  }
-
-  // Load favorites
-  const storedFavorites = localStorage.getItem(STORAGE_KEYS.FAVORITES);
-  if (storedFavorites) {
-    favorites = JSON.parse(storedFavorites);
-  }
-
-  // Load user stats
-  const storedStats = localStorage.getItem(STORAGE_KEYS.USER_STATS);
-  if (storedStats) {
-    userStats = JSON.parse(storedStats);
-  }
-}
-
-function vibrate() {
-  if (navigator.vibrate) {
-    navigator.vibrate(50);
-  }
-}
-
 function initializeApp() {
-  setupNavigation();
-  setupSearch();
-  setupFilters();
-  setupSettingsPanel();
-  loadThemePreference();
-  loadLanguagePreference();
-  loadUserData();
-  setupShareButton();
-  renderGames();
-  renderExchanges();
-  updateProfileStats();
-  
-  // Smooth loading
-  setTimeout(() => {
-    document.body.style.opacity = '1';
-  }, 100);
-  
-  // Telegram Web App integration
-  if (window.Telegram && window.Telegram.WebApp) {
-    window.Telegram.WebApp.expand();
-    
-    const themeParams = window.Telegram.WebApp.themeParams;
-    if (themeParams && themeParams.bg_color) {
-      document.documentElement.style.setProperty('--tg-theme-bg-color', themeParams.bg_color);
-    }
-  }
+    setupTelegramWebApp();
+    loadThemePreference();
+    loadLanguagePreference();
+    setupEventListeners();
+    loadGames();
+    loadExchanges();
+    loadNotifications();
+    loadUserData();
+    trackUserActivity();
 }
 
-// Navigation
-function setupNavigation() {
-  const navItems = document.querySelectorAll('.nav-item');
-  const sections = document.querySelectorAll('.content-section');
-  
-  navItems.forEach(item => {
-    item.addEventListener('click', function() {
-      vibrate();
-      const targetSection = this.getAttribute('data-section');
-      
-      navItems.forEach(nav => nav.classList.remove('active'));
-      this.classList.add('active');
-      
-      sections.forEach(section => {
-        section.classList.remove('active');
-        if (section.id === targetSection) {
-          section.classList.add('active');
-        }
-      });
-    });
-  });
-}
-
-// Search functionality
-function setupSearch() {
-  const searchInput = document.getElementById('search-input');
-  
-  searchInput.addEventListener('input', function(e) {
-    const query = e.target.value.toLowerCase().trim();
-    
-    // Determine which section is active
-    const activeSection = document.querySelector('.content-section.active');
-    
-    if (activeSection.id === 'games-section') {
-      renderGames(query);
-    } else if (activeSection.id === 'exchanges-section') {
-      renderExchanges(query);
-    }
-  });
-}
-
-// Filter functionality
-function setupFilters() {
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-      vibrate();
-      
-      filterBtns.forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      
-      currentFilter = this.getAttribute('data-filter');
-      renderGames();
-    });
-  });
-}
-
-// Render games
-function renderGames(searchQuery = '') {
-  const gamesGrid = document.getElementById('games-grid');
-  const noResults = document.getElementById('no-games-results');
-  
-  let filteredGames = [...games];
-  
-  // Apply search filter
-  if (searchQuery) {
-    filteredGames = filteredGames.filter(game => 
-      game.name.toLowerCase().includes(searchQuery) ||
-      game.description.toLowerCase().includes(searchQuery)
-    );
-  }
-  
-  // Apply category filter
-  if (currentFilter === 'favorites') {
-    filteredGames = filteredGames.filter(game => favorites.includes(game.id));
-  } else if (currentFilter === 'popular') {
-    filteredGames = filteredGames.sort((a, b) => b.views - a.views).slice(0, 3);
-  }
-  
-  gamesGrid.innerHTML = '';
-  
-  if (filteredGames.length === 0) {
-    noResults.style.display = 'block';
-    return;
-  } else {
-    noResults.style.display = 'none';
-  }
-  
-  filteredGames.forEach(game => {
-    const isFavorite = favorites.includes(game.id);
-    const gameCard = document.createElement('div');
-    gameCard.className = `game-card ${isFavorite ? 'favorite' : ''}`;
-    gameCard.innerHTML = `
-      <div class="game-image">
-        <img src="${game.image}" alt="${game.name}" class="game-img" onerror="this.style.display='none'">
-      </div>
-      <div class="game-info">
-        <h3>${game.name}</h3>
-        <p data-i18n="${game.id}Desc">${game.description}</p>
-        <div class="game-meta">
-          <span class="rating">⭐ ${game.rating}</span>
-          <span class="views">👁️ ${formatNumber(game.views)}</span>
-        </div>
-      </div>
-      <div class="game-actions">
-        <button class="favorite-btn" data-game-id="${game.id}">${isFavorite ? '❤️' : '🤍'}</button>
-        <button class="play-button" data-bot="${game.bot}" data-game-id="${game.id}" data-i18n="play">${translations[currentLang].play}</button>
-      </div>
-    `;
-    
-    gamesGrid.appendChild(gameCard);
-  });
-  
-  // Setup game buttons
-  setupGameButtons();
-  setupFavoriteButtons();
-}
-
-// Render exchanges
-function renderExchanges(searchQuery = '') {
-  const exchangesList = document.getElementById('exchanges-list');
-  const noResults = document.getElementById('no-exchanges-results');
-  
-  let filteredExchanges = [...exchanges];
-  
-  if (searchQuery) {
-    filteredExchanges = filteredExchanges.filter(exchange => 
-      exchange.name.toLowerCase().includes(searchQuery) ||
-      exchange.description.toLowerCase().includes(searchQuery)
-    );
-  }
-  
-  exchangesList.innerHTML = '';
-  
-  if (filteredExchanges.length === 0) {
-    noResults.style.display = 'block';
-    return;
-  } else {
-    noResults.style.display = 'none';
-  }
-  
-  filteredExchanges.forEach(exchange => {
-    const exchangeCard = document.createElement('div');
-    exchangeCard.className = 'exchange-card';
-    exchangeCard.innerHTML = `
-      <div class="exchange-logo">
-        <img src="${exchange.image}" alt="${exchange.name}" class="exchange-img" onerror="this.style.display='none'">
-      </div>
-      <div class="exchange-info">
-        <h3>${exchange.name}</h3>
-        <p data-i18n="${exchange.id}Desc">${exchange.description}</p>
-        <div class="exchange-meta">👁️ ${formatNumber(exchange.views)} ${translations[currentLang].views || 'просмотров'}</div>
-      </div>
-      <button class="exchange-button" data-url="${exchange.url}" data-exchange-id="${exchange.id}" data-i18n="go">${translations[currentLang].go}</button>
-    `;
-    
-    exchangesList.appendChild(exchangeCard);
-  });
-  
-  setupExchangeButtons();
-}
-
-// Setup game buttons
-function setupGameButtons() {
-  const playButtons = document.querySelectorAll('.play-button');
-  
-  playButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
-      e.stopPropagation();
-      vibrate();
-      
-      const botUsername = this.getAttribute('data-bot');
-      const gameId = this.getAttribute('data-game-id');
-      
-      // Track analytics
-      trackGameClick(gameId);
-      
-      // Update user stats
-      userStats.gamesPlayed++;
-      localStorage.setItem(STORAGE_KEYS.USER_STATS, JSON.stringify(userStats));
-      updateProfileStats();
-      
-      if (botUsername) {
-        const telegramUrl = `https://t.me/${botUsername}?start=app`;
+// Telegram Web App Integration
+function setupTelegramWebApp() {
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
         
-        if (window.Telegram && window.Telegram.WebApp) {
-          window.Telegram.WebApp.openTelegramLink(telegramUrl);
-        } else {
-          window.open(telegramUrl, '_blank');
+        currentUser = tg.initDataUnsafe?.user || null;
+        
+        // Apply Telegram theme
+        if (tg.themeParams) {
+            applyTelegramTheme(tg.themeParams);
         }
-      }
-    });
-  });
-}
-
-// Setup favorite buttons
-function setupFavoriteButtons() {
-  const favBtns = document.querySelectorAll('.favorite-btn');
-  
-  favBtns.forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      vibrate();
-      
-      const gameId = this.getAttribute('data-game-id');
-      const isFavorite = favorites.includes(gameId);
-      
-      if (isFavorite) {
-        favorites = favorites.filter(id => id !== gameId);
-        this.textContent = '🤍';
-      } else {
-        favorites.push(gameId);
-        this.textContent = '❤️';
-      }
-      
-      localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(favorites));
-      userStats.favorites = favorites.length;
-      localStorage.setItem(STORAGE_KEYS.USER_STATS, JSON.stringify(userStats));
-      updateProfileStats();
-      
-      // Update card styling
-      const card = this.closest('.game-card');
-      if (favorites.includes(gameId)) {
-        card.classList.add('favorite');
-      } else {
-        card.classList.remove('favorite');
-      }
-    });
-  });
-}
-
-// Setup exchange buttons
-function setupExchangeButtons() {
-  const exchangeButtons = document.querySelectorAll('.exchange-button');
-  
-  exchangeButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
-      e.stopPropagation();
-      vibrate();
-      
-      const exchangeUrl = this.getAttribute('data-url');
-      const exchangeId = this.getAttribute('data-exchange-id');
-      
-      // Track analytics
-      trackExchangeClick(exchangeId);
-      
-      if (exchangeUrl) {
-        if (window.Telegram && window.Telegram.WebApp) {
-          window.Telegram.WebApp.openLink(exchangeUrl);
-        } else {
-          window.open(exchangeUrl, '_blank');
+        
+        // Register user in Firebase
+        if (currentUser) {
+            registerUser(currentUser);
         }
-      }
-    });
-  });
-}
-
-// Analytics tracking
-function trackGameClick(gameId) {
-  const analytics = getAnalytics();
-  const today = new Date().toISOString().split('T')[0];
-  
-  if (!analytics.games[gameId]) {
-    analytics.games[gameId] = { clicks: 0, lastClick: null };
-  }
-  
-  analytics.games[gameId].clicks++;
-  analytics.games[gameId].lastClick = today;
-  
-  if (!analytics.dailyStats[today]) {
-    analytics.dailyStats[today] = { gameClicks: 0, exchangeClicks: 0 };
-  }
-  analytics.dailyStats[today].gameClicks++;
-  
-  saveAnalytics(analytics);
-  
-  // Update game views
-  const game = games.find(g => g.id === gameId);
-  if (game) {
-    game.views++;
-    localStorage.setItem(STORAGE_KEYS.GAMES, JSON.stringify(games));
-  }
-}
-
-function trackExchangeClick(exchangeId) {
-  const analytics = getAnalytics();
-  const today = new Date().toISOString().split('T')[0];
-  
-  if (!analytics.exchanges[exchangeId]) {
-    analytics.exchanges[exchangeId] = { clicks: 0, lastClick: null };
-  }
-  
-  analytics.exchanges[exchangeId].clicks++;
-  analytics.exchanges[exchangeId].lastClick = today;
-  
-  if (!analytics.dailyStats[today]) {
-    analytics.dailyStats[today] = { gameClicks: 0, exchangeClicks: 0 };
-  }
-  analytics.dailyStats[today].exchangeClicks++;
-  
-  saveAnalytics(analytics);
-  
-  // Update exchange views
-  const exchange = exchanges.find(e => e.id === exchangeId);
-  if (exchange) {
-    exchange.views++;
-    localStorage.setItem(STORAGE_KEYS.EXCHANGES, JSON.stringify(exchanges));
-  }
-}
-
-function getAnalytics() {
-  const stored = localStorage.getItem(STORAGE_KEYS.ANALYTICS);
-  if (stored) {
-    return JSON.parse(stored);
-  }
-  return {
-    games: {},
-    exchanges: {},
-    dailyStats: {},
-    totalUsers: 1
-  };
-}
-
-function saveAnalytics(analytics) {
-  localStorage.setItem(STORAGE_KEYS.ANALYTICS, JSON.stringify(analytics));
-}
-
-// Settings panel
-function setupSettingsPanel() {
-  const settingsButton = document.getElementById('settings-button');
-  const settingsPanel = document.getElementById('settings-panel');
-  const closeSettings = document.getElementById('close-settings');
-  
-  if (settingsButton) {
-    settingsButton.addEventListener('click', function() {
-      vibrate();
-      settingsPanel.classList.add('active');
-    });
-  }
-  
-  if (closeSettings) {
-    closeSettings.addEventListener('click', function() {
-      vibrate();
-      settingsPanel.classList.remove('active');
-    });
-  }
-  
-  if (settingsPanel) {
-    settingsPanel.addEventListener('click', function(e) {
-      if (e.target === settingsPanel) {
-        settingsPanel.classList.remove('active');
-      }
-    });
-  }
-  
-  // Theme switcher
-  const themeOptions = document.querySelectorAll('.theme-option');
-  themeOptions.forEach(option => {
-    option.addEventListener('click', function() {
-      vibrate();
-      const theme = this.getAttribute('data-theme');
-      
-      themeOptions.forEach(opt => opt.classList.remove('active'));
-      this.classList.add('active');
-      
-      if (theme === 'dark') {
-        document.body.classList.add('dark-theme');
-      } else {
-        document.body.classList.remove('dark-theme');
-      }
-      
-      localStorage.setItem(STORAGE_KEYS.THEME, theme);
-    });
-  });
-  
-  // Language switcher
-  const languageOptions = document.querySelectorAll('.language-option');
-  languageOptions.forEach(option => {
-    option.addEventListener('click', function() {
-      vibrate();
-      const lang = this.getAttribute('data-lang');
-      
-      languageOptions.forEach(opt => opt.classList.remove('active'));
-      this.classList.add('active');
-      
-      currentLang = lang;
-      setLanguage(lang);
-      localStorage.setItem(STORAGE_KEYS.LANGUAGE, lang);
-      
-      // Re-render content with new language
-      renderGames();
-      renderExchanges();
-    });
-  });
-}
-
-function setLanguage(lang) {
-  const elements = document.querySelectorAll('[data-i18n]');
-  elements.forEach(element => {
-    const key = element.getAttribute('data-i18n');
-    if (translations[lang] && translations[lang][key]) {
-      element.textContent = translations[lang][key];
     }
-  });
-  
-  // Update placeholder
-  const searchInput = document.getElementById('search-input');
-  if (searchInput && translations[lang].search) {
-    searchInput.placeholder = translations[lang].search;
-  }
 }
 
-function loadThemePreference() {
-  const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || 'light';
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-theme');
-  }
-  updateSettingsThemeOptions(savedTheme);
-}
-
-function loadLanguagePreference() {
-  const savedLang = localStorage.getItem(STORAGE_KEYS.LANGUAGE) || 'ru';
-  currentLang = savedLang;
-  setLanguage(savedLang);
-  updateSettingsLanguageOptions(savedLang);
-}
-
-function updateSettingsThemeOptions(theme) {
-  const themeOptions = document.querySelectorAll('.theme-option');
-  themeOptions.forEach(option => {
-    option.classList.remove('active');
-    if (option.getAttribute('data-theme') === theme) {
-      option.classList.add('active');
+function applyTelegramTheme(themeParams) {
+    if (themeParams.bg_color) {
+        document.documentElement.style.setProperty('--tg-bg', themeParams.bg_color);
     }
-  });
+    if (themeParams.text_color) {
+        document.documentElement.style.setProperty('--tg-text', themeParams.text_color);
+    }
 }
 
-function updateSettingsLanguageOptions(lang) {
-  const languageOptions = document.querySelectorAll('.language-option');
-  languageOptions.forEach(option => {
-    option.classList.remove('active');
-    if (option.getAttribute('data-lang') === lang) {
-      option.classList.add('active');
+// Firebase Functions
+function registerUser(user) {
+    if (!database) return;
+    
+    const userRef = database.ref('users/' + user.id);
+    userRef.once('value', (snapshot) => {
+        if (!snapshot.exists()) {
+            userRef.set({
+                id: user.id,
+                first_name: user.first_name || '',
+                last_name: user.last_name || '',
+                username: user.username || '',
+                language_code: user.language_code || 'ru',
+                joined_at: Date.now(),
+                last_active: Date.now()
+            });
+        } else {
+            userRef.update({
+                last_active: Date.now()
+            });
+        }
+    });
+    
+    // Update stats
+    updateStats();
+}
+
+function updateStats() {
+    if (!database) return;
+    
+    const statsRef = database.ref('stats');
+    statsRef.transaction((stats) => {
+        if (!stats) {
+            return {
+                total_users: 1,
+                active_users_today: 1,
+                last_updated: Date.now()
+            };
+        }
+        
+        const today = new Date().toDateString();
+        if (new Date(stats.last_updated).toDateString() !== today) {
+            stats.active_users_today = 1;
+        } else {
+            stats.active_users_today = (stats.active_users_today || 0) + 1;
+        }
+        
+        stats.last_updated = Date.now();
+        return stats;
+    });
+}
+
+function loadGames() {
+    if (!database) {
+        loadDefaultGames();
+        return;
     }
-  });
+    
+    const gamesRef = database.ref('games');
+    gamesRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            allGames = Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+            }));
+            displayGames();
+        } else {
+            loadDefaultGames();
+        }
+    });
+}
+
+function loadDefaultGames() {
+    allGames = [
+        {
+            id: 'hamster-gamedev',
+            name: 'Hamster GameDev',
+            description: 'Создай свою студию',
+            bot: 'hamsterdev_bot',
+            category: 'casual',
+            rating: 4.8,
+            isNew: false,
+            icon: '🐹'
+        },
+        {
+            id: 'hamster-king',
+            name: 'Hamster King',
+            description: 'Стань королем хомяков',
+            bot: 'hamsterking_bot',
+            category: 'action',
+            rating: 4.9,
+            isNew: false,
+            icon: '👑'
+        },
+        {
+            id: 'hamster-fightclub',
+            name: 'Hamster Fight Club',
+            description: 'Бойцовский клуб хомяков',
+            bot: 'hamsterfightclub_bot',
+            category: 'action',
+            rating: 4.7,
+            isNew: true,
+            icon: '🥊'
+        },
+        {
+            id: 'bitquest',
+            name: 'BitQuest',
+            description: 'Приключения в мире крипты',
+            bot: 'bitquest_bot',
+            category: 'casual',
+            rating: 4.6,
+            isNew: true,
+            icon: '🪙'
+        }
+    ];
+    
+    // Save to Firebase
+    if (database) {
+        const gamesRef = database.ref('games');
+        allGames.forEach(game => {
+            gamesRef.child(game.id).set(game);
+        });
+    }
+    
+    displayGames();
+}
+
+function loadExchanges() {
+    if (!database) {
+        loadDefaultExchanges();
+        return;
+    }
+    
+    const exchangesRef = database.ref('exchanges');
+    exchangesRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            allExchanges = Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+            }));
+            displayExchanges();
+        } else {
+            loadDefaultExchanges();
+        }
+    });
+}
+
+function loadDefaultExchanges() {
+    allExchanges = [
+        {
+            id: 'bybit',
+            name: 'Bybit',
+            description: 'Продвинутая торговая платформа',
+            url: 'https://www.bybit.com',
+            icon: '🔵'
+        },
+        {
+            id: 'bingx',
+            name: 'BingX',
+            description: 'Социальная торговля и копирование',
+            url: 'https://www.bingx.com',
+            icon: '🟬'
+        },
+        {
+            id: 'bitget',
+            name: 'Bitget',
+            description: 'Инновационная торговая платформа',
+            url: 'https://www.bitget.com',
+            icon: '🔶'
+        },
+        {
+            id: 'mexc',
+            name: 'MEXC',
+            description: 'Глобальная биржа с низкими комиссиями',
+            url: 'https://www.mexc.com',
+            icon: '🟢'
+        }
+    ];
+    
+    // Save to Firebase
+    if (database) {
+        const exchangesRef = database.ref('exchanges');
+        allExchanges.forEach(exchange => {
+            exchangesRef.child(exchange.id).set(exchange);
+        });
+    }
+    
+    displayExchanges();
+}
+
+function loadNotifications() {
+    if (!database) return;
+    
+    const notificationsRef = database.ref('notifications').orderByChild('timestamp').limitToLast(20);
+    notificationsRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const notifications = Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+            })).reverse();
+            displayNotifications(notifications);
+        }
+    });
+}
+
+function displayNotifications(notifications) {
+    const notificationsList = document.getElementById('notifications-list');
+    const notificationBadge = document.getElementById('notification-badge');
+    
+    if (notifications.length === 0) {
+        notificationsList.innerHTML = `<div class="no-notifications" data-i18n="noNotifications">${translations[currentLanguage].noNotifications}</div>`;
+        notificationBadge.style.display = 'none';
+        return;
+    }
+    
+    // Show unread count
+    const unreadCount = notifications.filter(n => !n.read).length;
+    if (unreadCount > 0) {
+        notificationBadge.textContent = unreadCount;
+        notificationBadge.style.display = 'block';
+    } else {
+        notificationBadge.style.display = 'none';
+    }
+    
+    notificationsList.innerHTML = notifications.map(notif => `
+        <div class="notification-item ${!notif.read ? 'unread' : ''}">
+            <div class="notification-title">${notif.title}</div>
+            <div class="notification-text">${notif.message}</div>
+            <div class="notification-time">${formatTime(notif.timestamp)}</div>
+        </div>
+    `).join('');
+}
+
+function displayGames() {
+    const gamesGrid = document.getElementById('games-grid');
+    const gamesCount = document.getElementById('games-count');
+    
+    let filteredGames = filterGames();
+    
+    gamesCount.textContent = `${filteredGames.length} ${currentLanguage === 'ru' ? 'игр' : 'games'}`;
+    
+    if (filteredGames.length === 0) {
+        gamesGrid.innerHTML = `<div class="loading-spinner">${currentLanguage === 'ru' ? 'Игры не найдены' : 'No games found'}</div>`;
+        return;
+    }
+    
+    gamesGrid.innerHTML = filteredGames.map(game => `
+        <div class="game-card" data-game-id="${game.id}">
+            <div class="game-image">
+                ${game.icon || '🎮'}
+            </div>
+            <div class="game-info">
+                <h3>
+                    ${game.name}
+                    ${game.isNew ? '<span class="game-badge">NEW</span>' : ''}
+                </h3>
+                <div class="game-description">${game.description}</div>
+                <div class="game-meta">
+                    <div class="game-rating">
+                        ⭐ ${game.rating || '4.5'}
+                    </div>
+                    <div class="game-category">
+                        🏷️ ${getCategoryName(game.category)}
+                    </div>
+                </div>
+            </div>
+            <div class="game-actions">
+                <button class="play-button" data-bot="${game.bot}" data-i18n="play">
+                    ${translations[currentLanguage].play}
+                </button>
+                <button class="favorite-button ${isFavorite(game.id) ? 'active' : ''}" data-game-id="${game.id}">
+                    ${isFavorite(game.id) ? '❤️' : '🤍'}
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    // Add event listeners
+    document.querySelectorAll('.play-button').forEach(btn => {
+        btn.addEventListener('click', handlePlayGame);
+    });
+    
+    document.querySelectorAll('.favorite-button').forEach(btn => {
+        btn.addEventListener('click', handleFavoriteToggle);
+    });
+}
+
+function displayExchanges() {
+    const exchangesList = document.getElementById('exchanges-list');
+    
+    if (allExchanges.length === 0) {
+        exchangesList.innerHTML = `<div class="loading-spinner">${currentLanguage === 'ru' ? 'Загрузка бирж...' : 'Loading exchanges...'}</div>`;
+        return;
+    }
+    
+    exchangesList.innerHTML = allExchanges.map(exchange => `
+        <div class="exchange-card">
+            <div class="exchange-logo">
+                ${exchange.icon || '📊'}
+            </div>
+            <div class="exchange-info">
+                <h3>${exchange.name}</h3>
+                <p>${exchange.description}</p>
+            </div>
+            <button class="exchange-button" data-url="${exchange.url}" data-i18n="go">
+                ${translations[currentLanguage].go}
+            </button>
+        </div>
+    `).join('');
+    
+    // Add event listeners
+    document.querySelectorAll('.exchange-button').forEach(btn => {
+        btn.addEventListener('click', handleOpenExchange);
+    });
+}
+
+function filterGames() {
+    let filtered = allGames;
+    
+    // Filter by category
+    if (currentCategory === 'popular') {
+        filtered = filtered.filter(g => (g.rating || 0) >= 4.7);
+    } else if (currentCategory === 'new') {
+        filtered = filtered.filter(g => g.isNew);
+    } else if (currentCategory === 'favorites') {
+        filtered = filtered.filter(g => isFavorite(g.id));
+    } else if (currentCategory !== 'all') {
+        filtered = filtered.filter(g => g.category === currentCategory);
+    }
+    
+    // Filter by search
+    const searchValue = document.getElementById('search-input').value.toLowerCase();
+    if (searchValue) {
+        filtered = filtered.filter(g => 
+            g.name.toLowerCase().includes(searchValue) ||
+            g.description.toLowerCase().includes(searchValue)
+        );
+    }
+    
+    return filtered;
+}
+
+function getCategoryName(category) {
+    const names = {
+        'ru': {
+            'action': 'Экшн',
+            'casual': 'Казуал',
+            'strategy': 'Стратегия',
+            'puzzle': 'Головоломка'
+        },
+        'en': {
+            'action': 'Action',
+            'casual': 'Casual',
+            'strategy': 'Strategy',
+            'puzzle': 'Puzzle'
+        }
+    };
+    return names[currentLanguage][category] || category;
+}
+
+function isFavorite(gameId) {
+    return userFavorites.includes(gameId);
 }
 
 function loadUserData() {
-  if (window.Telegram && window.Telegram.WebApp) {
-    const user = window.Telegram.WebApp.initDataUnsafe?.user;
-    
-    if (user) {
-      const userName = document.getElementById('user-name');
-      if (userName && user.first_name) {
-        userName.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-      }
-      
-      const userUsername = document.getElementById('user-username');
-      if (userUsername && user.username) {
-        userUsername.textContent = '@' + user.username;
-      }
-      
-      const avatarImg = document.getElementById('avatar-img');
-      const avatarFallback = document.getElementById('avatar-fallback');
-      
-      if (user.photo_url) {
-        avatarImg.src = user.photo_url;
-        avatarImg.style.display = 'block';
-        avatarFallback.style.display = 'none';
-      } else if (user.first_name) {
-        avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
-      }
+    // Load favorites from localStorage
+    const savedFavorites = localStorage.getItem('favorites');
+    if (savedFavorites) {
+        userFavorites = JSON.parse(savedFavorites);
     }
-  }
+    
+    updateUserProfile();
 }
 
-function updateProfileStats() {
-  document.getElementById('games-played').textContent = userStats.gamesPlayed || 0;
-  document.getElementById('favorites-count').textContent = favorites.length || 0;
-}
-
-function setupShareButton() {
-  const shareButton = document.getElementById('share-friends-button');
-  const notification = document.getElementById('notification');
-  
-  if (shareButton) {
-    shareButton.addEventListener('click', function() {
-      vibrate();
-      const shareUrl = window.location.href;
-      const shareText = 'Открой для себя лучшие игры Telegram в одном приложении! 🎮';
-      
-      if (navigator.share) {
-        navigator.share({
-          title: 'Games Verse',
-          text: shareText,
-          url: shareUrl,
-        }).catch(() => {});
-      } else {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(shareUrl).then(() => {
-            showNotification(notification);
-          }).catch(() => {
-            fallbackCopyToClipboard(shareUrl, notification);
-          });
-        } else {
-          fallbackCopyToClipboard(shareUrl, notification);
+function updateUserProfile() {
+    // Update user info
+    if (currentUser) {
+        const userName = document.getElementById('user-name');
+        const userUsername = document.getElementById('user-username');
+        const userAvatar = document.getElementById('user-avatar');
+        const avatarImg = document.getElementById('avatar-img');
+        const avatarFallback = document.getElementById('avatar-fallback');
+        
+        if (userName) {
+            userName.textContent = currentUser.first_name + (currentUser.last_name ? ' ' + currentUser.last_name : '');
         }
-      }
+        
+        if (userUsername && currentUser.username) {
+            userUsername.textContent = '@' + currentUser.username;
+        }
+        
+        if (currentUser.photo_url) {
+            avatarImg.src = currentUser.photo_url;
+            avatarImg.style.display = 'block';
+            avatarFallback.style.display = 'none';
+        } else if (currentUser.first_name) {
+            avatarFallback.textContent = currentUser.first_name.charAt(0).toUpperCase();
+        }
+    }
+    
+    // Update stats
+    document.getElementById('favorites-count').textContent = userFavorites.length;
+    
+    // Calculate time spent
+    const timeSpent = Math.floor((Date.now() - startTime) / 60000);
+    document.getElementById('time-spent').textContent = `${timeSpent} ${currentLanguage === 'ru' ? 'мин' : 'min'}`;
+}
+
+function trackUserActivity() {
+    setInterval(() => {
+        const timeSpent = Math.floor((Date.now() - startTime) / 60000);
+        document.getElementById('time-spent').textContent = `${timeSpent} ${currentLanguage === 'ru' ? 'мин' : 'min'}`;
+    }, 60000); // Update every minute
+}
+
+// Event Handlers
+function setupEventListeners() {
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', handleNavigation);
     });
-  }
+    
+    // Settings
+    document.getElementById('settings-button').addEventListener('click', () => {
+        document.getElementById('settings-panel').classList.add('active');
+        vibrate();
+    });
+    
+    document.getElementById('close-settings').addEventListener('click', closeSettings);
+    document.getElementById('close-settings-btn').addEventListener('click', closeSettings);
+    document.getElementById('settings-panel').addEventListener('click', (e) => {
+        if (e.target.id === 'settings-panel') closeSettings();
+    });
+    
+    // Notifications
+    document.getElementById('notifications-button').addEventListener('click', () => {
+        document.getElementById('notifications-panel').classList.add('active');
+        markNotificationsAsRead();
+        vibrate();
+    });
+    
+    document.getElementById('close-notifications').addEventListener('click', closeNotifications);
+    document.getElementById('notifications-panel').addEventListener('click', (e) => {
+        if (e.target.id === 'notifications-panel') closeNotifications();
+    });
+    
+    // Theme switcher
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.addEventListener('click', handleThemeChange);
+    });
+    
+    // Language switcher
+    document.querySelectorAll('.language-option').forEach(option => {
+        option.addEventListener('click', handleLanguageChange);
+    });
+    
+    // Categories
+    document.querySelectorAll('.category-chip').forEach(chip => {
+        chip.addEventListener('click', handleCategoryChange);
+    });
+    
+    // Search
+    document.getElementById('search-input').addEventListener('input', () => {
+        displayGames();
+    });
+    
+    // Profile actions
+    document.getElementById('share-friends-button').addEventListener('click', handleShare);
+    document.getElementById('feedback-button').addEventListener('click', handleFeedback);
 }
 
-function fallbackCopyToClipboard(text, notification) {
-  try {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.opacity = '0';
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    showNotification(notification);
-  } catch (err) {
-    console.error('Copy failed:', err);
-  }
+function handleNavigation(e) {
+    vibrate();
+    const targetSection = this.getAttribute('data-section');
+    
+    // Update active nav
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    this.classList.add('active');
+    
+    // Show target section
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+        if (section.id === targetSection) {
+            section.classList.add('active');
+        }
+    });
 }
 
-function showNotification(notification, customMessage) {
-  if (customMessage) {
-    notification.textContent = customMessage;
-  }
-  
-  notification.classList.add('show');
-  setTimeout(() => {
-    notification.classList.remove('show');
-  }, 2000);
+function handlePlayGame(e) {
+    e.stopPropagation();
+    vibrate();
+    const botUsername = this.getAttribute('data-bot');
+    const telegramUrl = `https://t.me/${botUsername}?start=app`;
+    
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.openTelegramLink(telegramUrl);
+    } else {
+        window.open(telegramUrl, '_blank');
+    }
 }
 
-function formatNumber(num) {
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'k';
-  }
-  return num;
+function handleOpenExchange(e) {
+    e.stopPropagation();
+    vibrate();
+    const url = this.getAttribute('data-url');
+    
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.openLink(url);
+    } else {
+        window.open(url, '_blank');
+    }
+}
+
+function handleFavoriteToggle(e) {
+    e.stopPropagation();
+    vibrate();
+    const gameId = this.getAttribute('data-game-id');
+    
+    if (isFavorite(gameId)) {
+        userFavorites = userFavorites.filter(id => id !== gameId);
+        showToast(translations[currentLanguage].removedFromFavorites);
+    } else {
+        userFavorites.push(gameId);
+        showToast(translations[currentLanguage].addedToFavorites);
+    }
+    
+    localStorage.setItem('favorites', JSON.stringify(userFavorites));
+    updateUserProfile();
+    displayGames();
+}
+
+function handleCategoryChange(e) {
+    vibrate();
+    currentCategory = this.getAttribute('data-category');
+    
+    document.querySelectorAll('.category-chip').forEach(chip => chip.classList.remove('active'));
+    this.classList.add('active');
+    
+    displayGames();
+}
+
+function handleThemeChange(e) {
+    vibrate();
+    const theme = this.getAttribute('data-theme');
+    
+    document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+    this.classList.add('active');
+    
+    if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+    } else {
+        document.body.classList.remove('dark-theme');
+    }
+    
+    localStorage.setItem('theme', theme);
+}
+
+function handleLanguageChange(e) {
+    vibrate();
+    const lang = this.getAttribute('data-lang');
+    
+    document.querySelectorAll('.language-option').forEach(opt => opt.classList.remove('active'));
+    this.classList.add('active');
+    
+    currentLanguage = lang;
+    setLanguage(lang);
+    localStorage.setItem('language', lang);
+    
+    // Refresh displays
+    displayGames();
+    displayExchanges();
+    updateUserProfile();
+}
+
+function handleShare() {
+    vibrate();
+    const shareUrl = window.location.href;
+    const shareText = currentLanguage === 'ru' 
+        ? '🎮 Открой для себя лучшие Telegram игры в одном приложении!'
+        : '🎮 Discover the best Telegram games in one app!';
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Games Verse',
+            text: shareText,
+            url: shareUrl
+        }).catch(() => {});
+    } else {
+        copyToClipboard(shareUrl);
+        showToast(translations[currentLanguage].linkCopied);
+    }
+}
+
+function handleFeedback() {
+    vibrate();
+    const feedbackUrl = `https://t.me/your_support_bot`;
+    
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.openTelegramLink(feedbackUrl);
+    } else {
+        window.open(feedbackUrl, '_blank');
+    }
+}
+
+function closeSettings() {
+    document.getElementById('settings-panel').classList.remove('active');
+}
+
+function closeNotifications() {
+    document.getElementById('notifications-panel').classList.remove('active');
+}
+
+function markNotificationsAsRead() {
+    if (!database || !currentUser) return;
+    
+    const notificationsRef = database.ref('notifications');
+    notificationsRef.once('value', (snapshot) => {
+        snapshot.forEach((child) => {
+            child.ref.update({ read: true });
+        });
+    });
+    
+    document.getElementById('notification-badge').style.display = 'none';
+}
+
+// Utility Functions
+function setLanguage(lang) {
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+            element.textContent = translations[lang][key];
+        }
+    });
+    
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-i18n-placeholder');
+        if (translations[lang] && translations[lang][key]) {
+            element.placeholder = translations[lang][key];
+        }
+    });
+}
+
+function loadThemePreference() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+    }
+    
+    document.querySelectorAll('.theme-option').forEach(option => {
+        if (option.getAttribute('data-theme') === savedTheme) {
+            option.classList.add('active');
+        } else {
+            option.classList.remove('active');
+        }
+    });
+}
+
+function loadLanguagePreference() {
+    const savedLang = localStorage.getItem('language') || 'ru';
+    currentLanguage = savedLang;
+    setLanguage(savedLang);
+    
+    document.querySelectorAll('.language-option').forEach(option => {
+        if (option.getAttribute('data-lang') === savedLang) {
+            option.classList.add('active');
+        } else {
+            option.classList.remove('active');
+        }
+    });
+}
+
+function vibrate() {
+    if (navigator.vibrate) {
+        navigator.vibrate(50);
+    }
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2500);
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text);
+    } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+}
+
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return currentLanguage === 'ru' ? 'только что' : 'just now';
+    if (diffMins < 60) return `${diffMins} ${currentLanguage === 'ru' ? 'мин назад' : 'min ago'}`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} ${currentLanguage === 'ru' ? 'ч назад' : 'h ago'}`;
+    
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} ${currentLanguage === 'ru' ? 'д назад' : 'd ago'}`;
 }

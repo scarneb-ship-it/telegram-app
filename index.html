@@ -3,48 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Games Verse</title>
+    <title>Games Verse - Лучшие Telegram Игры</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1 class="app-title" data-i18n="appTitle">🎮 Games Verse</h1>
-                <button class="settings-button" id="settings-button" aria-label="Settings">⚙️</button>
-            </div>
-            
-            <!-- Search Bar -->
-            <div class="search-container">
-                <input type="text" id="search-input" class="search-input" data-i18n-placeholder="search" placeholder="Поиск игр и бирж...">
-                <span class="search-icon">🔍</span>
+                <div class="header-left">
+                    <div class="app-logo">🎮</div>
+                    <div>
+                        <h1 class="app-title" data-i18n="appTitle">Games Verse</h1>
+                        <p class="app-subtitle" data-i18n="appSubtitle">Твой игровой мир</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-button" id="notifications-button" title="Уведомления">
+                        🔔
+                        <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
+                    </button>
+                    <button class="icon-button" id="settings-button" title="Настройки">⚙️</button>
+                </div>
             </div>
         </header>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Поиск игр..." data-i18n-placeholder="searchPlaceholder">
+            </div>
+        </div>
+
+        <!-- Notifications Panel -->
+        <div class="notifications-panel" id="notifications-panel">
+            <div class="notifications-content">
+                <div class="notifications-header">
+                    <h3 data-i18n="notifications">Уведомления</h3>
+                    <button class="close-btn" id="close-notifications">✕</button>
+                </div>
+                <div id="notifications-list" class="notifications-list">
+                    <div class="no-notifications" data-i18n="noNotifications">Нет новых уведомлений</div>
+                </div>
+            </div>
+        </div>
 
         <!-- Settings Panel -->
         <div class="settings-panel" id="settings-panel">
             <div class="settings-content">
-                <h3 class="settings-title" data-i18n="settings">Настройки</h3>
+                <div class="settings-header">
+                    <h3 data-i18n="settings">Настройки</h3>
+                    <button class="close-btn" id="close-settings">✕</button>
+                </div>
                 
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="theme">Тема</span>
                     <div class="theme-switcher">
-                        <button class="theme-option active" data-theme="light" data-i18n="lightTheme">Светлая</button>
-                        <button class="theme-option" data-theme="dark" data-i18n="darkTheme">Темная</button>
+                        <button class="theme-option active" data-theme="light" data-i18n="lightTheme">☀️ Светлая</button>
+                        <button class="theme-option" data-theme="dark" data-i18n="darkTheme">🌙 Темная</button>
                     </div>
                 </div>
                 
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="language">Язык</span>
                     <div class="language-switcher">
-                        <button class="language-option active" data-lang="ru" data-i18n="russian">Русский</button>
-                        <button class="language-option" data-lang="en" data-i18n="english">English</button>
+                        <button class="language-option active" data-lang="ru" data-i18n="russian">🇷🇺 Русский</button>
+                        <button class="language-option" data-lang="en" data-i18n="english">🇬🇧 English</button>
                     </div>
                 </div>
                 
-                <button class="close-settings" id="close-settings" data-i18n="done">Готово</button>
+                <button class="close-settings-btn" id="close-settings-btn" data-i18n="done">Готово</button>
             </div>
         </div>
 
@@ -52,25 +85,24 @@
         <main class="main-content">
             <!-- Games Section -->
             <section id="games-section" class="content-section active">
+                <!-- Categories -->
+                <div class="categories-scroll">
+                    <button class="category-chip active" data-category="all" data-i18n="allGames">Все игры</button>
+                    <button class="category-chip" data-category="popular" data-i18n="popular">🔥 Популярные</button>
+                    <button class="category-chip" data-category="new" data-i18n="new">✨ Новые</button>
+                    <button class="category-chip" data-category="action" data-i18n="action">⚔️ Экшн</button>
+                    <button class="category-chip" data-category="casual" data-i18n="casual">🎲 Казуальные</button>
+                    <button class="category-chip" data-category="favorites" data-i18n="favorites">❤️ Избранное</button>
+                </div>
+
                 <div class="section-header">
                     <h2 data-i18n="games">Игры</h2>
-                    <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
-                </div>
-                
-                <!-- Filter Buttons -->
-                <div class="filter-container">
-                    <button class="filter-btn active" data-filter="all" data-i18n="all">Все</button>
-                    <button class="filter-btn" data-filter="favorites" data-i18n="favorites">❤️ Избранное</button>
-                    <button class="filter-btn" data-filter="popular" data-i18n="popular">🔥 Популярные</button>
+                    <span class="games-count" id="games-count">0 игр</span>
                 </div>
                 
                 <div class="games-grid" id="games-grid">
-                    <!-- Games will be dynamically loaded -->
-                </div>
-                
-                <div class="no-results" id="no-games-results" style="display: none;">
-                    <span class="no-results-icon">😔</span>
-                    <p data-i18n="noResults">Ничего не найдено</p>
+                    <!-- Games will be loaded here dynamically -->
+                    <div class="loading-spinner">⏳ Загрузка игр...</div>
                 </div>
             </section>
 
@@ -82,12 +114,7 @@
                 </div>
                 
                 <div class="exchanges-list" id="exchanges-list">
-                    <!-- Exchanges will be dynamically loaded -->
-                </div>
-                
-                <div class="no-results" id="no-exchanges-results" style="display: none;">
-                    <span class="no-results-icon">😔</span>
-                    <p data-i18n="noResults">Ничего не найдено</p>
+                    <div class="loading-spinner">⏳ Загрузка бирж...</div>
                 </div>
             </section>
 
@@ -104,28 +131,31 @@
                     </div>
                 </div>
 
-                <!-- Profile Stats -->
                 <div class="profile-stats">
                     <div class="stat-card">
-                        <span class="stat-icon">🎮</span>
+                        <div class="stat-icon">🎮</div>
                         <div class="stat-info">
-                            <span class="stat-value" id="games-played">0</span>
-                            <span class="stat-label" data-i18n="gamesPlayed">Игр открыто</span>
+                            <div class="stat-value" id="favorites-count">0</div>
+                            <div class="stat-label" data-i18n="favoritesCount">Избранных игр</div>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-icon">❤️</span>
+                        <div class="stat-icon">⏱️</div>
                         <div class="stat-info">
-                            <span class="stat-value" id="favorites-count">0</span>
-                            <span class="stat-label" data-i18n="favoritesCount">В избранном</span>
+                            <div class="stat-value" id="time-spent">0 мин</div>
+                            <div class="stat-label" data-i18n="timeSpent">Времени в приложении</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="profile-actions">
-                    <button class="share-friends-button" id="share-friends-button">
+                    <button class="action-button primary" id="share-friends-button">
                         <span class="action-icon">👥</span>
                         <span data-i18n="shareWithFriends">Поделиться с друзьями</span>
+                    </button>
+                    <button class="action-button secondary" id="feedback-button">
+                        <span class="action-icon">💬</span>
+                        <span data-i18n="feedback">Оставить отзыв</span>
                     </button>
                 </div>
             </section>
@@ -147,8 +177,8 @@
             </button>
         </nav>
 
-        <!-- Notification -->
-        <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
     </div>
 
     <script src="script.js"></script>

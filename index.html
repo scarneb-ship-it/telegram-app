@@ -5,15 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Games Verse</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1 class="app-title" data-i18n="appTitle">Games Verse</h1>
-                <button class="settings-button" id="settings-button">⚙️</button>
+                <h1 class="app-title" data-i18n="appTitle">🎮 Games Verse</h1>
+                <button class="settings-button" id="settings-button" aria-label="Settings">⚙️</button>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" data-i18n-placeholder="search" placeholder="Поиск игр и бирж...">
+                <span class="search-icon">🔍</span>
             </div>
         </header>
 
@@ -51,50 +57,20 @@
                     <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
                 </div>
                 
-                <div class="games-grid">
-                    <div class="game-card">
-                        <div class="game-image">
-                            <img src="images/hamster-gamedev.jpg" alt="Hamster GameDev" class="game-img" onerror="this.style.display='none'">
-                        </div>
-                        <div class="game-info">
-                            <h3>Hamster GameDev</h3>
-                            <p data-i18n="hamsterGameDevDesc">Создай свою студию</p>
-                        </div>
-                        <button class="play-button" data-bot="hamsterdev_bot" data-i18n="play">Играть</button>
-                    </div>
-
-                    <div class="game-card">
-                        <div class="game-image">
-                            <img src="images/hamster-king.jpg" alt="Hamster King" class="game-img" onerror="this.style.display='none'">
-                        </div>
-                        <div class="game-info">
-                            <h3>Hamster King</h3>
-                            <p data-i18n="hamsterKingDesc">Стань королем хомяков</p>
-                        </div>
-                        <button class="play-button" data-bot="hamsterking_bot" data-i18n="play">Играть</button>
-                    </div>
-
-                    <div class="game-card">
-                        <div class="game-image">
-                            <img src="images/hamster-fightclub.jpg" alt="Hamster Fight Club" class="game-img" onerror="this.style.display='none'">
-                        </div>
-                        <div class="game-info">
-                            <h3>Hamster Fight Club</h3>
-                            <p data-i18n="hamsterFightClubDesc">Бойцовский клуб хомяков</p>
-                        </div>
-                        <button class="play-button" data-bot="hamsterfightclub_bot" data-i18n="play">Играть</button>
-                    </div>
-
-                    <div class="game-card">
-                        <div class="game-image">
-                            <img src="images/bitquest.jpg" alt="BitQuest" class="game-img" onerror="this.style.display='none'">
-                        </div>
-                        <div class="game-info">
-                            <h3>BitQuest</h3>
-                            <p data-i18n="bitquestDesc">Приключения в мире крипты</p>
-                        </div>
-                        <button class="play-button" data-bot="bitquest_bot" data-i18n="play">Играть</button>
-                    </div>
+                <!-- Filter Buttons -->
+                <div class="filter-container">
+                    <button class="filter-btn active" data-filter="all" data-i18n="all">Все</button>
+                    <button class="filter-btn" data-filter="favorites" data-i18n="favorites">❤️ Избранное</button>
+                    <button class="filter-btn" data-filter="popular" data-i18n="popular">🔥 Популярные</button>
+                </div>
+                
+                <div class="games-grid" id="games-grid">
+                    <!-- Games will be dynamically loaded -->
+                </div>
+                
+                <div class="no-results" id="no-games-results" style="display: none;">
+                    <span class="no-results-icon">😔</span>
+                    <p data-i18n="noResults">Ничего не найдено</p>
                 </div>
             </section>
 
@@ -105,50 +81,13 @@
                     <span class="section-subtitle" data-i18n="exchangesDesc">Торгуйте криптовалютами безопасно</span>
                 </div>
                 
-                <div class="exchanges-list">
-                    <div class="exchange-card">
-                        <div class="exchange-logo">
-                            <img src="images/bybit.jpg" alt="Bybit" class="exchange-img" onerror="this.style.display='none'">
-                        </div>
-                        <div class="exchange-info">
-                            <h3>Bybit</h3>
-                            <p data-i18n="bybitDesc">Продвинутая торговая платформа</p>
-                        </div>
-                        <button class="exchange-button" data-url="https://www.bybit.com" data-i18n="go">Перейти</button>
-                    </div>
-
-                    <div class="exchange-card">
-                        <div class="exchange-logo">
-                            <img src="images/bingx.jpg" alt="BingX" class="exchange-img" onerror="this.style.display='none'">
-                        </div>
-                        <div class="exchange-info">
-                            <h3>BingX</h3>
-                            <p data-i18n="bingxDesc">Социальная торговля и копирование</p>
-                        </div>
-                        <button class="exchange-button" data-url="https://www.bingx.com" data-i18n="go">Перейти</button>
-                    </div>
-
-                    <div class="exchange-card">
-                        <div class="exchange-logo">
-                            <img src="images/bitget.jpg" alt="Bitget" class="exchange-img" onerror="this.style.display='none'">
-                        </div>
-                        <div class="exchange-info">
-                            <h3>Bitget</h3>
-                            <p data-i18n="bitgetDesc">Инновационная торговая платформа</p>
-                        </div>
-                        <button class="exchange-button" data-url="https://www.bitget.com" data-i18n="go">Перейти</button>
-                    </div>
-
-                    <div class="exchange-card">
-                        <div class="exchange-logo">
-                            <img src="images/mexc.jpg" alt="MEXC" class="exchange-img" onerror="this.style.display='none'">
-                        </div>
-                        <div class="exchange-info">
-                            <h3>MEXC</h3>
-                            <p data-i18n="mexcDesc">Глобальная биржа с низкими комиссиями</p>
-                        </div>
-                        <button class="exchange-button" data-url="https://www.mexc.com" data-i18n="go">Перейти</button>
-                    </div>
+                <div class="exchanges-list" id="exchanges-list">
+                    <!-- Exchanges will be dynamically loaded -->
+                </div>
+                
+                <div class="no-results" id="no-exchanges-results" style="display: none;">
+                    <span class="no-results-icon">😔</span>
+                    <p data-i18n="noResults">Ничего не найдено</p>
                 </div>
             </section>
 
@@ -162,6 +101,24 @@
                     <div class="profile-info">
                         <h2 id="user-name" data-i18n="user">Пользователь</h2>
                         <p id="user-username">@username</p>
+                    </div>
+                </div>
+
+                <!-- Profile Stats -->
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <span class="stat-icon">🎮</span>
+                        <div class="stat-info">
+                            <span class="stat-value" id="games-played">0</span>
+                            <span class="stat-label" data-i18n="gamesPlayed">Игр открыто</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">❤️</span>
+                        <div class="stat-info">
+                            <span class="stat-value" id="favorites-count">0</span>
+                            <span class="stat-label" data-i18n="favoritesCount">В избранном</span>
+                        </div>
                     </div>
                 </div>
 

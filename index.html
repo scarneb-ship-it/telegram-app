@@ -4,25 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Games Verse</title>
-    <link rel="stylesheet" href="telegram-app.css">
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="app-container" id="app-container">
+    <div class="app-container">
         <!-- Header -->
-        <header class="header" id="main-header">
+        <header class="header">
             <div class="header-content">
-                <button class="back-button" id="back-button" style="display: none;">←</button>
                 <h1 class="app-title" data-i18n="appTitle">Games Verse</h1>
                 <button class="settings-button" id="settings-button">⚙️</button>
             </div>
         </header>
-
-        <!-- Game Container (for iframe) -->
-        <div class="game-container" id="game-container">
-            <iframe id="game-iframe" allow="camera; microphone; geolocation; payment; clipboard-write; clipboard-read;"></iframe>
-        </div>
 
         <!-- Settings Panel -->
         <div class="settings-panel" id="settings-panel">
@@ -49,22 +43,43 @@
             </div>
         </div>
 
+        <!-- Game Player Modal -->
+        <div class="game-modal" id="game-modal">
+            <div class="game-modal-content">
+                <div class="game-header">
+                    <button class="back-button" id="back-from-game">←</button>
+                    <h3 id="game-modal-title">Игра</h3>
+                    <div class="game-actions">
+                        <button class="game-action-btn" id="fullscreen-btn">⛶</button>
+                        <button class="game-action-btn" id="close-game">✕</button>
+                    </div>
+                </div>
+                <div class="game-iframe-container">
+                    <iframe id="game-iframe" src="" frameborder="0" allow="fullscreen"></iframe>
+                </div>
+                <div class="game-loading" id="game-loading">
+                    <div class="loading-spinner"></div>
+                    <p data-i18n="loadingGame">Загрузка игры...</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Content -->
-        <main class="main-content" id="main-content">
+        <main class="main-content">
             <!-- Games Section -->
             <section id="games-section" class="content-section active">
                 <div class="section-header">
                     <h2 data-i18n="games">Игры</h2>
-                    <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
+                    <span class="section-subtitle" data-i18n="bestGames">Лучшие игры в одном приложении</span>
                 </div>
                 
                 <div class="games-grid">
-                    <div class="game-card" data-game-name="Hamster GameDev">
+                    <div class="game-card">
                         <div class="game-image">
-                            <div class="game-placeholder">🎮</div>
+                            <div class="game-icon">🐹</div>
                         </div>
                         <div class="game-info">
-                            <h3>Hamster GameDev</h3>
+                            <h3>Hamster Kombat</h3>
                             <div class="game-rating">
                                 <div class="stars">
                                     <span class="star filled">★</span>
@@ -79,17 +94,17 @@
                                 <span class="players-icon">👥</span>
                                 <span class="players-count">2.4M</span>
                             </div>
-                            <p data-i18n="hamsterGameDevDesc">Создай свою студию</p>
+                            <p data-i18n="hamsterGameDesc">Тапы и комбо для заработка</p>
                         </div>
-                        <button class="play-button" data-bot="hamster_kombat_bot" data-game-id="game1" data-i18n="play">Играть</button>
+                        <button class="play-button" data-game="hamster" data-i18n="play">Играть</button>
                     </div>
 
-                    <div class="game-card" data-game-name="Hamster King">
+                    <div class="game-card">
                         <div class="game-image">
-                            <div class="game-placeholder">👑</div>
+                            <div class="game-icon">🎯</div>
                         </div>
                         <div class="game-info">
-                            <h3>Hamster King</h3>
+                            <h3>Notcoin</h3>
                             <div class="game-rating">
                                 <div class="stars">
                                     <span class="star filled">★</span>
@@ -104,17 +119,17 @@
                                 <span class="players-icon">👥</span>
                                 <span class="players-count">1.8M</span>
                             </div>
-                            <p data-i18n="hamsterKingDesc">Стань королем хомяков</p>
+                            <p data-i18n="notcoinDesc">Кликай и зарабатывай</p>
                         </div>
-                        <button class="play-button" data-bot="hamster_kombat_bot" data-game-id="game2" data-i18n="play">Играть</button>
+                        <button class="play-button" data-game="notcoin" data-i18n="play">Играть</button>
                     </div>
 
-                    <div class="game-card" data-game-name="Hamster Fight Club">
+                    <div class="game-card">
                         <div class="game-image">
-                            <div class="game-placeholder">🥊</div>
+                            <div class="game-icon">👑</div>
                         </div>
                         <div class="game-info">
-                            <h3>Hamster Fight Club</h3>
+                            <h3>Hamster King</h3>
                             <div class="game-rating">
                                 <div class="stars">
                                     <span class="star filled">★</span>
@@ -129,17 +144,17 @@
                                 <span class="players-icon">👥</span>
                                 <span class="players-count">1.2M</span>
                             </div>
-                            <p data-i18n="hamsterFightClubDesc">Бойцовский клуб хомяков</p>
+                            <p data-i18n="hamsterKingDesc">Стань королем хомяков</p>
                         </div>
-                        <button class="play-button" data-bot="hamster_kombat_bot" data-game-id="game3" data-i18n="play">Играть</button>
+                        <button class="play-button" data-game="king" data-i18n="play">Играть</button>
                     </div>
 
-                    <div class="game-card" data-game-name="BitQuest">
+                    <div class="game-card">
                         <div class="game-image">
-                            <div class="game-placeholder">💎</div>
+                            <div class="game-icon">⚔️</div>
                         </div>
                         <div class="game-info">
-                            <h3>BitQuest</h3>
+                            <h3>Fight Club</h3>
                             <div class="game-rating">
                                 <div class="stars">
                                     <span class="star filled">★</span>
@@ -154,9 +169,59 @@
                                 <span class="players-icon">👥</span>
                                 <span class="players-count">3.1M</span>
                             </div>
-                            <p data-i18n="bitquestDesc">Приключения в мире крипты</p>
+                            <p data-i18n="fightClubDesc">Бойцовский клуб хомяков</p>
                         </div>
-                        <button class="play-button" data-bot="BitQuest_bot" data-game-id="game4" data-i18n="play">Играть</button>
+                        <button class="play-button" data-game="fight" data-i18n="play">Играть</button>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-image">
+                            <div class="game-icon">💰</div>
+                        </div>
+                        <div class="game-info">
+                            <h3>Crypto Miner</h3>
+                            <div class="game-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                                <span class="rating-value">4.2</span>
+                            </div>
+                            <div class="game-players">
+                                <span class="players-icon">👥</span>
+                                <span class="players-count">2.1M</span>
+                            </div>
+                            <p data-i18n="cryptoMinerDesc">Майнинг криптовалюты</p>
+                        </div>
+                        <button class="play-button" data-game="miner" data-i18n="play">Играть</button>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-image">
+                            <div class="game-icon">🎮</div>
+                        </div>
+                        <div class="game-info">
+                            <h3>Tap Adventure</h3>
+                            <div class="game-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star half">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                                <span class="rating-value">3.8</span>
+                            </div>
+                            <div class="game-players">
+                                <span class="players-icon">👥</span>
+                                <span class="players-count">1.5M</span>
+                            </div>
+                            <p data-i18n="tapAdventureDesc">Приключения с тапами</p>
+                        </div>
+                        <button class="play-button" data-game="adventure" data-i18n="play">Играть</button>
                     </div>
                 </div>
             </section>
@@ -181,7 +246,7 @@
                 <div class="exchanges-list">
                     <div class="exchange-card">
                         <div class="exchange-logo">
-                            <div class="exchange-placeholder">B</div>
+                            <div class="exchange-icon">🚀</div>
                         </div>
                         <div class="exchange-info">
                             <h3>Bybit</h3>
@@ -192,7 +257,7 @@
 
                     <div class="exchange-card">
                         <div class="exchange-logo">
-                            <div class="exchange-placeholder">X</div>
+                            <div class="exchange-icon">🔍</div>
                         </div>
                         <div class="exchange-info">
                             <h3>BingX</h3>
@@ -203,7 +268,7 @@
 
                     <div class="exchange-card">
                         <div class="exchange-logo">
-                            <div class="exchange-placeholder">G</div>
+                            <div class="exchange-icon">⚡</div>
                         </div>
                         <div class="exchange-info">
                             <h3>Bitget</h3>
@@ -214,7 +279,7 @@
 
                     <div class="exchange-card">
                         <div class="exchange-logo">
-                            <div class="exchange-placeholder">M</div>
+                            <div class="exchange-icon">🌍</div>
                         </div>
                         <div class="exchange-info">
                             <h3>MEXC</h3>
@@ -267,7 +332,7 @@
                             <div class="invite-icon">👥</div>
                             <div class="invite-content">
                                 <h3 class="invite-title" data-i18n="inviteTitle">Пригласи друзей!</h3>
-                                <p class="invite-description" data-i18n="inviteDesc">Делись лучшими играми Telegram со своими друзьями</p>
+                                <p class="invite-description" data-i18n="inviteDesc">Делись лучшими играми со своими друзьями</p>
                             </div>
                         </div>
                         <button class="invite-button" id="share-friends-button">
@@ -280,7 +345,7 @@
         </main>
 
         <!-- Bottom Navigation -->
-        <nav class="bottom-nav" id="bottom-nav">
+        <nav class="bottom-nav">
             <button class="nav-item active" data-section="games-section">
                 <span class="nav-icon">🎮</span>
                 <span class="nav-label" data-i18n="games">Игры</span>
@@ -299,6 +364,6 @@
         <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
     </div>
 
-    <script src="telegram-app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

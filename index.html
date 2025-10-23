@@ -58,6 +58,20 @@
                         </div>
                         <div class="game-info">
                             <h3>Hamster GameDev</h3>
+                            <div class="game-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star half">★</span>
+                                </div>
+                                <span class="rating-value">4.5</span>
+                            </div>
+                            <div class="game-players">
+                                <span class="players-icon">👥</span>
+                                <span class="players-count">2.4M</span>
+                            </div>
                             <p data-i18n="hamsterGameDevDesc">Создай свою студию</p>
                         </div>
                         <button class="play-button" data-bot="hamsterdev_bot" data-i18n="play">Играть</button>
@@ -69,6 +83,20 @@
                         </div>
                         <div class="game-info">
                             <h3>Hamster King</h3>
+                            <div class="game-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                                <span class="rating-value">4.0</span>
+                            </div>
+                            <div class="game-players">
+                                <span class="players-icon">👥</span>
+                                <span class="players-count">1.8M</span>
+                            </div>
                             <p data-i18n="hamsterKingDesc">Стань королем хомяков</p>
                         </div>
                         <button class="play-button" data-bot="hamsterking_bot" data-i18n="play">Играть</button>
@@ -80,6 +108,20 @@
                         </div>
                         <div class="game-info">
                             <h3>Hamster Fight Club</h3>
+                            <div class="game-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star half">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                                <span class="rating-value">3.5</span>
+                            </div>
+                            <div class="game-players">
+                                <span class="players-icon">👥</span>
+                                <span class="players-count">1.2M</span>
+                            </div>
                             <p data-i18n="hamsterFightClubDesc">Бойцовский клуб хомяков</p>
                         </div>
                         <button class="play-button" data-bot="hamsterfightclub_bot" data-i18n="play">Играть</button>
@@ -91,6 +133,20 @@
                         </div>
                         <div class="game-info">
                             <h3>BitQuest</h3>
+                            <div class="game-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                </div>
+                                <span class="rating-value">5.0</span>
+                            </div>
+                            <div class="game-players">
+                                <span class="players-icon">👥</span>
+                                <span class="players-count">3.1M</span>
+                            </div>
                             <p data-i18n="bitquestDesc">Приключения в мире крипты</p>
                         </div>
                         <button class="play-button" data-bot="bitquest_bot" data-i18n="play">Играть</button>
@@ -165,22 +221,51 @@
 
             <!-- Profile Section -->
             <section id="profile-section" class="content-section">
-                <div class="profile-header">
-                    <div class="profile-avatar" id="user-avatar">
-                        <img src="" alt="User Avatar" id="avatar-img" style="display: none;">
-                        <span id="avatar-fallback">U</span>
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="user-avatar">
+                            <img src="" alt="User Avatar" id="avatar-img" style="display: none;">
+                            <span id="avatar-fallback">U</span>
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="user-name" data-i18n="user">Пользователь</h2>
+                            <p id="user-username">@username</p>
+                            <div class="profile-badge">
+                                <span class="badge-icon">⭐</span>
+                                <span class="badge-text">Игрок</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="profile-info">
-                        <h2 id="user-name" data-i18n="user">Пользователь</h2>
-                        <p id="user-username">@username</p>
-                    </div>
-                </div>
 
-                <div class="profile-actions">
-                    <button class="share-friends-button" id="share-friends-button">
-                        <span class="action-icon">👥</span>
-                        <span data-i18n="shareWithFriends">Поделиться с друзьями</span>
-                    </button>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label" data-i18n="gamesPlayed">Игр сыграно</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label" data-i18n="daysInGame">Дней в игре</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">1</div>
+                            <div class="stat-label" data-i18n="friendsInvited">Друзей приглашено</div>
+                        </div>
+                    </div>
+
+                    <div class="profile-actions">
+                        <button class="profile-action-button" id="edit-profile-button">
+                            <span class="action-icon">✏️</span>
+                            <span data-i18n="editProfile">Редактировать профиль</span>
+                        </button>
+                        <button class="profile-action-button" id="share-friends-button">
+                            <span class="action-icon">👥</span>
+                            <span data-i18n="shareWithFriends">Поделиться с друзьями</span>
+                        </button>
+                        <button class="profile-action-button" id="achievements-button">
+                            <span class="action-icon">🏆</span>
+                            <span data-i18n="achievements">Достижения</span>
+                        </button>
+                    </div>
                 </div>
             </section>
         </main>

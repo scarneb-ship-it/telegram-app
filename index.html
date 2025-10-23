@@ -4,19 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Games Verse</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="telegram-app.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-container" id="app-container">
         <!-- Header -->
-        <header class="header">
+        <header class="header" id="main-header">
             <div class="header-content">
+                <button class="back-button" id="back-button" style="display: none;">←</button>
                 <h1 class="app-title" data-i18n="appTitle">Games Verse</h1>
                 <button class="settings-button" id="settings-button">⚙️</button>
             </div>
         </header>
+
+        <!-- Game Container (for iframe) -->
+        <div class="game-container" id="game-container">
+            <iframe id="game-iframe" allow="camera; microphone; geolocation; payment; clipboard-write; clipboard-read;"></iframe>
+        </div>
 
         <!-- Settings Panel -->
         <div class="settings-panel" id="settings-panel">
@@ -44,7 +50,7 @@
         </div>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content" id="main-content">
             <!-- Games Section -->
             <section id="games-section" class="content-section active">
                 <div class="section-header">
@@ -53,9 +59,9 @@
                 </div>
                 
                 <div class="games-grid">
-                    <div class="game-card">
+                    <div class="game-card" data-game-name="Hamster GameDev">
                         <div class="game-image">
-                            <img src="images/hamster-gamedev.jpg" alt="Hamster GameDev" class="game-img" onerror="this.style.display='none'">
+                            <div class="game-placeholder">🎮</div>
                         </div>
                         <div class="game-info">
                             <h3>Hamster GameDev</h3>
@@ -75,12 +81,12 @@
                             </div>
                             <p data-i18n="hamsterGameDevDesc">Создай свою студию</p>
                         </div>
-                        <button class="play-button" data-bot="hamsterdev_bot" data-game-id="game1" data-i18n="play">Играть</button>
+                        <button class="play-button" data-bot="hamster_kombat_bot" data-game-id="game1" data-i18n="play">Играть</button>
                     </div>
 
-                    <div class="game-card">
+                    <div class="game-card" data-game-name="Hamster King">
                         <div class="game-image">
-                            <img src="images/hamster-king.jpg" alt="Hamster King" class="game-img" onerror="this.style.display='none'">
+                            <div class="game-placeholder">👑</div>
                         </div>
                         <div class="game-info">
                             <h3>Hamster King</h3>
@@ -100,12 +106,12 @@
                             </div>
                             <p data-i18n="hamsterKingDesc">Стань королем хомяков</p>
                         </div>
-                        <button class="play-button" data-bot="hamsterking_bot" data-game-id="game2" data-i18n="play">Играть</button>
+                        <button class="play-button" data-bot="hamster_kombat_bot" data-game-id="game2" data-i18n="play">Играть</button>
                     </div>
 
-                    <div class="game-card">
+                    <div class="game-card" data-game-name="Hamster Fight Club">
                         <div class="game-image">
-                            <img src="images/hamster-fightclub.jpg" alt="Hamster Fight Club" class="game-img" onerror="this.style.display='none'">
+                            <div class="game-placeholder">🥊</div>
                         </div>
                         <div class="game-info">
                             <h3>Hamster Fight Club</h3>
@@ -125,12 +131,12 @@
                             </div>
                             <p data-i18n="hamsterFightClubDesc">Бойцовский клуб хомяков</p>
                         </div>
-                        <button class="play-button" data-bot="hamsterfightclub_bot" data-game-id="game3" data-i18n="play">Играть</button>
+                        <button class="play-button" data-bot="hamster_kombat_bot" data-game-id="game3" data-i18n="play">Играть</button>
                     </div>
 
-                    <div class="game-card">
+                    <div class="game-card" data-game-name="BitQuest">
                         <div class="game-image">
-                            <img src="images/bitquest.jpg" alt="BitQuest" class="game-img" onerror="this.style.display='none'">
+                            <div class="game-placeholder">💎</div>
                         </div>
                         <div class="game-info">
                             <h3>BitQuest</h3>
@@ -150,7 +156,7 @@
                             </div>
                             <p data-i18n="bitquestDesc">Приключения в мире крипты</p>
                         </div>
-                        <button class="play-button" data-bot="bitquest_bot" data-game-id="game4" data-i18n="play">Играть</button>
+                        <button class="play-button" data-bot="BitQuest_bot" data-game-id="game4" data-i18n="play">Играть</button>
                     </div>
                 </div>
             </section>
@@ -165,7 +171,6 @@
                 <!-- GameFi Banner -->
                 <div class="gamefi-banner">
                     <div class="banner-content">
-                        <img src="images/gamefi.jpg" alt="GameFi Trading" class="banner-image">
                         <div class="banner-overlay">
                             <h3 class="banner-title">GameFi</h3>
                             <p class="banner-text" data-i18n="tradeGameFi">Торгуйте монетами GameFi на популярных криптобиржах</p>
@@ -176,7 +181,7 @@
                 <div class="exchanges-list">
                     <div class="exchange-card">
                         <div class="exchange-logo">
-                            <img src="images/bybit.jpg" alt="Bybit" class="exchange-img" onerror="this.style.display='none'">
+                            <div class="exchange-placeholder">B</div>
                         </div>
                         <div class="exchange-info">
                             <h3>Bybit</h3>
@@ -187,7 +192,7 @@
 
                     <div class="exchange-card">
                         <div class="exchange-logo">
-                            <img src="images/bingx.jpg" alt="BingX" class="exchange-img" onerror="this.style.display='none'">
+                            <div class="exchange-placeholder">X</div>
                         </div>
                         <div class="exchange-info">
                             <h3>BingX</h3>
@@ -198,7 +203,7 @@
 
                     <div class="exchange-card">
                         <div class="exchange-logo">
-                            <img src="images/bitget.jpg" alt="Bitget" class="exchange-img" onerror="this.style.display='none'">
+                            <div class="exchange-placeholder">G</div>
                         </div>
                         <div class="exchange-info">
                             <h3>Bitget</h3>
@@ -209,7 +214,7 @@
 
                     <div class="exchange-card">
                         <div class="exchange-logo">
-                            <img src="images/mexc.jpg" alt="MEXC" class="exchange-img" onerror="this.style.display='none'">
+                            <div class="exchange-placeholder">M</div>
                         </div>
                         <div class="exchange-info">
                             <h3>MEXC</h3>
@@ -275,7 +280,7 @@
         </main>
 
         <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
+        <nav class="bottom-nav" id="bottom-nav">
             <button class="nav-item active" data-section="games-section">
                 <span class="nav-icon">🎮</span>
                 <span class="nav-label" data-i18n="games">Игры</span>
@@ -294,6 +299,6 @@
         <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="telegram-app.js"></script>
 </body>
 </html>

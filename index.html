@@ -3,81 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Games Verse - Лучшие Telegram Игры</title>
+    <title>Games Verse</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <div class="header-left">
-                    <div class="app-logo">🎮</div>
-                    <div>
-                        <h1 class="app-title" data-i18n="appTitle">Games Verse</h1>
-                        <p class="app-subtitle" data-i18n="appSubtitle">Твой игровой мир</p>
-                    </div>
-                </div>
-                <div class="header-actions">
-                    <button class="icon-button" id="notifications-button" title="Уведомления">
-                        🔔
-                        <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
-                    </button>
-                    <button class="icon-button" id="settings-button" title="Настройки">⚙️</button>
-                </div>
+                <h1 class="app-title" data-i18n="appTitle">Games Verse</h1>
+                <button class="settings-button" id="settings-button">⚙️</button>
             </div>
         </header>
-
-        <!-- Search Bar -->
-        <div class="search-container">
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="search-input" placeholder="Поиск игр..." data-i18n-placeholder="searchPlaceholder">
-            </div>
-        </div>
-
-        <!-- Notifications Panel -->
-        <div class="notifications-panel" id="notifications-panel">
-            <div class="notifications-content">
-                <div class="notifications-header">
-                    <h3 data-i18n="notifications">Уведомления</h3>
-                    <button class="close-btn" id="close-notifications">✕</button>
-                </div>
-                <div id="notifications-list" class="notifications-list">
-                    <div class="no-notifications" data-i18n="noNotifications">Нет новых уведомлений</div>
-                </div>
-            </div>
-        </div>
 
         <!-- Settings Panel -->
         <div class="settings-panel" id="settings-panel">
             <div class="settings-content">
-                <div class="settings-header">
-                    <h3 data-i18n="settings">Настройки</h3>
-                    <button class="close-btn" id="close-settings">✕</button>
-                </div>
+                <h3 class="settings-title" data-i18n="settings">Настройки</h3>
                 
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="theme">Тема</span>
                     <div class="theme-switcher">
-                        <button class="theme-option active" data-theme="light" data-i18n="lightTheme">☀️ Светлая</button>
-                        <button class="theme-option" data-theme="dark" data-i18n="darkTheme">🌙 Темная</button>
+                        <button class="theme-option active" data-theme="light" data-i18n="lightTheme">Светлая</button>
+                        <button class="theme-option" data-theme="dark" data-i18n="darkTheme">Темная</button>
                     </div>
                 </div>
                 
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="language">Язык</span>
                     <div class="language-switcher">
-                        <button class="language-option active" data-lang="ru" data-i18n="russian">🇷🇺 Русский</button>
-                        <button class="language-option" data-lang="en" data-i18n="english">🇬🇧 English</button>
+                        <button class="language-option active" data-lang="ru" data-i18n="russian">Русский</button>
+                        <button class="language-option" data-lang="en" data-i18n="english">English</button>
                     </div>
                 </div>
                 
-                <button class="close-settings-btn" id="close-settings-btn" data-i18n="done">Готово</button>
+                <button class="close-settings" id="close-settings" data-i18n="done">Готово</button>
             </div>
         </div>
 
@@ -85,24 +46,55 @@
         <main class="main-content">
             <!-- Games Section -->
             <section id="games-section" class="content-section active">
-                <!-- Categories -->
-                <div class="categories-scroll">
-                    <button class="category-chip active" data-category="all" data-i18n="allGames">Все игры</button>
-                    <button class="category-chip" data-category="popular" data-i18n="popular">🔥 Популярные</button>
-                    <button class="category-chip" data-category="new" data-i18n="new">✨ Новые</button>
-                    <button class="category-chip" data-category="action" data-i18n="action">⚔️ Экшн</button>
-                    <button class="category-chip" data-category="casual" data-i18n="casual">🎲 Казуальные</button>
-                    <button class="category-chip" data-category="favorites" data-i18n="favorites">❤️ Избранное</button>
-                </div>
-
                 <div class="section-header">
                     <h2 data-i18n="games">Игры</h2>
-                    <span class="games-count" id="games-count">0 игр</span>
+                    <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
                 </div>
                 
-                <div class="games-grid" id="games-grid">
-                    <!-- Games will be loaded here dynamically -->
-                    <div class="loading-spinner">⏳ Загрузка игр...</div>
+                <div class="games-grid">
+                    <div class="game-card">
+                        <div class="game-image">
+                            <img src="images/hamster-gamedev.jpg" alt="Hamster GameDev" class="game-img" onerror="this.style.display='none'">
+                        </div>
+                        <div class="game-info">
+                            <h3>Hamster GameDev</h3>
+                            <p data-i18n="hamsterGameDevDesc">Создай свою студию</p>
+                        </div>
+                        <button class="play-button" data-bot="hamsterdev_bot" data-i18n="play">Играть</button>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-image">
+                            <img src="images/hamster-king.jpg" alt="Hamster King" class="game-img" onerror="this.style.display='none'">
+                        </div>
+                        <div class="game-info">
+                            <h3>Hamster King</h3>
+                            <p data-i18n="hamsterKingDesc">Стань королем хомяков</p>
+                        </div>
+                        <button class="play-button" data-bot="hamsterking_bot" data-i18n="play">Играть</button>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-image">
+                            <img src="images/hamster-fightclub.jpg" alt="Hamster Fight Club" class="game-img" onerror="this.style.display='none'">
+                        </div>
+                        <div class="game-info">
+                            <h3>Hamster Fight Club</h3>
+                            <p data-i18n="hamsterFightClubDesc">Бойцовский клуб хомяков</p>
+                        </div>
+                        <button class="play-button" data-bot="hamsterfightclub_bot" data-i18n="play">Играть</button>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-image">
+                            <img src="images/bitquest.jpg" alt="BitQuest" class="game-img" onerror="this.style.display='none'">
+                        </div>
+                        <div class="game-info">
+                            <h3>BitQuest</h3>
+                            <p data-i18n="bitquestDesc">Приключения в мире крипты</p>
+                        </div>
+                        <button class="play-button" data-bot="bitquest_bot" data-i18n="play">Играть</button>
+                    </div>
                 </div>
             </section>
 
@@ -113,8 +105,50 @@
                     <span class="section-subtitle" data-i18n="exchangesDesc">Торгуйте криптовалютами безопасно</span>
                 </div>
                 
-                <div class="exchanges-list" id="exchanges-list">
-                    <div class="loading-spinner">⏳ Загрузка бирж...</div>
+                <div class="exchanges-list">
+                    <div class="exchange-card">
+                        <div class="exchange-logo">
+                            <img src="images/bybit.jpg" alt="Bybit" class="exchange-img" onerror="this.style.display='none'">
+                        </div>
+                        <div class="exchange-info">
+                            <h3>Bybit</h3>
+                            <p data-i18n="bybitDesc">Продвинутая торговая платформа</p>
+                        </div>
+                        <button class="exchange-button" data-url="https://www.bybit.com" data-i18n="go">Перейти</button>
+                    </div>
+
+                    <div class="exchange-card">
+                        <div class="exchange-logo">
+                            <img src="images/bingx.jpg" alt="BingX" class="exchange-img" onerror="this.style.display='none'">
+                        </div>
+                        <div class="exchange-info">
+                            <h3>BingX</h3>
+                            <p data-i18n="bingxDesc">Социальная торговля и копирование</p>
+                        </div>
+                        <button class="exchange-button" data-url="https://www.bingx.com" data-i18n="go">Перейти</button>
+                    </div>
+
+                    <div class="exchange-card">
+                        <div class="exchange-logo">
+                            <img src="images/bitget.jpg" alt="Bitget" class="exchange-img" onerror="this.style.display='none'">
+                        </div>
+                        <div class="exchange-info">
+                            <h3>Bitget</h3>
+                            <p data-i18n="bitgetDesc">Инновационная торговая платформа</p>
+                        </div>
+                        <button class="exchange-button" data-url="https://www.bitget.com" data-i18n="go">Перейти</button>
+                    </div>
+
+                    <div class="exchange-card">
+                        <div class="exchange-logo">
+                            <img src="images/mexc.jpg" alt="MEXC" class="exchange-img" onerror="this.style.display='none'">
+                        </div>
+                        <div class="exchange-info">
+                            <h3>MEXC</h3>
+                            <p data-i18n="mexcDesc">Глобальная биржа с низкими комиссиями</p>
+                        </div>
+                        <button class="exchange-button" data-url="https://www.mexc.com" data-i18n="go">Перейти</button>
+                    </div>
                 </div>
             </section>
 
@@ -131,31 +165,10 @@
                     </div>
                 </div>
 
-                <div class="profile-stats">
-                    <div class="stat-card">
-                        <div class="stat-icon">🎮</div>
-                        <div class="stat-info">
-                            <div class="stat-value" id="favorites-count">0</div>
-                            <div class="stat-label" data-i18n="favoritesCount">Избранных игр</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⏱️</div>
-                        <div class="stat-info">
-                            <div class="stat-value" id="time-spent">0 мин</div>
-                            <div class="stat-label" data-i18n="timeSpent">Времени в приложении</div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="profile-actions">
-                    <button class="action-button primary" id="share-friends-button">
+                    <button class="share-friends-button" id="share-friends-button">
                         <span class="action-icon">👥</span>
                         <span data-i18n="shareWithFriends">Поделиться с друзьями</span>
-                    </button>
-                    <button class="action-button secondary" id="feedback-button">
-                        <span class="action-icon">💬</span>
-                        <span data-i18n="feedback">Оставить отзыв</span>
                     </button>
                 </div>
             </section>
@@ -177,8 +190,8 @@
             </button>
         </nav>
 
-        <!-- Toast Notification -->
-        <div id="toast" class="toast"></div>
+        <!-- Notification -->
+        <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
     </div>
 
     <script src="script.js"></script>

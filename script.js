@@ -1,6 +1,8 @@
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-});
+// API Configuration - укажите URL вашего backend
+const API_BASE_URL = 'https://your-backend-url.com/api';  // Замените на реальный URL
+
+// Telegram Web App
+let tg = window.Telegram.WebApp;
 
 // Translations object
 const translations = {
@@ -82,39 +84,256 @@ const translations = {
     }
 };
 
+// Глобальные переменные для хранения данных пользователя
+let currentUser = null;
+let userTelegramId = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
 function vibrate() {
     if (navigator.vibrate) {
         navigator.vibrate(50);
     }
+    if (tg.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred('light');
+    }
 }
 
-function initializeApp() {
+async function initializeApp() {
+    // Инициализация Telegram Web App
+    tg.ready();
+    tg.expand();
+    
+    // Применение темы Telegram
+    applyTelegramTheme();
+    
     setupNavigation();
     setupGameButtons();
     setupExchangeButtons();
     setupSettingsPanel();
     loadThemePreference();
     loadLanguagePreference();
-    loadUserData();
+    
+    // Загрузка данных пользователя из Telegram
+    await loadTelegramUserData();
+    
     setupShareButton();
-    updateStreak();
-    updateProfileStats();
+    
+    // Проверка реферальной ссылки
+    await checkReferral();
+    
+    // Обновление streak при каждом входе
+    if (userTelegramId) {
+        await updateStreak();
+    }
     
     // Плавная загрузка контента
     setTimeout(() => {
         document.body.style.opacity = '1';
     }, 100);
+}
+
+function applyTelegramTheme() {
+    if (tg.colorScheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        updateSettingsThemeOptions('dark');
+    }
     
-    // Telegram Web App integration
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.expand();
+    const themeParams = tg.themeParams;
+    if (themeParams) {
+        document.documentElement.style.setProperty('--tg-theme-bg-color', themeParams.bg_color || '#ffffff');
+        document.documentElement.style.setProperty('--tg-theme-text-color', themeParams.text_color || '#000000');
+        document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color || '#667eea');
+        document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color || '#ffffff');
+    }
+}
+
+async function loadTelegramUserData() {
+    const user = tg.initDataUnsafe?.user;
+    
+    if (user) {
+        userTelegramId = user.id.toString();
         
-        const themeParams = window.Telegram.WebApp.themeParams;
-        if (themeParams) {
-            document.documentElement.style.setProperty('--tg-theme-bg-color', themeParams.bg_color || '#ffffff');
-            document.documentElement.style.setProperty('--tg-theme-text-color', themeParams.text_color || '#000000');
-            document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color || '#667eea');
-            document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color || '#ffffff');
+        // Обновление интерфейса с данными пользователя
+        const userName = document.getElementById('user-name');
+        if (userName && user.first_name) {
+            userName.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+        }
+        
+        const userUsername = document.getElementById('user-username');
+        if (userUsername && user.username) {
+            userUsername.textContent = '@' + user.username;
+        } else if (userUsername) {
+            userUsername.textContent = 'ID: ' + user.id;
+        }
+        
+        // Обновление аватара
+        const avatarImg = document.getElementById('avatar-img');
+        const avatarFallback = document.getElementById('avatar-fallback');
+        
+        if (user.photo_url) {
+            avatarImg.src = user.photo_url;
+            avatarImg.style.display = 'block';
+            avatarFallback.style.display = 'none';
+        } else if (user.first_name) {
+            avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
+        }
+        
+        // Загрузка данных пользователя с backend или создание нового
+        await loadOrCreateUserProfile(user);
+    } else {
+        // Fallback для тестирования вне Telegram
+        console.log('Telegram user data not available - using test mode');
+        loadLocalStats();
+    }
+}
+
+async function loadOrCreateUserProfile(telegramUser) {
+    try {
+        // Попытка получить профиль пользователя
+        const response = await fetch(`${API_BASE_URL}/users/${telegramUser.id}`);
+        
+        if (response.ok) {
+            // Пользователь существует
+            currentUser = await response.json();
+            updateProfileStats();
+        } else if (response.status === 404) {
+            // Пользователь не найден, создаем новый профиль
+            const newUser = {
+                telegram_id: telegramUser.id.toString(),
+                first_name: telegramUser.first_name,
+                last_name: telegramUser.last_name || null,
+                username: telegramUser.username || null,
+                photo_url: telegramUser.photo_url || null,
+                referred_by: localStorage.getItem('referredBy') || null
+            };
+            
+            const createResponse = await fetch(`${API_BASE_URL}/users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newUser)
+            });
+            
+            if (createResponse.ok) {
+                currentUser = await createResponse.json();
+                updateProfileStats();
+            }
+        }
+    } catch (error) {
+        console.error('Error loading user profile:', error);
+        // Fallback to localStorage
+        loadLocalStats();
+    }
+}
+
+function loadLocalStats() {
+    // Резервная загрузка из localStorage
+    const gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
+    const streak = parseInt(localStorage.getItem('streak') || '0');
+    const friendsInvited = parseInt(localStorage.getItem('friendsInvited') || '0');
+    
+    document.getElementById('games-opened').textContent = gamesOpened;
+    document.getElementById('streak-days').textContent = streak;
+    document.getElementById('friends-invited').textContent = friendsInvited;
+}
+
+function updateProfileStats() {
+    if (currentUser) {
+        document.getElementById('games-opened').textContent = currentUser.games_opened || 0;
+        document.getElementById('streak-days').textContent = currentUser.streak_days || 0;
+        document.getElementById('friends-invited').textContent = currentUser.friends_invited || 0;
+    }
+}
+
+async function incrementGamesOpened() {
+    if (userTelegramId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/${userTelegramId}/game-opened`, {
+                method: 'POST'
+            });
+            
+            if (response.ok) {
+                currentUser = await response.json();
+                updateProfileStats();
+            }
+        } catch (error) {
+            console.error('Error incrementing games opened:', error);
+            // Fallback to localStorage
+            let gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
+            gamesOpened++;
+            localStorage.setItem('gamesOpened', gamesOpened.toString());
+            document.getElementById('games-opened').textContent = gamesOpened;
+        }
+    } else {
+        // Fallback для тестирования
+        let gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
+        gamesOpened++;
+        localStorage.setItem('gamesOpened', gamesOpened.toString());
+        document.getElementById('games-opened').textContent = gamesOpened;
+    }
+}
+
+async function updateStreak() {
+    if (userTelegramId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/${userTelegramId}/check-streak`, {
+                method: 'POST'
+            });
+            
+            if (response.ok) {
+                currentUser = await response.json();
+                updateProfileStats();
+            }
+        } catch (error) {
+            console.error('Error updating streak:', error);
+            // Fallback to localStorage
+            updateStreakLocal();
+        }
+    } else {
+        updateStreakLocal();
+    }
+}
+
+function updateStreakLocal() {
+    const today = new Date().toDateString();
+    const lastVisit = localStorage.getItem('lastVisit');
+    let streak = parseInt(localStorage.getItem('streak') || '0');
+    
+    if (lastVisit) {
+        const lastVisitDate = new Date(lastVisit);
+        const todayDate = new Date(today);
+        const diffTime = todayDate - lastVisitDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+            streak++;
+        } else if (diffDays > 1) {
+            streak = 1;
+        }
+    } else {
+        streak = 1;
+    }
+    
+    localStorage.setItem('streak', streak.toString());
+    localStorage.setItem('lastVisit', today);
+    document.getElementById('streak-days').textContent = streak;
+}
+
+async function checkReferral() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refId = urlParams.get('ref') || urlParams.get('start');
+    
+    if (refId && userTelegramId && refId !== userTelegramId) {
+        const hasBeenReferred = localStorage.getItem('hasBeenReferred');
+        
+        if (!hasBeenReferred) {
+            localStorage.setItem('hasBeenReferred', 'true');
+            localStorage.setItem('referredBy', refId);
+            console.log('Приглашен пользователем:', refId);
         }
     }
 }
@@ -128,11 +347,9 @@ function setupNavigation() {
             vibrate();
             const targetSection = this.getAttribute('data-section');
             
-            // Update active nav item
             navItems.forEach(nav => nav.classList.remove('active'));
             this.classList.add('active');
             
-            // Show target section
             sections.forEach(section => {
                 section.classList.remove('active');
                 if (section.id === targetSection) {
@@ -153,7 +370,6 @@ function setupGameButtons() {
             const botUsername = this.getAttribute('data-bot');
             const gameId = this.getAttribute('data-game-id');
             
-            // Увеличиваем счетчик открытых игр
             if (gameId) {
                 incrementGamesOpened();
             }
@@ -161,8 +377,8 @@ function setupGameButtons() {
             if (botUsername) {
                 const telegramUrl = `https://t.me/${botUsername}?start=app`;
                 
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.openTelegramLink(telegramUrl);
+                if (tg.openTelegramLink) {
+                    tg.openTelegramLink(telegramUrl);
                 } else {
                     window.open(telegramUrl, '_blank');
                 }
@@ -180,8 +396,8 @@ function setupExchangeButtons() {
             vibrate();
             const exchangeUrl = this.getAttribute('data-url');
             if (exchangeUrl) {
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.openLink(exchangeUrl);
+                if (tg.openLink) {
+                    tg.openLink(exchangeUrl);
                 } else {
                     window.open(exchangeUrl, '_blank');
                 }
@@ -209,7 +425,6 @@ function setupSettingsPanel() {
         });
     }
     
-    // Close settings when clicking outside
     if (settingsPanel) {
         settingsPanel.addEventListener('click', function(e) {
             if (e.target === settingsPanel) {
@@ -218,51 +433,41 @@ function setupSettingsPanel() {
         });
     }
     
-    // Theme switcher in settings
     const themeOptions = document.querySelectorAll('.theme-option');
     themeOptions.forEach(option => {
         option.addEventListener('click', function() {
             vibrate();
             const theme = this.getAttribute('data-theme');
             
-            // Update active state
             themeOptions.forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
             
-            // Apply theme
             if (theme === 'dark') {
                 document.body.classList.add('dark-theme');
             } else {
                 document.body.classList.remove('dark-theme');
             }
             
-            // Save to localStorage
             localStorage.setItem('theme', theme);
         });
     });
     
-    // Language switcher in settings
     const languageOptions = document.querySelectorAll('.language-option');
     languageOptions.forEach(option => {
         option.addEventListener('click', function() {
             vibrate();
             const lang = this.getAttribute('data-lang');
             
-            // Update active state
             languageOptions.forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
             
-            // Change language
             setLanguage(lang);
-            
-            // Save to localStorage
             localStorage.setItem('language', lang);
         });
     });
 }
 
 function setLanguage(lang) {
-    // Update all elements with data-i18n attribute
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(element => {
         const key = element.getAttribute('data-i18n');
@@ -273,7 +478,7 @@ function setLanguage(lang) {
 }
 
 function loadThemePreference() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem('theme') || (tg.colorScheme === 'dark' ? 'dark' : 'light');
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-theme');
     }
@@ -308,100 +513,6 @@ function updateSettingsLanguageOptions(lang) {
     });
 }
 
-function loadUserData() {
-    // Try to get user data from Telegram Web App
-    if (window.Telegram && window.Telegram.WebApp) {
-        const user = window.Telegram.WebApp.initDataUnsafe?.user;
-        
-        if (user) {
-            // Update user name
-            const userName = document.getElementById('user-name');
-            if (userName && user.first_name) {
-                userName.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-            }
-            
-            // Update username
-            const userUsername = document.getElementById('user-username');
-            if (userUsername && user.username) {
-                userUsername.textContent = '@' + user.username;
-            }
-            
-            // Update avatar
-            const userAvatar = document.getElementById('user-avatar');
-            const avatarImg = document.getElementById('avatar-img');
-            const avatarFallback = document.getElementById('avatar-fallback');
-            
-            if (user.photo_url) {
-                avatarImg.src = user.photo_url;
-                avatarImg.style.display = 'block';
-                avatarFallback.style.display = 'none';
-            } else if (user.first_name) {
-                // Show first letter of first name as fallback
-                avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
-            }
-        }
-    }
-}
-
-// ПРОФИЛЬНЫЕ ФУНКЦИИ - ПОДСЧЕТ СТАТИСТИКИ
-
-function incrementGamesOpened() {
-    let gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
-    gamesOpened++;
-    localStorage.setItem('gamesOpened', gamesOpened.toString());
-    updateProfileStats();
-}
-
-function updateStreak() {
-    const today = new Date().toDateString();
-    const lastVisit = localStorage.getItem('lastVisit');
-    let streak = parseInt(localStorage.getItem('streak') || '0');
-    
-    if (lastVisit) {
-        const lastVisitDate = new Date(lastVisit);
-        const todayDate = new Date(today);
-        const diffTime = todayDate - lastVisitDate;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 1) {
-            // Пользователь зашел на следующий день
-            streak++;
-        } else if (diffDays > 1) {
-            // Прошло больше дня, сбрасываем streak
-            streak = 1;
-        }
-        // Если diffDays === 0, то это тот же день, не меняем streak
-    } else {
-        // Первый визит
-        streak = 1;
-    }
-    
-    localStorage.setItem('streak', streak.toString());
-    localStorage.setItem('lastVisit', today);
-    updateProfileStats();
-}
-
-function incrementFriendsInvited() {
-    let friendsInvited = parseInt(localStorage.getItem('friendsInvited') || '0');
-    friendsInvited++;
-    localStorage.setItem('friendsInvited', friendsInvited.toString());
-    updateProfileStats();
-}
-
-function updateProfileStats() {
-    const gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
-    const streak = parseInt(localStorage.getItem('streak') || '0');
-    const friendsInvited = parseInt(localStorage.getItem('friendsInvited') || '0');
-    
-    const gamesOpenedEl = document.getElementById('games-opened');
-    const streakDaysEl = document.getElementById('streak-days');
-    const friendsInvitedEl = document.getElementById('friends-invited');
-    
-    if (gamesOpenedEl) gamesOpenedEl.textContent = gamesOpened;
-    if (streakDaysEl) streakDaysEl.textContent = streak;
-    if (friendsInvitedEl) friendsInvitedEl.textContent = friendsInvited;
-}
-
 function setupShareButton() {
     const shareButton = document.getElementById('share-friends-button');
     const notification = document.getElementById('notification');
@@ -410,21 +521,16 @@ function setupShareButton() {
         shareButton.addEventListener('click', function() {
             vibrate();
             
-            // Получаем данные пользователя Telegram
-            let userId = 'default';
-            if (window.Telegram && window.Telegram.WebApp) {
-                const user = window.Telegram.WebApp.initDataUnsafe?.user;
-                if (user && user.id) {
-                    userId = user.id;
-                }
-            }
-            
-            // Создаем реферальную ссылку
-            const shareUrl = `${window.location.href}?ref=${userId}`;
+            const userId = userTelegramId || 'default';
+            const botUsername = 'YOUR_BOT_USERNAME';  // Замените на username вашего бота
+            const shareUrl = `https://t.me/${botUsername}?start=${userId}`;
             const shareText = 'Присоединяйся к Games Verse - лучшие игры Telegram в одном приложении! 🎮';
             
-            // Check if Web Share API is available
-            if (navigator.share) {
+            // Используем Telegram Web App API для шаринга
+            if (tg.openTelegramLink) {
+                const shareLink = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+                tg.openTelegramLink(shareLink);
+            } else if (navigator.share) {
                 navigator.share({
                     title: 'Games Verse',
                     text: shareText,
@@ -432,7 +538,6 @@ function setupShareButton() {
                 })
                 .then(() => {
                     console.log('Успешный шаринг');
-                    // Можно добавить счетчик приглашенных друзей здесь
                 })
                 .catch((error) => console.log('Ошибка шаринга', error));
             } else {
@@ -478,25 +583,3 @@ function showNotification(notification, customMessage) {
         notification.classList.remove('show');
     }, 2000);
 }
-
-// Проверка реферальной ссылки при загрузке
-function checkReferral() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const refId = urlParams.get('ref');
-    
-    if (refId) {
-        // Сохраняем информацию о том, кто пригласил
-        const hasBeenReferred = localStorage.getItem('hasBeenReferred');
-        
-        if (!hasBeenReferred) {
-            localStorage.setItem('hasBeenReferred', 'true');
-            localStorage.setItem('referredBy', refId);
-            
-            // Здесь можно отправить информацию на сервер о новом приглашенном пользователе
-            console.log('Приглашен пользователем:', refId);
-        }
-    }
-}
-
-// Вызываем проверку реферала при загрузке
-checkReferral();

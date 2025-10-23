@@ -14,6 +14,7 @@
   --border-light: #e2e8f0;
   --border-dark: #2d3748;
   --success-color: #48bb78;
+  --warning-color: #ed8936;
   --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 }
@@ -328,7 +329,64 @@ body.dark-theme {
 .game-info h3 {
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+}
+
+.game-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.stars {
+  display: flex;
+}
+
+.star {
+  color: #d1d5db;
+  font-size: 14px;
+  margin-right: 1px;
+}
+
+.star.filled {
+  color: #fbbf24;
+}
+
+.star.half {
+  background: linear-gradient(90deg, #fbbf24 50%, #d1d5db 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.rating-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary-light);
+}
+
+.dark-theme .rating-value {
+  color: var(--text-secondary-dark);
+}
+
+.game-players {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.players-icon {
+  font-size: 12px;
+}
+
+.players-count {
+  font-size: 12px;
+  color: var(--text-secondary-light);
+}
+
+.dark-theme .players-count {
+  color: var(--text-secondary-dark);
 }
 
 .game-info p {
@@ -575,11 +633,26 @@ body.dark-theme {
 }
 
 /* Profile Section */
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .profile-header {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 32px;
+  background: var(--card-light);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid var(--border-light);
+  position: relative;
+}
+
+.dark-theme .profile-header {
+  background: var(--card-dark);
+  border-color: var(--border-dark);
 }
 
 .profile-avatar {
@@ -596,6 +669,7 @@ body.dark-theme {
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
   overflow: hidden;
   position: relative;
+  flex-shrink: 0;
 }
 
 .dark-theme .profile-avatar {
@@ -609,6 +683,10 @@ body.dark-theme {
   object-fit: cover;
 }
 
+.profile-info {
+  flex-grow: 1;
+}
+
 .profile-info h2 {
   font-size: 24px;
   font-weight: 700;
@@ -618,52 +696,124 @@ body.dark-theme {
 .profile-info p {
   color: var(--text-secondary-light);
   font-size: 14px;
+  margin-bottom: 8px;
 }
 
 .dark-theme .profile-info p {
   color: var(--text-secondary-dark);
 }
 
+.profile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dark-theme .profile-badge {
+  background: rgba(102, 126, 234, 0.2);
+}
+
+.badge-icon {
+  font-size: 12px;
+}
+
+.badge-text {
+  color: var(--primary-light);
+}
+
+.dark-theme .badge-text {
+  color: var(--primary-dark);
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  background: var(--card-light);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid var(--border-light);
+}
+
+.dark-theme .profile-stats {
+  background: var(--card-dark);
+  border-color: var(--border-dark);
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-light);
+  margin-bottom: 4px;
+}
+
+.dark-theme .stat-value {
+  color: var(--primary-dark);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-secondary-light);
+  font-weight: 500;
+}
+
+.dark-theme .stat-label {
+  color: var(--text-secondary-dark);
+}
+
 .profile-actions {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
-.share-friends-button {
+.profile-action-button {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 12px;
   width: 100%;
-  padding: 18px;
-  background: var(--primary-gradient);
-  color: white;
-  border: none;
-  border-radius: 20px;
+  padding: 16px;
+  background: var(--card-light);
+  color: var(--text-primary-light);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 16px;
-  font-weight: 600;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  font-weight: 500;
+  text-align: left;
 }
 
-.dark-theme .share-friends-button {
-  background: var(--primary-dark);
-  box-shadow: 0 4px 15px rgba(74, 85, 104, 0.3);
+.dark-theme .profile-action-button {
+  background: var(--card-dark);
+  color: var(--text-primary-dark);
+  border-color: var(--border-dark);
 }
 
-.share-friends-button:hover {
+.profile-action-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: var(--shadow-light);
+  background: #ffffff;
 }
 
-.dark-theme .share-friends-button:hover {
-  box-shadow: 0 6px 20px rgba(74, 85, 104, 0.4);
+.dark-theme .profile-action-button:hover {
+  background: #374151;
+  box-shadow: var(--shadow-dark);
 }
 
 .action-icon {
   font-size: 20px;
+  width: 24px;
+  text-align: center;
 }
 
 /* Bottom Navigation */
@@ -777,8 +927,20 @@ body.dark-theme {
     font-size: 28px;
   }
   
-  .share-friends-button {
+  .profile-header {
+    padding: 20px;
+  }
+  
+  .profile-stats {
     padding: 16px;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+  }
+  
+  .profile-action-button {
+    padding: 14px;
   }
   
   .settings-content {

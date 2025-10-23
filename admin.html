@@ -1,151 +1,299 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Games Verse</title>
-    <link rel="stylesheet" href="admin.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Games Verse</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="login-screen" class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <h1>🎮 Games Verse Admin</h1>
-                <p>Панель управления</p>
-            </div>
-            <form id="login-form" class="login-form">
-                <div class="form-group">
-                    <label for="password">Пароль</label>
-                    <input type="password" id="password" placeholder="Введите пароль" required>
-                </div>
-                <button type="submit" class="btn-primary">Войти</button>
-                <div id="login-error" class="error-message"></div>
-            </form>
-        </div>
-    </div>
+<div class="app-container">
+<!-- Header -->
+<header class="header">
+<div class="header-content">
+<h1 class="app-title" data-i18n="appTitle">Games Verse</h1>
+<button class="settings-button" id="settings-button">⚙️</button>
+</div>
+</header>
 
-    <!-- Admin Dashboard -->
-    <div id="admin-dashboard" class="dashboard-container" style="display: none;">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <div class="header-content">
-                <h1>🎮 Games Verse Admin</h1>
-                <button id="logout-btn" class="btn-logout">Выйти</button>
-            </div>
-        </header>
+<!-- Settings Panel -->
+<div class="settings-panel" id="settings-panel">
+<div class="settings-content">
+<h3 class="settings-title" data-i18n="settings">Настройки</h3>
 
-        <!-- Stats Cards -->
-        <section class="stats-section">
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-info">
-                    <h3 id="total-users">0</h3>
-                    <p>Всего пользователей</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🔥</div>
-                <div class="stat-info">
-                    <h3 id="active-today">0</h3>
-                    <p>Активных сегодня</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📅</div>
-                <div class="stat-info">
-                    <h3 id="active-week">0</h3>
-                    <p>Активных за неделю</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🎮</div>
-                <div class="stat-info">
-                    <h3 id="total-games-opened">0</h3>
-                    <p>Игр открыто всего</p>
-                </div>
-            </div>
-        </section>
+<div class="setting-item">
+<span class="setting-label" data-i18n="theme">Тема</span>
+<div class="theme-switcher">
+<button class="theme-option active" data-theme="light" data-i18n="lightTheme">Светлая</button>
+<button class="theme-option" data-theme="dark" data-i18n="darkTheme">Темная</button>
+</div>
+</div>
 
-        <!-- Activity Chart -->
-        <section class="chart-section">
-            <div class="section-header">
-                <h2>📊 График активности (последние 7 дней)</h2>
-            </div>
-            <div class="chart-container">
-                <canvas id="activity-chart"></canvas>
-            </div>
-        </section>
+<div class="setting-item">
+<span class="setting-label" data-i18n="language">Язык</span>
+<div class="language-switcher">
+<button class="language-option active" data-lang="ru" data-i18n="russian">Русский</button>
+<button class="language-option" data-lang="en" data-i18n="english">English</button>
+</div>
+</div>
 
-        <!-- Broadcast Section -->
-        <section class="broadcast-section">
-            <div class="section-header">
-                <h2>📢 Рассылка пользователям</h2>
-            </div>
-            <form id="broadcast-form" class="broadcast-form">
-                <div class="form-group">
-                    <label for="broadcast-text">Текст сообщения</label>
-                    <textarea id="broadcast-text" rows="4" placeholder="Введите текст сообщения" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="broadcast-image">URL изображения (опционально)</label>
-                    <input type="url" id="broadcast-image" placeholder="https://example.com/image.jpg">
-                </div>
+<button class="close-settings" id="close-settings" data-i18n="done">Готово</button>
+</div>
+</div>
 
-                <div class="form-group">
-                    <label>Кнопки (опционально)</label>
-                    <div id="buttons-container">
-                        <div class="button-input-group">
-                            <input type="text" placeholder="Текст кнопки" class="btn-text-input">
-                            <input type="url" placeholder="URL кнопки" class="btn-url-input">
-                            <button type="button" class="btn-remove">✕</button>
-                        </div>
-                    </div>
-                    <button type="button" id="add-button-btn" class="btn-secondary">+ Добавить кнопку</button>
-                </div>
+<!-- Main Content -->
+<main class="main-content">
+<!-- Games Section -->
+<section id="games-section" class="content-section active">
+<div class="section-header">
+<h2 data-i18n="games">Игры</h2>
+<span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
+</div>
 
-                <button type="submit" class="btn-primary btn-large">Отправить рассылку</button>
-                <div id="broadcast-status" class="status-message"></div>
-            </form>
-        </section>
+<div class="games-grid">
+<div class="game-card">
+<div class="game-image">
+<img src="images/hamster-gamedev.jpg" alt="Hamster GameDev" class="game-img" onerror="this.style.display='none'">
+</div>
+<div class="game-info">
+<h3>Hamster GameDev</h3>
+<div class="game-rating">
+<div class="stars">
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star half">★</span>
+</div>
+<span class="rating-value">4.5</span>
+</div>
+<div class="game-players">
+<span class="players-icon">👥</span>
+<span class="players-count">2.4M</span>
+</div>
+<p data-i18n="hamsterGameDevDesc">Создай свою студию</p>
+</div>
+<button class="play-button" data-bot="hamsterdev_bot" data-game-id="game1" data-i18n="play">Играть</button>
+</div>
 
-        <!-- Users Table -->
-        <section class="users-section">
-            <div class="section-header">
-                <h2>👥 Список пользователей</h2>
-                <div class="search-box">
-                    <input type="text" id="user-search" placeholder="Поиск по имени или username...">
-                </div>
-            </div>
-            <div class="table-container">
-                <table class="users-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Имя</th>
-                            <th>Username</th>
-                            <th>Игр открыто</th>
-                            <th>Дней подряд</th>
-                            <th>Друзей</th>
-                            <th>Последний визит</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-table-body">
-                        <tr>
-                            <td colspan="7" class="loading">Загрузка данных...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </div>
+<div class="game-card">
+<div class="game-image">
+<img src="images/hamster-king.jpg" alt="Hamster King" class="game-img" onerror="this.style.display='none'">
+</div>
+<div class="game-info">
+<h3>Hamster King</h3>
+<div class="game-rating">
+<div class="stars">
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star">★</span>
+</div>
+<span class="rating-value">4.0</span>
+</div>
+<div class="game-players">
+<span class="players-icon">👥</span>
+<span class="players-count">1.8M</span>
+</div>
+<p data-i18n="hamsterKingDesc">Стань королем хомяков</p>
+</div>
+<button class="play-button" data-bot="hamsterking_bot" data-game-id="game2" data-i18n="play">Играть</button>
+</div>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="toast"></div>
+<div class="game-card">
+<div class="game-image">
+<img src="images/hamster-fightclub.jpg" alt="Hamster Fight Club" class="game-img" onerror="this.style.display='none'">
+</div>
+<div class="game-info">
+<h3>Hamster Fight Club</h3>
+<div class="game-rating">
+<div class="stars">
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star half">★</span>
+<span class="star">★</span>
+</div>
+<span class="rating-value">3.5</span>
+</div>
+<div class="game-players">
+<span class="players-icon">👥</span>
+<span class="players-count">1.2M</span>
+</div>
+<p data-i18n="hamsterFightClubDesc">Бойцовский клуб хомяков</p>
+</div>
+<button class="play-button" data-bot="hamsterfightclub_bot" data-game-id="game3" data-i18n="play">Играть</button>
+</div>
 
-    <script src="admin.js"></script>
+<div class="game-card">
+<div class="game-image">
+<img src="images/bitquest.jpg" alt="BitQuest" class="game-img" onerror="this.style.display='none'">
+</div>
+<div class="game-info">
+<h3>BitQuest</h3>
+<div class="game-rating">
+<div class="stars">
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+<span class="star filled">★</span>
+</div>
+<span class="rating-value">5.0</span>
+</div>
+<div class="game-players">
+<span class="players-icon">👥</span>
+<span class="players-count">3.1M</span>
+</div>
+<p data-i18n="bitquestDesc">Приключения в мире крипты</p>
+</div>
+<button class="play-button" data-bot="bitquest_bot" data-game-id="game4" data-i18n="play">Играть</button>
+</div>
+</div>
+</section>
+
+<!-- Exchanges Section -->
+<section id="exchanges-section" class="content-section">
+<div class="section-header">
+<h2 data-i18n="exchanges">Крипто-биржи</h2>
+<span class="section-subtitle" data-i18n="exchangesDesc">Торгуйте криптовалютами безопасно</span>
+</div>
+
+<!-- GameFi Banner -->
+<div class="gamefi-banner">
+<div class="banner-content">
+<img src="images/gamefi.jpg" alt="GameFi Trading" class="banner-image">
+<div class="banner-overlay">
+<h3 class="banner-title">GameFi</h3>
+<p class="banner-text" data-i18n="tradeGameFi">Торгуйте монетами GameFi на популярных криптобиржах</p>
+</div>
+</div>
+</div>
+
+<div class="exchanges-list">
+<div class="exchange-card">
+<div class="exchange-logo">
+<img src="images/bybit.jpg" alt="Bybit" class="exchange-img" onerror="this.style.display='none'">
+</div>
+<div class="exchange-info">
+<h3>Bybit</h3>
+<p data-i18n="bybitDesc">Продвинутая торговая платформа</p>
+</div>
+<button class="exchange-button" data-url="https://www.bybit.com" data-i18n="go">Перейти</button>
+</div>
+
+<div class="exchange-card">
+<div class="exchange-logo">
+<img src="images/bingx.jpg" alt="BingX" class="exchange-img" onerror="this.style.display='none'">
+</div>
+<div class="exchange-info">
+<h3>BingX</h3>
+<p data-i18n="bingxDesc">Социальная торговля и копирование</p>
+</div>
+<button class="exchange-button" data-url="https://www.bingx.com" data-i18n="go">Перейти</button>
+</div>
+
+<div class="exchange-card">
+<div class="exchange-logo">
+<img src="images/bitget.jpg" alt="Bitget" class="exchange-img" onerror="this.style.display='none'">
+</div>
+<div class="exchange-info">
+<h3>Bitget</h3>
+<p data-i18n="bitgetDesc">Инновационная торговая платформа</p>
+</div>
+<button class="exchange-button" data-url="https://www.bitget.com" data-i18n="go">Перейти</button>
+</div>
+
+<div class="exchange-card">
+<div class="exchange-logo">
+<img src="images/mexc.jpg" alt="MEXC" class="exchange-img" onerror="this.style.display='none'">
+</div>
+<div class="exchange-info">
+<h3>MEXC</h3>
+<p data-i18n="mexcDesc">Глобальная биржа с низкими комиссиями</p>
+</div>
+<button class="exchange-button" data-url="https://www.mexc.com" data-i18n="go">Перейти</button>
+</div>
+</div>
+</section>
+
+<!-- Profile Section -->
+<section id="profile-section" class="content-section">
+<div class="profile-container">
+<div class="profile-header">
+<div class="profile-avatar" id="user-avatar">
+<img src="" alt="User Avatar" id="avatar-img" style="display: none;">
+<span id="avatar-fallback">U</span>
+</div>
+<div class="profile-info">
+<h2 id="user-name" data-i18n="user">Пользователь</h2>
+<p id="user-username">@username</p>
+<div class="profile-badge">
+<span class="badge-icon">⭐</span>
+<span class="badge-text">Игрок</span>
+</div>
+</div>
+</div>
+
+<div class="profile-stats">
+<div class="stat-item">
+<div class="stat-icon">🎮</div>
+<div class="stat-value" id="games-opened">0</div>
+<div class="stat-label" data-i18n="gamesOpened">Игр открыто</div>
+</div>
+<div class="stat-item">
+<div class="stat-icon">🔥</div>
+<div class="stat-value" id="streak-days">0</div>
+<div class="stat-label" data-i18n="streakDays">Дней подряд</div>
+</div>
+<div class="stat-item">
+<div class="stat-icon">👥</div>
+<div class="stat-value" id="friends-invited">0</div>
+<div class="stat-label" data-i18n="friendsInvited">Друзей</div>
+</div>
+</div>
+
+<!-- Invite Friends Card -->
+<div class="invite-card">
+<div class="invite-header">
+<div class="invite-icon">👥</div>
+<div class="invite-content">
+<h3 class="invite-title" data-i18n="inviteTitle">Пригласи друзей!</h3>
+<p class="invite-description" data-i18n="inviteDesc">Делись лучшими играми Telegram со своими друзьями</p>
+</div>
+</div>
+<button class="invite-button" id="share-friends-button">
+<span class="invite-button-icon">📤</span>
+<span data-i18n="shareLink">Поделиться ссылкой</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+<button class="nav-item active" data-section="games-section">
+<span class="nav-icon">🎮</span>
+<span class="nav-label" data-i18n="games">Игры</span>
+</button>
+<button class="nav-item" data-section="exchanges-section">
+<span class="nav-icon">📊</span>
+<span class="nav-label" data-i18n="exchanges">Биржи</span>
+</button>
+<button class="nav-item" data-section="profile-section">
+<span class="nav-icon">👤</span>
+<span class="nav-label" data-i18n="profile">Профиль</span>
+</button>
+</nav>
+
+<!-- Notification -->
+<div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

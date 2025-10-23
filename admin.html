@@ -1,1 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games Verse - Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+    <!-- Login Screen -->
+    <div class="admin-login" id="admin-login">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo-large">🎮</div>
+                <h1>Games Verse</h1>
+                <p>Admin Panel</p>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Введите пароль администратора"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+                <button type="submit" class="login-button" data-testid="admin-login-btn">
+                    <span>Войти</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M21 12H9"></path>
+                    </svg>
+                </button>
+                <div class="error-message" id="login-error"></div>
+            </form>
+        </div>
+    </div>
 
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="admin-dashboard" style="display: none;">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <div class="admin-logo">
+                    <span class="logo-icon">🎮</span>
+                    <h1>Games Verse Admin</h1>
+                </div>
+                <button class="logout-button" id="logout-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path>
+                    </svg>
+                    <span>Выйти</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Admin Navigation -->
+        <nav class="admin-nav">
+            <button class="admin-nav-item active" data-tab="stats">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3v18h18M7 16l4-4 4 4 6-6"></path>
+                </svg>
+                <span>Статистика</span>
+            </button>
+            <button class="admin-nav-item" data-tab="users">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span>Пользователи</span>
+            </button>
+            <button class="admin-nav-item" data-tab="broadcast">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span>Рассылка</span>
+            </button>
+            <button class="admin-nav-item" data-tab="history">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>История</span>
+            </button>
+        </nav>
+
+        <!-- Admin Content -->
+        <main class="admin-content">
+            <!-- Statistics Tab -->
+            <div class="admin-tab active" id="stats-tab">
+                <h2 class="tab-title">📊 Статистика</h2>
+                
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Всего пользователей</h3>
+                            <p class="stat-number" id="total-users">-</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM17 11l2 2 4-4"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Новых сегодня</h3>
+                            <p class="stat-number" id="new-users-today">-</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Активных сегодня</h3>
+                            <p class="stat-number" id="active-users-today">-</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Новых за неделю</h3>
+                            <p class="stat-number" id="new-users-week">-</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Кликов по играм</h3>
+                            <p class="stat-number" id="total-game-clicks">-</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Кликов по биржам</h3>
+                            <p class="stat-number" id="total-exchange-clicks">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>📈 Топ игры</h3>
+                        <div class="chart-content" id="top-games-chart">
+                            <p class="loading-text">Загрузка данных...</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>📊 Топ биржи</h3>
+                        <div class="chart-content" id="top-exchanges-chart">
+                            <p class="loading-text">Загрузка данных...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card full-width">
+                    <h3>📅 Рост пользователей (последние 7 дней)</h3>
+                    <div class="chart-content" id="user-growth-chart">
+                        <p class="loading-text">Загрузка данных...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="admin-tab" id="users-tab">
+                <h2 class="tab-title">👥 Пользователи</h2>
+                
+                <div class="users-table-container">
+                    <div class="table-header">
+                        <div class="search-box">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <input type="text" id="user-search" placeholder="Поиск пользователей...">
+                        </div>
+                        <div class="table-info">
+                            Всего: <span id="users-count">0</span> пользователей
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Имя</th>
+                                    <th>Username</th>
+                                    <th>Дата регистрации</th>
+                                    <th>Последняя активность</th>
+                                    <th>Реферер</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <tr>
+                                    <td colspan="6" class="loading-cell">Загрузка пользователей...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Broadcast Tab -->
+            <div class="admin-tab" id="broadcast-tab">
+                <h2 class="tab-title">📢 Создать рассылку</h2>
+                
+                <div class="broadcast-form-container">
+                    <form id="broadcast-form" class="broadcast-form">
+                        <div class="form-group">
+                            <label for="broadcast-title">Заголовок *</label>
+                            <input 
+                                type="text" 
+                                id="broadcast-title" 
+                                placeholder="Введите заголовок рассылки"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="broadcast-text">Сообщение *</label>
+                            <textarea 
+                                id="broadcast-text" 
+                                placeholder="Введите текст сообщения..."
+                                rows="5"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="broadcast-image">URL изображения</label>
+                            <input 
+                                type="url" 
+                                id="broadcast-image" 
+                                placeholder="https://example.com/image.jpg"
+                            >
+                            <small>Введите прямую ссылку на изображение</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="broadcast-link">Ссылка (кнопка)</label>
+                            <input 
+                                type="url" 
+                                id="broadcast-link" 
+                                placeholder="https://example.com"
+                            >
+                            <small>Опциональная ссылка для кнопки в рассылке</small>
+                        </div>
+
+                        <div class="broadcast-preview" id="broadcast-preview">
+                            <h4>Предпросмотр</h4>
+                            <div class="preview-content">
+                                <div id="preview-image-container" style="display: none;">
+                                    <img id="preview-image" src="" alt="Preview">
+                                </div>
+                                <h5 id="preview-title">Заголовок появится здесь</h5>
+                                <p id="preview-text">Текст сообщения появится здесь</p>
+                                <button type="button" id="preview-link" style="display: none;">Открыть ссылку</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="broadcast-submit-button" data-testid="send-broadcast-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                            <span>Отправить рассылку</span>
+                        </button>
+                    </form>
+
+                    <div class="broadcast-info">
+                        <div class="info-card">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 16v-4M12 8h.01"></path>
+                            </svg>
+                            <div>
+                                <h4>Информация о рассылке</h4>
+                                <p>Рассылка будет отправлена всем пользователям, которые зашли в приложение. Уведомление будет показано при следующем входе пользователя.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div class="admin-tab" id="history-tab">
+                <h2 class="tab-title">📜 История рассылок</h2>
+                
+                <div class="history-container" id="broadcasts-history">
+                    <p class="loading-text">Загрузка истории...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="admin-notification" class="notification">
+        <span id="admin-notification-text"></span>
+    </div>
+
+    <script>
+        // Set admin flag for script.js
+        window.isAdminPanel = true;
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

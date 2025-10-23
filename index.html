@@ -74,7 +74,7 @@
                             </div>
                             <p data-i18n="hamsterGameDevDesc">Создай свою студию</p>
                         </div>
-                        <button class="play-button" data-bot="hamsterdev_bot" data-i18n="play">Играть</button>
+                        <button class="play-button" data-bot="hamsterdev_bot" data-game-id="game1" data-i18n="play">Играть</button>
                     </div>
 
                     <div class="game-card">
@@ -99,7 +99,7 @@
                             </div>
                             <p data-i18n="hamsterKingDesc">Стань королем хомяков</p>
                         </div>
-                        <button class="play-button" data-bot="hamsterking_bot" data-i18n="play">Играть</button>
+                        <button class="play-button" data-bot="hamsterking_bot" data-game-id="game2" data-i18n="play">Играть</button>
                     </div>
 
                     <div class="game-card">
@@ -124,7 +124,7 @@
                             </div>
                             <p data-i18n="hamsterFightClubDesc">Бойцовский клуб хомяков</p>
                         </div>
-                        <button class="play-button" data-bot="hamsterfightclub_bot" data-i18n="play">Играть</button>
+                        <button class="play-button" data-bot="hamsterfightclub_bot" data-game-id="game3" data-i18n="play">Играть</button>
                     </div>
 
                     <div class="game-card">
@@ -149,7 +149,7 @@
                             </div>
                             <p data-i18n="bitquestDesc">Приключения в мире крипты</p>
                         </div>
-                        <button class="play-button" data-bot="bitquest_bot" data-i18n="play">Играть</button>
+                        <button class="play-button" data-bot="bitquest_bot" data-game-id="game4" data-i18n="play">Играть</button>
                     </div>
                 </div>
             </section>
@@ -239,27 +239,47 @@
 
                     <div class="profile-stats">
                         <div class="stat-item">
-                            <div class="stat-value">12</div>
-                            <div class="stat-label" data-i18n="gamesPlayed">Игр сыграно</div>
+                            <div class="stat-icon">🎮</div>
+                            <div class="stat-value" id="games-opened">0</div>
+                            <div class="stat-label" data-i18n="gamesOpened">Игр открыто</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">3</div>
-                            <div class="stat-label" data-i18n="daysInGame">Дней в игре</div>
+                            <div class="stat-icon">🔥</div>
+                            <div class="stat-value" id="streak-days">0</div>
+                            <div class="stat-label" data-i18n="streakDays">Дней подряд</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">1</div>
-                            <div class="stat-label" data-i18n="friendsInvited">Друзей приглашено</div>
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-value" id="friends-invited">0</div>
+                            <div class="stat-label" data-i18n="friendsInvited">Друзей</div>
                         </div>
+                    </div>
+
+                    <!-- Invite Friends Card -->
+                    <div class="invite-card">
+                        <div class="invite-header">
+                            <div class="invite-icon">🎁</div>
+                            <div class="invite-content">
+                                <h3 class="invite-title" data-i18n="inviteTitle">Пригласи друзей!</h3>
+                                <p class="invite-description" data-i18n="inviteDesc">Получай бонусы за каждого приглашенного друга</p>
+                            </div>
+                        </div>
+                        <div class="invite-reward">
+                            <div class="reward-item">
+                                <span class="reward-value">+100</span>
+                                <span class="reward-label" data-i18n="coinsPerFriend">монет за друга</span>
+                            </div>
+                        </div>
+                        <button class="invite-button" id="share-friends-button">
+                            <span class="invite-button-icon">📤</span>
+                            <span data-i18n="shareLink">Поделиться ссылкой</span>
+                        </button>
                     </div>
 
                     <div class="profile-actions">
                         <button class="profile-action-button" id="edit-profile-button">
                             <span class="action-icon">✏️</span>
                             <span data-i18n="editProfile">Редактировать профиль</span>
-                        </button>
-                        <button class="profile-action-button" id="share-friends-button">
-                            <span class="action-icon">👥</span>
-                            <span data-i18n="shareWithFriends">Поделиться с друзьями</span>
                         </button>
                         <button class="profile-action-button" id="achievements-button">
                             <span class="action-icon">🏆</span>

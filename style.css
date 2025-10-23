@@ -243,18 +243,18 @@ body.dark-theme {
 
 /* Section Headers */
 .section-header {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .section-header h2 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
 .section-subtitle {
   color: var(--text-secondary-light);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -262,20 +262,20 @@ body.dark-theme {
   color: var(--text-secondary-dark);
 }
 
-/* Games Grid */
+/* Games Grid - УЗКИЕ КАРТОЧКИ */
 .games-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
 .game-card {
   background: var(--card-light);
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 12px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-light);
@@ -289,7 +289,7 @@ body.dark-theme {
 }
 
 .game-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-light);
   background: #ffffff;
 }
@@ -300,9 +300,9 @@ body.dark-theme {
 }
 
 .game-image {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
   overflow: hidden;
   flex-shrink: 0;
   box-shadow: var(--shadow-light);
@@ -324,19 +324,23 @@ body.dark-theme {
 
 .game-info {
   flex-grow: 1;
+  min-width: 0;
 }
 
 .game-info h3 {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .game-rating {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+  gap: 6px;
+  margin-bottom: 3px;
 }
 
 .stars {
@@ -345,7 +349,7 @@ body.dark-theme {
 
 .star {
   color: #d1d5db;
-  font-size: 14px;
+  font-size: 12px;
   margin-right: 1px;
 }
 
@@ -360,7 +364,7 @@ body.dark-theme {
 }
 
 .rating-value {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-secondary-light);
 }
@@ -372,16 +376,16 @@ body.dark-theme {
 .game-players {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
+  gap: 3px;
+  margin-bottom: 4px;
 }
 
 .players-icon {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .players-count {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary-light);
 }
 
@@ -390,8 +394,11 @@ body.dark-theme {
 }
 
 .game-info p {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text-secondary-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dark-theme .game-info p {
@@ -402,16 +409,17 @@ body.dark-theme {
   background: var(--primary-gradient);
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 14px;
+  padding: 8px 16px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 13px;
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .dark-theme .play-button {
@@ -449,8 +457,8 @@ body.dark-theme {
 
 /* GameFi Banner */
 .gamefi-banner {
-  margin: 0 0 24px 0;
-  border-radius: 20px;
+  margin: 0 0 20px 0;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow-light);
   transition: all 0.3s ease;
@@ -472,8 +480,8 @@ body.dark-theme {
 .banner-content {
   position: relative;
   width: 100%;
-  height: 140px;
-  border-radius: 20px;
+  height: 120px;
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -505,18 +513,18 @@ body.dark-theme {
   align-items: center;
   text-align: center;
   color: white;
-  padding: 20px;
+  padding: 16px;
 }
 
 .banner-title {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .banner-text {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 500;
   opacity: 0.95;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -524,20 +532,20 @@ body.dark-theme {
   line-height: 1.4;
 }
 
-/* Exchanges List */
+/* Exchanges List - УЗКИЕ КАРТОЧКИ */
 .exchanges-list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
 .exchange-card {
   background: var(--card-light);
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 12px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-light);
   cursor: default;
@@ -551,7 +559,7 @@ body.dark-theme {
 }
 
 .exchange-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-light);
   background: #ffffff;
 }
@@ -562,9 +570,9 @@ body.dark-theme {
 }
 
 .exchange-logo {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -586,18 +594,21 @@ body.dark-theme {
 
 .exchange-info {
   flex-grow: 1;
+  min-width: 0;
 }
 
 .exchange-info h3 {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .exchange-info p {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text-secondary-light);
-  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dark-theme .exchange-info p {
@@ -608,14 +619,15 @@ body.dark-theme {
   background: var(--primary-gradient);
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 14px;
+  padding: 8px 16px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 13px;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .dark-theme .exchange-button {
@@ -632,11 +644,11 @@ body.dark-theme {
   box-shadow: 0 6px 20px rgba(74, 85, 104, 0.4);
 }
 
-/* Profile Section */
+/* Profile Section - УЛУЧШЕННЫЙ */
 .profile-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .profile-header {
@@ -645,7 +657,7 @@ body.dark-theme {
   gap: 16px;
   background: var(--card-light);
   border-radius: 20px;
-  padding: 24px;
+  padding: 20px;
   border: 1px solid var(--border-light);
   position: relative;
 }
@@ -656,14 +668,14 @@ body.dark-theme {
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   background: var(--primary-gradient);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
   color: white;
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
@@ -688,14 +700,14 @@ body.dark-theme {
 }
 
 .profile-info h2 {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
 .profile-info p {
   color: var(--text-secondary-light);
-  font-size: 14px;
+  font-size: 13px;
   margin-bottom: 8px;
 }
 
@@ -730,12 +742,14 @@ body.dark-theme {
   color: var(--primary-dark);
 }
 
+/* Stats - УЛУЧШЕННЫЕ */
 .profile-stats {
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
   background: var(--card-light);
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 16px;
   border: 1px solid var(--border-light);
 }
 
@@ -746,7 +760,28 @@ body.dark-theme {
 
 .stat-item {
   text-align: center;
-  flex: 1;
+  padding: 8px;
+  background: var(--surface-light);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.dark-theme .stat-item {
+  background: var(--surface-dark);
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-light);
+}
+
+.dark-theme .stat-item:hover {
+  box-shadow: var(--shadow-dark);
+}
+
+.stat-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
 }
 
 .stat-value {
@@ -761,19 +796,117 @@ body.dark-theme {
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary-light);
   font-weight: 500;
+  line-height: 1.2;
 }
 
 .dark-theme .stat-label {
   color: var(--text-secondary-dark);
 }
 
+/* Invite Card - КРАСИВАЯ КАРТОЧКА */
+.invite-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 20px;
+  color: white;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+}
+
+.invite-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+}
+
+.invite-header {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.invite-icon {
+  font-size: 40px;
+  flex-shrink: 0;
+}
+
+.invite-content {
+  flex-grow: 1;
+}
+
+.invite-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.invite-description {
+  font-size: 13px;
+  opacity: 0.95;
+  line-height: 1.4;
+}
+
+.invite-reward {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+
+.reward-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.reward-value {
+  font-size: 28px;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.reward-label {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.invite-button {
+  width: 100%;
+  background: white;
+  color: var(--primary-light);
+  border: none;
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.invite-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.invite-button-icon {
+  font-size: 18px;
+}
+
 .profile-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .profile-action-button {
@@ -781,14 +914,14 @@ body.dark-theme {
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 16px;
+  padding: 14px 16px;
   background: var(--card-light);
   color: var(--text-primary-light);
   border: 1px solid var(--border-light);
-  border-radius: 16px;
+  border-radius: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   text-align: left;
 }
@@ -811,8 +944,8 @@ body.dark-theme {
 }
 
 .action-icon {
-  font-size: 20px;
-  width: 24px;
+  font-size: 18px;
+  width: 20px;
   text-align: center;
 }
 
@@ -825,7 +958,7 @@ body.dark-theme {
   background: var(--surface-light);
   display: flex;
   justify-content: space-around;
-  padding: 12px 0;
+  padding: 10px 0;
   border-top: 1px solid var(--border-light);
   backdrop-filter: blur(10px);
   max-width: 400px;
@@ -846,7 +979,7 @@ body.dark-theme {
   background: none;
   border: none;
   padding: 8px 16px;
-  border-radius: 16px;
+  border-radius: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
   opacity: 0.6;
@@ -873,7 +1006,7 @@ body.dark-theme {
 }
 
 .nav-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
 }
 
@@ -914,33 +1047,42 @@ body.dark-theme {
   }
   
   .games-grid, .exchanges-list {
-    gap: 12px;
+    gap: 10px;
   }
   
   .game-card, .exchange-card {
-    padding: 16px;
+    padding: 10px;
   }
   
   .profile-avatar {
-    width: 70px;
-    height: 70px;
-    font-size: 28px;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
   }
   
   .profile-header {
-    padding: 20px;
+    padding: 16px;
   }
   
   .profile-stats {
-    padding: 16px;
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .stat-icon {
+    font-size: 24px;
   }
   
   .stat-value {
     font-size: 20px;
   }
   
-  .profile-action-button {
-    padding: 14px;
+  .invite-card {
+    padding: 16px;
+  }
+  
+  .invite-title {
+    font-size: 18px;
   }
   
   .settings-content {
@@ -952,21 +1094,16 @@ body.dark-theme {
     padding: 60px 12px 0 0;
   }
   
-  /* GameFi Banner Responsive */
   .banner-content {
-    height: 120px;
+    height: 100px;
   }
   
   .banner-title {
-    font-size: 24px;
+    font-size: 20px;
   }
   
   .banner-text {
-    font-size: 14px;
-  }
-  
-  .banner-overlay {
-    padding: 16px;
+    font-size: 12px;
   }
 }
 

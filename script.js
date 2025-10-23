@@ -32,7 +32,12 @@ const translations = {
         profile: "Профиль",
         linkCopied: "Ссылка скопирована в буфер обмена!",
         go: "Перейти",
-        tradeGameFi: "Торгуйте монетами GameFi на популярных криптобиржах"
+        tradeGameFi: "Торгуйте монетами GameFi на популярных криптобиржах",
+        gamesPlayed: "Игр сыграно",
+        daysInGame: "Дней в игре",
+        friendsInvited: "Друзей приглашено",
+        editProfile: "Редактировать профиль",
+        achievements: "Достижения"
     },
     en: {
         appTitle: "Games Verse",
@@ -62,7 +67,12 @@ const translations = {
         profile: "Profile",
         linkCopied: "Link copied to clipboard!",
         go: "Go",
-        tradeGameFi: "Trade GameFi coins on popular crypto exchanges"
+        tradeGameFi: "Trade GameFi coins on popular crypto exchanges",
+        gamesPlayed: "Games played",
+        daysInGame: "Days in game",
+        friendsInvited: "Friends invited",
+        editProfile: "Edit profile",
+        achievements: "Achievements"
     }
 };
 
@@ -81,6 +91,7 @@ function initializeApp() {
     loadLanguagePreference();
     loadUserData();
     setupShareButton();
+    setupProfileButtons();
     
     // Плавная загрузка контента
     setTimeout(() => {
@@ -348,6 +359,27 @@ function setupShareButton() {
                     fallbackCopyToClipboard(shareUrl, notification);
                 }
             }
+        });
+    }
+}
+
+function setupProfileButtons() {
+    const editProfileButton = document.getElementById('edit-profile-button');
+    const achievementsButton = document.getElementById('achievements-button');
+    
+    if (editProfileButton) {
+        editProfileButton.addEventListener('click', function() {
+            vibrate();
+            // Здесь можно добавить функционал редактирования профиля
+            showNotification(document.getElementById('notification'), 'Функция в разработке');
+        });
+    }
+    
+    if (achievementsButton) {
+        achievementsButton.addEventListener('click', function() {
+            vibrate();
+            // Здесь можно добавить функционал достижений
+            showNotification(document.getElementById('notification'), 'Функция в разработке');
         });
     }
 }

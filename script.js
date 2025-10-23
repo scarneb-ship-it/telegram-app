@@ -39,8 +39,7 @@ const translations = {
         editProfile: "Редактировать профиль",
         achievements: "Достижения",
         inviteTitle: "Пригласи друзей!",
-        inviteDesc: "Получай бонусы за каждого приглашенного друга",
-        coinsPerFriend: "монет за друга",
+        inviteDesc: "Делись лучшими играми Telegram со своими друзьями",
         shareLink: "Поделиться ссылкой"
     },
     en: {
@@ -78,8 +77,7 @@ const translations = {
         editProfile: "Edit profile",
         achievements: "Achievements",
         inviteTitle: "Invite friends!",
-        inviteDesc: "Get bonuses for each invited friend",
-        coinsPerFriend: "coins per friend",
+        inviteDesc: "Share the best Telegram games with your friends",
         shareLink: "Share link"
     }
 };
@@ -99,7 +97,6 @@ function initializeApp() {
     loadLanguagePreference();
     loadUserData();
     setupShareButton();
-    setupProfileButtons();
     updateStreak();
     updateProfileStats();
     
@@ -450,27 +447,6 @@ function setupShareButton() {
                     fallbackCopyToClipboard(shareUrl, notification);
                 }
             }
-        });
-    }
-}
-
-function setupProfileButtons() {
-    const editProfileButton = document.getElementById('edit-profile-button');
-    const achievementsButton = document.getElementById('achievements-button');
-    
-    if (editProfileButton) {
-        editProfileButton.addEventListener('click', function() {
-            vibrate();
-            // Здесь можно добавить функционал редактирования профиля
-            showNotification(document.getElementById('notification'), 'Функция в разработке');
-        });
-    }
-    
-    if (achievementsButton) {
-        achievementsButton.addEventListener('click', function() {
-            vibrate();
-            // Здесь можно добавить функционал достижений
-            showNotification(document.getElementById('notification'), 'Функция в разработке');
         });
     }
 }

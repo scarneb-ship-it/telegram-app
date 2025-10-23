@@ -1,6 +1,3 @@
-// API Configuration - укажите URL вашего backend
-const API_BASE_URL = 'https://your-backend-url.com/api';  // Замените на реальный URL
-
 // Telegram Web App
 let tg = window.Telegram.WebApp;
 
@@ -84,9 +81,16 @@ const translations = {
     }
 };
 
-// Глобальные переменные для хранения данных пользователя
+// Глобальные переменные
 let currentUser = null;
 let userTelegramId = null;
+let isGameOpen = false;
+
+// Game bot mapping - реальные URL для встраивания игр
+const gameUrls = {
+    'hamster_kombat_bot': 'https://hamsterkombatgame.io/',
+    'BitQuest_bot': 'https://t.me/BitQuest_bot/start'
+};
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
@@ -113,6 +117,7 @@ async function initializeApp() {
     setupGameButtons();
     setupExchangeButtons();
     setupSettingsPanel();
+    setupBackButton();
     loadThemePreference();
     loadLanguagePreference();
     
@@ -181,8 +186,8 @@ async function loadTelegramUserData() {
             avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
         }
         
-        // Загрузка данных пользователя с backend или создание нового
-        await loadOrCreateUserProfile(user);
+        // Загрузка статистики
+        loadLocalStats();
     } else {
         // Fallback для тестирования вне Telegram
         console.log('Telegram user data not available - using test mode');
@@ -190,48 +195,8 @@ async function loadTelegramUserData() {
     }
 }
 
-async function loadOrCreateUserProfile(telegramUser) {
-    try {
-        // Попытка получить профиль пользователя
-        const response = await fetch(`${API_BASE_URL}/users/${telegramUser.id}`);
-        
-        if (response.ok) {
-            // Пользователь существует
-            currentUser = await response.json();
-            updateProfileStats();
-        } else if (response.status === 404) {
-            // Пользователь не найден, создаем новый профиль
-            const newUser = {
-                telegram_id: telegramUser.id.toString(),
-                first_name: telegramUser.first_name,
-                last_name: telegramUser.last_name || null,
-                username: telegramUser.username || null,
-                photo_url: telegramUser.photo_url || null,
-                referred_by: localStorage.getItem('referredBy') || null
-            };
-            
-            const createResponse = await fetch(`${API_BASE_URL}/users`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newUser)
-            });
-            
-            if (createResponse.ok) {
-                currentUser = await createResponse.json();
-                updateProfileStats();
-            }
-        }
-    } catch (error) {
-        console.error('Error loading user profile:', error);
-        // Fallback to localStorage
-        loadLocalStats();
-    }
-}
-
 function loadLocalStats() {
-    // Резервная загрузка из localStorage
+    // Загрузка из localStorage
     const gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
     const streak = parseInt(localStorage.getItem('streak') || '0');
     const friendsInvited = parseInt(localStorage.getItem('friendsInvited') || '0');
@@ -241,64 +206,14 @@ function loadLocalStats() {
     document.getElementById('friends-invited').textContent = friendsInvited;
 }
 
-function updateProfileStats() {
-    if (currentUser) {
-        document.getElementById('games-opened').textContent = currentUser.games_opened || 0;
-        document.getElementById('streak-days').textContent = currentUser.streak_days || 0;
-        document.getElementById('friends-invited').textContent = currentUser.friends_invited || 0;
-    }
-}
-
-async function incrementGamesOpened() {
-    if (userTelegramId) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/users/${userTelegramId}/game-opened`, {
-                method: 'POST'
-            });
-            
-            if (response.ok) {
-                currentUser = await response.json();
-                updateProfileStats();
-            }
-        } catch (error) {
-            console.error('Error incrementing games opened:', error);
-            // Fallback to localStorage
-            let gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
-            gamesOpened++;
-            localStorage.setItem('gamesOpened', gamesOpened.toString());
-            document.getElementById('games-opened').textContent = gamesOpened;
-        }
-    } else {
-        // Fallback для тестирования
-        let gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
-        gamesOpened++;
-        localStorage.setItem('gamesOpened', gamesOpened.toString());
-        document.getElementById('games-opened').textContent = gamesOpened;
-    }
+function incrementGamesOpened() {
+    let gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
+    gamesOpened++;
+    localStorage.setItem('gamesOpened', gamesOpened.toString());
+    document.getElementById('games-opened').textContent = gamesOpened;
 }
 
 async function updateStreak() {
-    if (userTelegramId) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/users/${userTelegramId}/check-streak`, {
-                method: 'POST'
-            });
-            
-            if (response.ok) {
-                currentUser = await response.json();
-                updateProfileStats();
-            }
-        } catch (error) {
-            console.error('Error updating streak:', error);
-            // Fallback to localStorage
-            updateStreakLocal();
-        }
-    } else {
-        updateStreakLocal();
-    }
-}
-
-function updateStreakLocal() {
     const today = new Date().toDateString();
     const lastVisit = localStorage.getItem('lastVisit');
     let streak = parseInt(localStorage.getItem('streak') || '0');
@@ -344,6 +259,9 @@ function setupNavigation() {
     
     navItems.forEach(item => {
         item.addEventListener('click', function() {
+            // Не переключаем навигацию если игра открыта
+            if (isGameOpen) return;
+            
             vibrate();
             const targetSection = this.getAttribute('data-section');
             
@@ -369,22 +287,130 @@ function setupGameButtons() {
             vibrate();
             const botUsername = this.getAttribute('data-bot');
             const gameId = this.getAttribute('data-game-id');
+            const gameCard = this.closest('.game-card');
+            const gameName = gameCard.getAttribute('data-game-name');
             
             if (gameId) {
                 incrementGamesOpened();
             }
             
             if (botUsername) {
-                const telegramUrl = `https://t.me/${botUsername}?start=app`;
-                
-                if (tg.openTelegramLink) {
-                    tg.openTelegramLink(telegramUrl);
-                } else {
-                    window.open(telegramUrl, '_blank');
-                }
+                openGameInApp(botUsername, gameName);
             }
         });
     });
+}
+
+function openGameInApp(botUsername, gameName) {
+    // Скрываем основной контент
+    const mainContent = document.getElementById('main-content');
+    const bottomNav = document.getElementById('bottom-nav');
+    const gameContainer = document.getElementById('game-container');
+    const backButton = document.getElementById('back-button');
+    const settingsButton = document.getElementById('settings-button');
+    const appTitle = document.querySelector('.app-title');
+    
+    mainContent.style.display = 'none';
+    bottomNav.style.display = 'none';
+    gameContainer.style.display = 'flex';
+    backButton.style.display = 'flex';
+    settingsButton.style.display = 'none';
+    
+    // Обновляем заголовок
+    appTitle.textContent = gameName;
+    
+    // Получаем iframe
+    const iframe = document.getElementById('game-iframe');
+    
+    // Формируем URL для игры с передачей данных пользователя
+    let gameUrl = '';
+    
+    if (gameUrls[botUsername]) {
+        gameUrl = gameUrls[botUsername];
+    } else {
+        // Fallback: используем универсальный формат Telegram Bot Game URL
+        gameUrl = `https://t.me/${botUsername}`;
+    }
+    
+    // Добавляем параметры пользователя если они есть
+    if (userTelegramId) {
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            // Используем Telegram Web App initData для авторизации
+            const initData = tg.initData;
+            if (initData) {
+                gameUrl += (gameUrl.includes('?') ? '&' : '?') + 'tgWebAppData=' + encodeURIComponent(initData);
+            }
+        }
+    }
+    
+    // Загружаем игру в iframe
+    iframe.src = gameUrl;
+    isGameOpen = true;
+    
+    // Показываем индикатор загрузки
+    showLoadingIndicator(iframe);
+}
+
+function showLoadingIndicator(iframe) {
+    const gameContainer = document.getElementById('game-container');
+    
+    // Создаем индикатор загрузки если его еще нет
+    let loader = gameContainer.querySelector('.game-loader');
+    if (!loader) {
+        loader = document.createElement('div');
+        loader.className = 'game-loader';
+        loader.innerHTML = '<div class="loader-spinner"></div><p>Загрузка игры...</p>';
+        gameContainer.appendChild(loader);
+    }
+    
+    loader.style.display = 'flex';
+    
+    // Скрываем загрузчик когда iframe загрузится
+    iframe.onload = function() {
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 500);
+    };
+    
+    // Скрываем загрузчик через 10 секунд в любом случае
+    setTimeout(() => {
+        loader.style.display = 'none';
+    }, 10000);
+}
+
+function setupBackButton() {
+    const backButton = document.getElementById('back-button');
+    
+    backButton.addEventListener('click', function() {
+        vibrate();
+        closeGame();
+    });
+}
+
+function closeGame() {
+    const mainContent = document.getElementById('main-content');
+    const bottomNav = document.getElementById('bottom-nav');
+    const gameContainer = document.getElementById('game-container');
+    const backButton = document.getElementById('back-button');
+    const settingsButton = document.getElementById('settings-button');
+    const appTitle = document.querySelector('.app-title');
+    const iframe = document.getElementById('game-iframe');
+    
+    // Останавливаем игру
+    iframe.src = '';
+    
+    // Показываем основной контент
+    mainContent.style.display = 'block';
+    bottomNav.style.display = 'flex';
+    gameContainer.style.display = 'none';
+    backButton.style.display = 'none';
+    settingsButton.style.display = 'flex';
+    
+    // Возвращаем заголовок
+    appTitle.textContent = translations[localStorage.getItem('language') || 'ru'].appTitle;
+    
+    isGameOpen = false;
 }
 
 function setupExchangeButtons() {
@@ -522,7 +548,7 @@ function setupShareButton() {
             vibrate();
             
             const userId = userTelegramId || 'default';
-            const botUsername = 'games_verse_bot';  // Замените на username вашего бота
+            const botUsername = 'YOUR_BOT_USERNAME';  // Замените на username вашего бота
             const shareUrl = `https://t.me/${botUsername}?start=${userId}`;
             const shareText = 'Присоединяйся к Games Verse - лучшие игры Telegram в одном приложении! 🎮';
             

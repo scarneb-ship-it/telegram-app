@@ -522,7 +522,7 @@ function setupShareButton() {
             vibrate();
             
             const userId = userTelegramId || 'default';
-            const botUsername = 'YOUR_BOT_USERNAME';  // Замените на username вашего бота
+            const botUsername = 'games_verse_bot';  // Замените на username вашего бота
             const shareUrl = `https://t.me/${botUsername}?start=${userId}`;
             const shareText = 'Присоединяйся к Games Verse - лучшие игры Telegram в одном приложении! 🎮';
             

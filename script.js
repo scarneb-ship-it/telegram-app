@@ -33,11 +33,15 @@ const translations = {
         linkCopied: "Ссылка скопирована в буфер обмена!",
         go: "Перейти",
         tradeGameFi: "Торгуйте монетами GameFi на популярных криптобиржах",
-        gamesPlayed: "Игр сыграно",
-        daysInGame: "Дней в игре",
-        friendsInvited: "Друзей приглашено",
+        gamesOpened: "Игр открыто",
+        streakDays: "Дней подряд",
+        friendsInvited: "Друзей",
         editProfile: "Редактировать профиль",
-        achievements: "Достижения"
+        achievements: "Достижения",
+        inviteTitle: "Пригласи друзей!",
+        inviteDesc: "Получай бонусы за каждого приглашенного друга",
+        coinsPerFriend: "монет за друга",
+        shareLink: "Поделиться ссылкой"
     },
     en: {
         appTitle: "Games Verse",
@@ -68,11 +72,15 @@ const translations = {
         linkCopied: "Link copied to clipboard!",
         go: "Go",
         tradeGameFi: "Trade GameFi coins on popular crypto exchanges",
-        gamesPlayed: "Games played",
-        daysInGame: "Days in game",
-        friendsInvited: "Friends invited",
+        gamesOpened: "Games opened",
+        streakDays: "Days streak",
+        friendsInvited: "Friends",
         editProfile: "Edit profile",
-        achievements: "Achievements"
+        achievements: "Achievements",
+        inviteTitle: "Invite friends!",
+        inviteDesc: "Get bonuses for each invited friend",
+        coinsPerFriend: "coins per friend",
+        shareLink: "Share link"
     }
 };
 
@@ -92,6 +100,8 @@ function initializeApp() {
     loadUserData();
     setupShareButton();
     setupProfileButtons();
+    updateStreak();
+    updateProfileStats();
     
     // Плавная загрузка контента
     setTimeout(() => {
@@ -144,6 +154,13 @@ function setupGameButtons() {
             e.stopPropagation();
             vibrate();
             const botUsername = this.getAttribute('data-bot');
+            const gameId = this.getAttribute('data-game-id');
+            
+            // Увеличиваем счетчик открытых игр
+            if (gameId) {
+                incrementGamesOpened();
+            }
+            
             if (botUsername) {
                 const telegramUrl = `https://t.me/${botUsername}?start=app`;
                 
@@ -317,16 +334,75 @@ function loadUserData() {
             const avatarImg = document.getElementById('avatar-img');
             const avatarFallback = document.getElementById('avatar-fallback');
             
-            if (userAvatar && user.photo_url) {
+            if (user.photo_url) {
                 avatarImg.src = user.photo_url;
                 avatarImg.style.display = 'block';
                 avatarFallback.style.display = 'none';
-            } else if (userAvatar && user.first_name) {
+            } else if (user.first_name) {
                 // Show first letter of first name as fallback
                 avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
             }
         }
     }
+}
+
+// ПРОФИЛЬНЫЕ ФУНКЦИИ - ПОДСЧЕТ СТАТИСТИКИ
+
+function incrementGamesOpened() {
+    let gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
+    gamesOpened++;
+    localStorage.setItem('gamesOpened', gamesOpened.toString());
+    updateProfileStats();
+}
+
+function updateStreak() {
+    const today = new Date().toDateString();
+    const lastVisit = localStorage.getItem('lastVisit');
+    let streak = parseInt(localStorage.getItem('streak') || '0');
+    
+    if (lastVisit) {
+        const lastVisitDate = new Date(lastVisit);
+        const todayDate = new Date(today);
+        const diffTime = todayDate - lastVisitDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+            // Пользователь зашел на следующий день
+            streak++;
+        } else if (diffDays > 1) {
+            // Прошло больше дня, сбрасываем streak
+            streak = 1;
+        }
+        // Если diffDays === 0, то это тот же день, не меняем streak
+    } else {
+        // Первый визит
+        streak = 1;
+    }
+    
+    localStorage.setItem('streak', streak.toString());
+    localStorage.setItem('lastVisit', today);
+    updateProfileStats();
+}
+
+function incrementFriendsInvited() {
+    let friendsInvited = parseInt(localStorage.getItem('friendsInvited') || '0');
+    friendsInvited++;
+    localStorage.setItem('friendsInvited', friendsInvited.toString());
+    updateProfileStats();
+}
+
+function updateProfileStats() {
+    const gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
+    const streak = parseInt(localStorage.getItem('streak') || '0');
+    const friendsInvited = parseInt(localStorage.getItem('friendsInvited') || '0');
+    
+    const gamesOpenedEl = document.getElementById('games-opened');
+    const streakDaysEl = document.getElementById('streak-days');
+    const friendsInvitedEl = document.getElementById('friends-invited');
+    
+    if (gamesOpenedEl) gamesOpenedEl.textContent = gamesOpened;
+    if (streakDaysEl) streakDaysEl.textContent = streak;
+    if (friendsInvitedEl) friendsInvitedEl.textContent = friendsInvited;
 }
 
 function setupShareButton() {
@@ -336,16 +412,31 @@ function setupShareButton() {
     if (shareButton) {
         shareButton.addEventListener('click', function() {
             vibrate();
-            const shareUrl = window.location.href;
+            
+            // Получаем данные пользователя Telegram
+            let userId = 'default';
+            if (window.Telegram && window.Telegram.WebApp) {
+                const user = window.Telegram.WebApp.initDataUnsafe?.user;
+                if (user && user.id) {
+                    userId = user.id;
+                }
+            }
+            
+            // Создаем реферальную ссылку
+            const shareUrl = `${window.location.href}?ref=${userId}`;
+            const shareText = 'Присоединяйся к Games Verse - лучшие игры Telegram в одном приложении! 🎮';
             
             // Check if Web Share API is available
             if (navigator.share) {
                 navigator.share({
                     title: 'Games Verse',
-                    text: 'Открой для себя лучшие игры Telegram в одном приложении!',
+                    text: shareText,
                     url: shareUrl,
                 })
-                .then(() => console.log('Успешный шаринг'))
+                .then(() => {
+                    console.log('Успешный шаринг');
+                    // Можно добавить счетчик приглашенных друзей здесь
+                })
                 .catch((error) => console.log('Ошибка шаринга', error));
             } else {
                 // Fallback: copy to clipboard
@@ -411,3 +502,25 @@ function showNotification(notification, customMessage) {
         notification.classList.remove('show');
     }, 2000);
 }
+
+// Проверка реферальной ссылки при загрузке
+function checkReferral() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refId = urlParams.get('ref');
+    
+    if (refId) {
+        // Сохраняем информацию о том, кто пригласил
+        const hasBeenReferred = localStorage.getItem('hasBeenReferred');
+        
+        if (!hasBeenReferred) {
+            localStorage.setItem('hasBeenReferred', 'true');
+            localStorage.setItem('referredBy', refId);
+            
+            // Здесь можно отправить информацию на сервер о новом приглашенном пользователе
+            console.log('Приглашен пользователем:', refId);
+        }
+    }
+}
+
+// Вызываем проверку реферала при загрузке
+checkReferral();

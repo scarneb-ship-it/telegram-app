@@ -1,5 +1,22 @@
-// Telegram Web App
-let tg = window.Telegram.WebApp;
+// Game URLs - замените на реальные URL ваших игр
+const GAME_URLS = {
+    hamster: "https://example.com/hamster-game",
+    notcoin: "https://example.com/notcoin-game", 
+    king: "https://example.com/hamster-king",
+    fight: "https://example.com/fight-club",
+    miner: "https://example.com/crypto-miner",
+    adventure: "https://example.com/tap-adventure"
+};
+
+// Game Names
+const GAME_NAMES = {
+    hamster: "Hamster Kombat",
+    notcoin: "Notcoin",
+    king: "Hamster King", 
+    fight: "Fight Club",
+    miner: "Crypto Miner",
+    adventure: "Tap Adventure"
+};
 
 // Translations object
 const translations = {
@@ -14,11 +31,13 @@ const translations = {
         english: "English",
         done: "Готово",
         games: "Игры",
-        bestGames: "Лучшие игры Telegram",
-        hamsterGameDevDesc: "Создай свою студию",
+        bestGames: "Лучшие игры в одном приложении",
+        hamsterGameDesc: "Тапы и комбо для заработка",
+        notcoinDesc: "Кликай и зарабатывай",
         hamsterKingDesc: "Стань королем хомяков",
-        hamsterFightClubDesc: "Бойцовский клуб хомяков",
-        bitquestDesc: "Приключения в мире крипты",
+        fightClubDesc: "Бойцовский клуб хомяков",
+        cryptoMinerDesc: "Майнинг криптовалюты",
+        tapAdventureDesc: "Приключения с тапами",
         play: "Играть",
         exchanges: "Биржи",
         exchangesDesc: "Торгуйте криптовалютами безопасно",
@@ -38,8 +57,9 @@ const translations = {
         editProfile: "Редактировать профиль",
         achievements: "Достижения",
         inviteTitle: "Пригласи друзей!",
-        inviteDesc: "Делись лучшими играми Telegram со своими друзьями",
-        shareLink: "Поделиться ссылкой"
+        inviteDesc: "Делись лучшими играми со своими друзьями",
+        shareLink: "Поделиться ссылкой",
+        loadingGame: "Загрузка игры..."
     },
     en: {
         appTitle: "Games Verse",
@@ -52,11 +72,13 @@ const translations = {
         english: "English",
         done: "Done",
         games: "Games",
-        bestGames: "Best Telegram Games",
-        hamsterGameDevDesc: "Create your own studio",
+        bestGames: "Best games in one app",
+        hamsterGameDesc: "Taps and combos for earning",
+        notcoinDesc: "Click and earn",
         hamsterKingDesc: "Become the hamster king",
-        hamsterFightClubDesc: "Hamster fighting club",
-        bitquestDesc: "Adventures in the crypto world",
+        fightClubDesc: "Hamster fighting club",
+        cryptoMinerDesc: "Crypto mining",
+        tapAdventureDesc: "Tap adventures",
         play: "Play",
         exchanges: "Exchanges",
         exchangesDesc: "Trade cryptocurrencies safely",
@@ -76,21 +98,16 @@ const translations = {
         editProfile: "Edit profile",
         achievements: "Achievements",
         inviteTitle: "Invite friends!",
-        inviteDesc: "Share the best Telegram games with your friends",
-        shareLink: "Share link"
+        inviteDesc: "Share the best games with your friends",
+        shareLink: "Share link",
+        loadingGame: "Loading game..."
     }
 };
 
 // Глобальные переменные
 let currentUser = null;
 let userTelegramId = null;
-let isGameOpen = false;
-
-// Game bot mapping - реальные URL для встраивания игр
-const gameUrls = {
-    'hamster_kombat_bot': 'https://hamsterkombatgame.io/',
-    'BitQuest_bot': 'https://t.me/BitQuest_bot/start'
-};
+let tg = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
@@ -100,39 +117,37 @@ function vibrate() {
     if (navigator.vibrate) {
         navigator.vibrate(50);
     }
-    if (tg.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('light');
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
     }
 }
 
 async function initializeApp() {
     // Инициализация Telegram Web App
-    tg.ready();
-    tg.expand();
-    
-    // Применение темы Telegram
-    applyTelegramTheme();
+    if (window.Telegram && window.Telegram.WebApp) {
+        tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        
+        // Применение темы Telegram
+        applyTelegramTheme();
+    }
     
     setupNavigation();
     setupGameButtons();
     setupExchangeButtons();
     setupSettingsPanel();
-    setupBackButton();
+    setupGameModal();
     loadThemePreference();
     loadLanguagePreference();
     
-    // Загрузка данных пользователя из Telegram
-    await loadTelegramUserData();
+    // Загрузка данных пользователя
+    await loadUserData();
     
     setupShareButton();
     
-    // Проверка реферальной ссылки
-    await checkReferral();
-    
-    // Обновление streak при каждом входе
-    if (userTelegramId) {
-        await updateStreak();
-    }
+    // Обновление статистики
+    updateStreak();
     
     // Плавная загрузка контента
     setTimeout(() => {
@@ -141,6 +156,8 @@ async function initializeApp() {
 }
 
 function applyTelegramTheme() {
+    if (!tg) return;
+    
     if (tg.colorScheme === 'dark') {
         document.body.classList.add('dark-theme');
         updateSettingsThemeOptions('dark');
@@ -155,10 +172,10 @@ function applyTelegramTheme() {
     }
 }
 
-async function loadTelegramUserData() {
-    const user = tg.initDataUnsafe?.user;
-    
-    if (user) {
+async function loadUserData() {
+    // Если Telegram Web App доступен, используем данные пользователя
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const user = tg.initDataUnsafe.user;
         userTelegramId = user.id.toString();
         
         // Обновление интерфейса с данными пользователя
@@ -185,18 +202,18 @@ async function loadTelegramUserData() {
         } else if (user.first_name) {
             avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
         }
-        
-        // Загрузка статистики
-        loadLocalStats();
     } else {
         // Fallback для тестирования вне Telegram
         console.log('Telegram user data not available - using test mode');
-        loadLocalStats();
+        document.getElementById('user-name').textContent = 'Тестовый пользователь';
+        document.getElementById('user-username').textContent = '@testuser';
     }
+    
+    // Загрузка статистики из localStorage
+    loadLocalStats();
 }
 
 function loadLocalStats() {
-    // Загрузка из localStorage
     const gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
     const streak = parseInt(localStorage.getItem('streak') || '0');
     const friendsInvited = parseInt(localStorage.getItem('friendsInvited') || '0');
@@ -213,7 +230,7 @@ function incrementGamesOpened() {
     document.getElementById('games-opened').textContent = gamesOpened;
 }
 
-async function updateStreak() {
+function updateStreak() {
     const today = new Date().toDateString();
     const lastVisit = localStorage.getItem('lastVisit');
     let streak = parseInt(localStorage.getItem('streak') || '0');
@@ -238,30 +255,12 @@ async function updateStreak() {
     document.getElementById('streak-days').textContent = streak;
 }
 
-async function checkReferral() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const refId = urlParams.get('ref') || urlParams.get('start');
-    
-    if (refId && userTelegramId && refId !== userTelegramId) {
-        const hasBeenReferred = localStorage.getItem('hasBeenReferred');
-        
-        if (!hasBeenReferred) {
-            localStorage.setItem('hasBeenReferred', 'true');
-            localStorage.setItem('referredBy', refId);
-            console.log('Приглашен пользователем:', refId);
-        }
-    }
-}
-
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
     const sections = document.querySelectorAll('.content-section');
     
     navItems.forEach(item => {
         item.addEventListener('click', function() {
-            // Не переключаем навигацию если игра открыта
-            if (isGameOpen) return;
-            
             vibrate();
             const targetSection = this.getAttribute('data-section');
             
@@ -285,132 +284,114 @@ function setupGameButtons() {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             vibrate();
-            const botUsername = this.getAttribute('data-bot');
-            const gameId = this.getAttribute('data-game-id');
-            const gameCard = this.closest('.game-card');
-            const gameName = gameCard.getAttribute('data-game-name');
+            const gameKey = this.getAttribute('data-game');
             
-            if (gameId) {
-                incrementGamesOpened();
-            }
-            
-            if (botUsername) {
-                openGameInApp(botUsername, gameName);
+            if (gameKey && GAME_URLS[gameKey]) {
+                openGame(gameKey);
+            } else {
+                console.error('Game URL not found for:', gameKey);
             }
         });
     });
 }
 
-function openGameInApp(botUsername, gameName) {
-    // Скрываем основной контент
-    const mainContent = document.getElementById('main-content');
-    const bottomNav = document.getElementById('bottom-nav');
-    const gameContainer = document.getElementById('game-container');
-    const backButton = document.getElementById('back-button');
-    const settingsButton = document.getElementById('settings-button');
-    const appTitle = document.querySelector('.app-title');
+function setupGameModal() {
+    const gameModal = document.getElementById('game-modal');
+    const backButton = document.getElementById('back-from-game');
+    const closeButton = document.getElementById('close-game');
+    const fullscreenButton = document.getElementById('fullscreen-btn');
+    const gameIframe = document.getElementById('game-iframe');
+    const gameLoading = document.getElementById('game-loading');
     
-    mainContent.style.display = 'none';
-    bottomNav.style.display = 'none';
-    gameContainer.style.display = 'flex';
-    backButton.style.display = 'flex';
-    settingsButton.style.display = 'none';
-    
-    // Обновляем заголовок
-    appTitle.textContent = gameName;
-    
-    // Получаем iframe
-    const iframe = document.getElementById('game-iframe');
-    
-    // Формируем URL для игры с передачей данных пользователя
-    let gameUrl = '';
-    
-    if (gameUrls[botUsername]) {
-        gameUrl = gameUrls[botUsername];
-    } else {
-        // Fallback: используем универсальный формат Telegram Bot Game URL
-        gameUrl = `https://t.me/${botUsername}`;
-    }
-    
-    // Добавляем параметры пользователя если они есть
-    if (userTelegramId) {
-        const user = tg.initDataUnsafe?.user;
-        if (user) {
-            // Используем Telegram Web App initData для авторизации
-            const initData = tg.initData;
-            if (initData) {
-                gameUrl += (gameUrl.includes('?') ? '&' : '?') + 'tgWebAppData=' + encodeURIComponent(initData);
-            }
-        }
-    }
-    
-    // Загружаем игру в iframe
-    iframe.src = gameUrl;
-    isGameOpen = true;
-    
-    // Показываем индикатор загрузки
-    showLoadingIndicator(iframe);
-}
-
-function showLoadingIndicator(iframe) {
-    const gameContainer = document.getElementById('game-container');
-    
-    // Создаем индикатор загрузки если его еще нет
-    let loader = gameContainer.querySelector('.game-loader');
-    if (!loader) {
-        loader = document.createElement('div');
-        loader.className = 'game-loader';
-        loader.innerHTML = '<div class="loader-spinner"></div><p>Загрузка игры...</p>';
-        gameContainer.appendChild(loader);
-    }
-    
-    loader.style.display = 'flex';
-    
-    // Скрываем загрузчик когда iframe загрузится
-    iframe.onload = function() {
-        setTimeout(() => {
-            loader.style.display = 'none';
-        }, 500);
-    };
-    
-    // Скрываем загрузчик через 10 секунд в любом случае
-    setTimeout(() => {
-        loader.style.display = 'none';
-    }, 10000);
-}
-
-function setupBackButton() {
-    const backButton = document.getElementById('back-button');
-    
+    // Кнопка "Назад"
     backButton.addEventListener('click', function() {
         vibrate();
-        closeGame();
+        closeGameModal();
+    });
+    
+    // Кнопка закрытия
+    closeButton.addEventListener('click', function() {
+        vibrate();
+        closeGameModal();
+    });
+    
+    // Кнопка полноэкранного режима
+    fullscreenButton.addEventListener('click', function() {
+        vibrate();
+        toggleFullscreen();
+    });
+    
+    // Обработка загрузки iframe
+    gameIframe.addEventListener('load', function() {
+        gameLoading.style.display = 'none';
+        gameIframe.style.display = 'block';
+    });
+    
+    // Закрытие по клику вне контента (если нужно)
+    gameModal.addEventListener('click', function(e) {
+        if (e.target === gameModal) {
+            closeGameModal();
+        }
     });
 }
 
-function closeGame() {
-    const mainContent = document.getElementById('main-content');
-    const bottomNav = document.getElementById('bottom-nav');
-    const gameContainer = document.getElementById('game-container');
-    const backButton = document.getElementById('back-button');
-    const settingsButton = document.getElementById('settings-button');
-    const appTitle = document.querySelector('.app-title');
-    const iframe = document.getElementById('game-iframe');
+function openGame(gameKey) {
+    const gameModal = document.getElementById('game-modal');
+    const gameIframe = document.getElementById('game-iframe');
+    const gameTitle = document.getElementById('game-modal-title');
+    const gameLoading = document.getElementById('game-loading');
     
-    // Останавливаем игру
-    iframe.src = '';
+    // Увеличиваем счетчик открытых игр
+    incrementGamesOpened();
     
-    // Показываем основной контент
-    mainContent.style.display = 'block';
-    bottomNav.style.display = 'flex';
-    gameContainer.style.display = 'none';
-    backButton.style.display = 'none';
-    settingsButton.style.display = 'flex';
+    // Устанавливаем заголовок
+    gameTitle.textContent = GAME_NAMES[gameKey] || 'Игра';
     
-    // Возвращаем заголовок
-    appTitle.textContent = translations[localStorage.getItem('language') || 'ru'].appTitle;
+    // Показываем модальное окно
+    gameModal.classList.add('active');
     
-    isGameOpen = false;
+    // Показываем загрузку и скрываем iframe
+    gameLoading.style.display = 'flex';
+    gameIframe.style.display = 'none';
+    
+    // Загружаем игру в iframe
+    setTimeout(() => {
+        gameIframe.src = GAME_URLS[gameKey];
+    }, 500);
+}
+
+function closeGameModal() {
+    const gameModal = document.getElementById('game-modal');
+    const gameIframe = document.getElementById('game-iframe');
+    
+    gameModal.classList.remove('active');
+    
+    // Останавливаем загрузку iframe
+    setTimeout(() => {
+        gameIframe.src = '';
+    }, 300);
+}
+
+function toggleFullscreen() {
+    const gameIframe = document.getElementById('game-iframe');
+    
+    if (!document.fullscreenElement) {
+        if (gameIframe.requestFullscreen) {
+            gameIframe.requestFullscreen();
+        } else if (gameIframe.webkitRequestFullscreen) {
+            gameIframe.webkitRequestFullscreen();
+        } else if (gameIframe.msRequestFullscreen) {
+            gameIframe.msRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
 }
 
 function setupExchangeButtons() {
@@ -422,7 +403,7 @@ function setupExchangeButtons() {
             vibrate();
             const exchangeUrl = this.getAttribute('data-url');
             if (exchangeUrl) {
-                if (tg.openLink) {
+                if (tg && tg.openLink) {
                     tg.openLink(exchangeUrl);
                 } else {
                     window.open(exchangeUrl, '_blank');
@@ -504,7 +485,7 @@ function setLanguage(lang) {
 }
 
 function loadThemePreference() {
-    const savedTheme = localStorage.getItem('theme') || (tg.colorScheme === 'dark' ? 'dark' : 'light');
+    const savedTheme = localStorage.getItem('theme') || (tg && tg.colorScheme === 'dark' ? 'dark' : 'light');
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-theme');
     }
@@ -547,13 +528,11 @@ function setupShareButton() {
         shareButton.addEventListener('click', function() {
             vibrate();
             
-            const userId = userTelegramId || 'default';
-            const botUsername = 'YOUR_BOT_USERNAME';  // Замените на username вашего бота
-            const shareUrl = `https://t.me/${botUsername}?start=${userId}`;
-            const shareText = 'Присоединяйся к Games Verse - лучшие игры Telegram в одном приложении! 🎮';
+            const shareText = 'Присоединяйся к Games Verse - лучшие игры в одном приложении! 🎮';
+            const shareUrl = window.location.href;
             
             // Используем Telegram Web App API для шаринга
-            if (tg.openTelegramLink) {
+            if (tg && tg.openTelegramLink) {
                 const shareLink = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
                 tg.openTelegramLink(shareLink);
             } else if (navigator.share) {
@@ -608,4 +587,19 @@ function showNotification(notification, customMessage) {
     setTimeout(() => {
         notification.classList.remove('show');
     }, 2000);
+}
+
+// Обработка выхода из полноэкранного режима
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+function handleFullscreenChange() {
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    if (!document.fullscreenElement) {
+        fullscreenBtn.textContent = '⛶';
+    } else {
+        fullscreenBtn.textContent = '⛷';
+    }
 }

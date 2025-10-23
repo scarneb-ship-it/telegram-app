@@ -16,42 +16,28 @@ const translations = {
         done: "Готово",
         games: "Игры",
         bestGames: "Лучшие игры Telegram",
-        hamsterGameDevDesc: "Создай свою игровую студию и стань легендой",
-        hamsterKingDesc: "Стань королем хомяков и построй империю",
-        hamsterFightClubDesc: "Бойцовский клуб хомяков - стань чемпионом",
-        bitquestDesc: "Приключения в мире криптовалют и блокчейна",
+        hamsterGameDevDesc: "Создай свою студию",
+        hamsterKingDesc: "Стань королем хомяков",
+        hamsterFightClubDesc: "Бойцовский клуб хомяков",
+        bitquestDesc: "Приключения в мире крипты",
         play: "Играть",
         exchanges: "Биржи",
         exchangesDesc: "Торгуйте криптовалютами безопасно",
-        bybitDesc: "Продвинутая торговая платформа с низкими комиссиями",
-        bingxDesc: "Социальная торговля и копирование успешных трейдеров",
-        bitgetDesc: "Инновационная торговая платформа с защитой капитала",
-        mexcDesc: "Глобальная биржа с низкими комиссиями и 1000+ монет",
+        bybitDesc: "Продвинутая торговая платформа",
+        bingxDesc: "Социальная торговля и копирование",
+        bitgetDesc: "Инновационная торговая платформа",
+        mexcDesc: "Глобальная биржа с низкими комиссиями",
         user: "Пользователь",
         shareWithFriends: "Поделиться с друзьями",
         profile: "Профиль",
         linkCopied: "Ссылка скопирована в буфер обмена!",
         go: "Перейти",
         tradeGameFi: "Торгуйте монетами GameFi на популярных криптобиржах",
-        explore: "Исследовать",
-        gamesOpened: "Игр открыто",
-        streakDays: "Дней подряд",
+        gamesPlayed: "Игр сыграно",
+        daysInGame: "Дней в игре",
         friendsInvited: "Друзей приглашено",
-        totalTime: "Всего времени",
-        inviteFriends: "Пригласи друзей",
-        inviteDescription: "Приглашай друзей и получай бонусы за каждого приглашенного!",
-        friends: "друзей",
-        bonusCoins: "бонусных монет",
-        inviteNow: "Пригласить сейчас",
-        achievements: "Достижения",
-        firstGame: "Первая игра",
-        firstGameDesc: "Запусти свою первую игру",
-        weekStreak: "Неделя подряд",
-        weekStreakDesc: "Заходи в приложение 7 дней подряд",
-        socializer: "Общительный",
-        socializerDesc: "Пригласи 5 друзей",
-        veteran: "Ветеран",
-        veteranDesc: "Проведи в играх 24 часа"
+        editProfile: "Редактировать профиль",
+        achievements: "Достижения"
     },
     en: {
         appTitle: "Games Verse",
@@ -65,57 +51,28 @@ const translations = {
         done: "Done",
         games: "Games",
         bestGames: "Best Telegram Games",
-        hamsterGameDevDesc: "Create your own game studio and become a legend",
-        hamsterKingDesc: "Become the hamster king and build an empire",
-        hamsterFightClubDesc: "Hamster fighting club - become the champion",
-        bitquestDesc: "Adventures in the world of cryptocurrencies and blockchain",
+        hamsterGameDevDesc: "Create your own studio",
+        hamsterKingDesc: "Become the hamster king",
+        hamsterFightClubDesc: "Hamster fighting club",
+        bitquestDesc: "Adventures in the crypto world",
         play: "Play",
         exchanges: "Exchanges",
         exchangesDesc: "Trade cryptocurrencies safely",
-        bybitDesc: "Advanced trading platform with low fees",
-        bingxDesc: "Social trading and copy successful traders",
-        bitgetDesc: "Innovative trading platform with capital protection",
-        mexcDesc: "Global exchange with low fees and 1000+ coins",
+        bybitDesc: "Advanced trading platform",
+        bingxDesc: "Social trading and copy trading",
+        bitgetDesc: "Innovative trading platform",
+        mexcDesc: "Global exchange with low fees",
         user: "User",
         shareWithFriends: "Share with friends",
         profile: "Profile",
         linkCopied: "Link copied to clipboard!",
         go: "Go",
         tradeGameFi: "Trade GameFi coins on popular crypto exchanges",
-        explore: "Explore",
-        gamesOpened: "Games opened",
-        streakDays: "Day streak",
+        gamesPlayed: "Games played",
+        daysInGame: "Days in game",
         friendsInvited: "Friends invited",
-        totalTime: "Total time",
-        inviteFriends: "Invite friends",
-        inviteDescription: "Invite friends and get bonuses for each invited!",
-        friends: "friends",
-        bonusCoins: "bonus coins",
-        inviteNow: "Invite now",
-        achievements: "Achievements",
-        firstGame: "First game",
-        firstGameDesc: "Launch your first game",
-        weekStreak: "Week streak",
-        weekStreakDesc: "Open the app 7 days in a row",
-        socializer: "Socializer",
-        socializerDesc: "Invite 5 friends",
-        veteran: "Veteran",
-        veteranDesc: "Spend 24 hours in games"
-    }
-};
-
-// User Statistics
-let userStats = {
-    gamesOpened: 0,
-    streakDays: 0,
-    friendsInvited: 0,
-    totalTime: 0,
-    lastLogin: null,
-    achievements: {
-        firstGame: false,
-        weekStreak: false,
-        socializer: false,
-        veteran: false
+        editProfile: "Edit profile",
+        achievements: "Achievements"
     }
 };
 
@@ -126,7 +83,6 @@ function vibrate() {
 }
 
 function initializeApp() {
-    loadUserStats();
     setupNavigation();
     setupGameButtons();
     setupExchangeButtons();
@@ -134,8 +90,8 @@ function initializeApp() {
     loadThemePreference();
     loadLanguagePreference();
     loadUserData();
-    setupInviteButton();
-    updateStreak();
+    setupShareButton();
+    setupProfileButtons();
     
     // Плавная загрузка контента
     setTimeout(() => {
@@ -154,95 +110,6 @@ function initializeApp() {
             document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color || '#ffffff');
         }
     }
-}
-
-function loadUserStats() {
-    const savedStats = localStorage.getItem('userStats');
-    if (savedStats) {
-        userStats = JSON.parse(savedStats);
-    }
-    updateStatsDisplay();
-}
-
-function saveUserStats() {
-    localStorage.setItem('userStats', JSON.stringify(userStats));
-}
-
-function updateStatsDisplay() {
-    document.getElementById('games-opened').textContent = userStats.gamesOpened;
-    document.getElementById('streak-days').textContent = userStats.streakDays;
-    document.getElementById('friends-invited').textContent = userStats.friendsInvited;
-    document.getElementById('total-time').textContent = Math.floor(userStats.totalTime / 60) + 'ч';
-    
-    // Update invite stats
-    document.getElementById('invite-count').textContent = userStats.friendsInvited;
-    document.getElementById('invite-bonus').textContent = userStats.friendsInvited * 50;
-    
-    // Update achievements
-    updateAchievementsDisplay();
-}
-
-function updateStreak() {
-    const today = new Date().toDateString();
-    const lastLogin = userStats.lastLogin;
-    
-    if (!lastLogin) {
-        // First login
-        userStats.streakDays = 1;
-    } else {
-        const lastLoginDate = new Date(lastLogin);
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        
-        if (lastLoginDate.toDateString() === yesterday.toDateString()) {
-            // Consecutive day
-            userStats.streakDays++;
-        } else if (lastLoginDate.toDateString() !== today) {
-            // Broken streak
-            userStats.streakDays = 1;
-        }
-    }
-    
-    userStats.lastLogin = today;
-    saveUserStats();
-    updateStatsDisplay();
-}
-
-function updateAchievementsDisplay() {
-    // Update achievement completion states
-    const achievements = document.querySelectorAll('.achievement');
-    
-    // First game achievement
-    if (userStats.gamesOpened > 0 && !userStats.achievements.firstGame) {
-        userStats.achievements.firstGame = true;
-        achievements[0].classList.add('completed');
-    }
-    
-    // Week streak achievement
-    if (userStats.streakDays >= 7 && !userStats.achievements.weekStreak) {
-        userStats.achievements.weekStreak = true;
-        achievements[1].classList.add('completed');
-    }
-    
-    // Socializer achievement
-    if (userStats.friendsInvited >= 5 && !userStats.achievements.socializer) {
-        userStats.achievements.socializer = true;
-        achievements[2].classList.add('completed');
-    } else {
-        achievements[2].querySelector('.achievement-progress').textContent = 
-            userStats.friendsInvited + '/5';
-    }
-    
-    // Veteran achievement
-    if (userStats.totalTime >= 1440 && !userStats.achievements.veteran) {
-        userStats.achievements.veteran = true;
-        achievements[3].classList.add('completed');
-    } else {
-        achievements[3].querySelector('.achievement-progress').textContent = 
-            Math.floor(userStats.totalTime / 60) + '/24';
-    }
-    
-    saveUserStats();
 }
 
 function setupNavigation() {
@@ -276,13 +143,6 @@ function setupGameButtons() {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             vibrate();
-            
-            // Track game opened
-            userStats.gamesOpened++;
-            userStats.totalTime += 5; // Add 5 minutes for each game session
-            saveUserStats();
-            updateStatsDisplay();
-            
             const botUsername = this.getAttribute('data-bot');
             if (botUsername) {
                 const telegramUrl = `https://t.me/${botUsername}?start=app`;
@@ -299,7 +159,6 @@ function setupGameButtons() {
 
 function setupExchangeButtons() {
     const exchangeButtons = document.querySelectorAll('.exchange-button');
-    const bannerButton = document.querySelector('.banner-button');
     
     exchangeButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -315,49 +174,6 @@ function setupExchangeButtons() {
             }
         });
     });
-    
-    if (bannerButton) {
-        bannerButton.addEventListener('click', function() {
-            vibrate();
-            showNotification(document.getElementById('notification'), 'Исследуйте GameFi монеты!');
-        });
-    }
-}
-
-function setupInviteButton() {
-    const inviteButton = document.getElementById('invite-friends-button');
-    const notification = document.getElementById('notification');
-    
-    if (inviteButton) {
-        inviteButton.addEventListener('click', function() {
-            vibrate();
-            
-            // Track friend invited
-            userStats.friendsInvited++;
-            saveUserStats();
-            updateStatsDisplay();
-            
-            const shareUrl = window.location.href;
-            const shareText = 'Открой для себя лучшие игры Telegram в одном приложении! Присоединяйся к Games Verse!';
-            
-            // Check if Web Share API is available
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Games Verse',
-                    text: shareText,
-                    url: shareUrl,
-                })
-                .then(() => console.log('Успешный шаринг'))
-                .catch((error) => {
-                    console.log('Ошибка шаринга', error);
-                    fallbackCopyToClipboard(shareUrl, notification);
-                });
-            } else {
-                // Fallback: copy to clipboard
-                fallbackCopyToClipboard(shareUrl, notification);
-            }
-        });
-    }
 }
 
 function setupSettingsPanel() {
@@ -513,6 +329,61 @@ function loadUserData() {
     }
 }
 
+function setupShareButton() {
+    const shareButton = document.getElementById('share-friends-button');
+    const notification = document.getElementById('notification');
+    
+    if (shareButton) {
+        shareButton.addEventListener('click', function() {
+            vibrate();
+            const shareUrl = window.location.href;
+            
+            // Check if Web Share API is available
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Games Verse',
+                    text: 'Открой для себя лучшие игры Telegram в одном приложении!',
+                    url: shareUrl,
+                })
+                .then(() => console.log('Успешный шаринг'))
+                .catch((error) => console.log('Ошибка шаринга', error));
+            } else {
+                // Fallback: copy to clipboard
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        showNotification(notification);
+                    }).catch(() => {
+                        fallbackCopyToClipboard(shareUrl, notification);
+                    });
+                } else {
+                    fallbackCopyToClipboard(shareUrl, notification);
+                }
+            }
+        });
+    }
+}
+
+function setupProfileButtons() {
+    const editProfileButton = document.getElementById('edit-profile-button');
+    const achievementsButton = document.getElementById('achievements-button');
+    
+    if (editProfileButton) {
+        editProfileButton.addEventListener('click', function() {
+            vibrate();
+            // Здесь можно добавить функционал редактирования профиля
+            showNotification(document.getElementById('notification'), 'Функция в разработке');
+        });
+    }
+    
+    if (achievementsButton) {
+        achievementsButton.addEventListener('click', function() {
+            vibrate();
+            // Здесь можно добавить функционал достижений
+            showNotification(document.getElementById('notification'), 'Функция в разработке');
+        });
+    }
+}
+
 function fallbackCopyToClipboard(text, notification) {
     try {
         const textArea = document.createElement('textarea');
@@ -540,10 +411,3 @@ function showNotification(notification, customMessage) {
         notification.classList.remove('show');
     }, 2000);
 }
-
-// Simulate time spent in games (for demo purposes)
-setInterval(() => {
-    userStats.totalTime += 1;
-    saveUserStats();
-    updateStatsDisplay();
-}, 60000); // Add 1 minute every minute

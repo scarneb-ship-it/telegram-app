@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hamster Verse - Игровая платформа</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Хамстер - Игровая платформа</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -13,24 +13,11 @@
         <header class="header">
             <div class="header-content">
                 <div class="header-titles">
-                    <h1 class="app-title">Hamster Verse</h1>
+                    <h1 class="app-title">Хамстер</h1>
                     <p class="app-subtitle">Все игры Telegram в одном месте</p>
                 </div>
-                <div class="header-actions">
-                    <button class="search-toggle" id="search-toggle">
-                        <span class="search-icon">🔍</span>
-                    </button>
-                    <div class="user-avatar" id="tg-avatar">
-                        🐹
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Search Bar -->
-            <div class="search-container hidden" id="search-container">
-                <div class="search-bar">
-                    <input type="text" id="search-input" placeholder="Поиск игр...">
-                    <button class="search-clear" id="search-clear">✕</button>
+                <div class="user-avatar" id="tg-avatar">
+                    🐹
                 </div>
             </div>
         </header>
@@ -43,14 +30,6 @@
                     <h2>Игры</h2>
                     <p class="section-subtitle">Выберите игру и начните играть</p>
                 </div>
-                
-                <!-- Games Filter -->
-                <div class="games-filter" id="games-filter">
-                    <button class="filter-btn active" data-filter="all">Все</button>
-                    <button class="filter-btn" data-filter="popular">Популярные</button>
-                    <button class="filter-btn" data-filter="new">Новые</button>
-                </div>
-                
                 <div class="games-container" id="games-container">
                     <!-- Games will be loaded here -->
                 </div>
@@ -88,16 +67,6 @@
                         <div class="profile-info">
                             <h2 id="tg-name">Пользователь</h2>
                             <p id="tg-username">@username</p>
-                            <div class="profile-stats">
-                                <div class="stat">
-                                    <span class="stat-value">0</span>
-                                    <span class="stat-label">Игр сыграно</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-value">0</span>
-                                    <span class="stat-label">Дней в игре</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -110,60 +79,11 @@
                             <span class="action-icon">📤</span>
                             <span class="action-text">Поделиться</span>
                         </button>
-                        <button class="profile-action-btn" id="about-button">
-                            <span class="action-icon">ℹ️</span>
-                            <span class="action-text">О приложении</span>
-                        </button>
                     </div>
 
                     <div class="app-info">
-                        <p>Hamster Verse v<span id="app-version">2.5.0</span></p>
-                        <p class="app-build">Build: <span id="app-build">2024.02.15</span></p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- About Section -->
-            <section id="about-section" class="content-section">
-                <div class="about-content">
-                    <div class="about-header">
-                        <h2>О приложении</h2>
-                        <button class="back-button" id="about-back">← Назад</button>
-                    </div>
-                    
-                    <div class="about-card">
-                        <h3>Hamster Verse</h3>
-                        <p>Все лучшие игры Telegram в одном приложении. Откройте для себя новые игры, следите за обновлениями и делитесь с друзьями.</p>
-                        
-                        <div class="about-features">
-                            <div class="feature">
-                                <span class="feature-icon">🎮</span>
-                                <div class="feature-text">
-                                    <strong>Множество игр</strong>
-                                    <p>Доступ к лучшим играм Telegram</p>
-                                </div>
-                            </div>
-                            <div class="feature">
-                                <span class="feature-icon">🚀</span>
-                                <div class="feature-text">
-                                    <strong>Быстрый запуск</strong>
-                                    <p>Начните играть в один клик</p>
-                                </div>
-                            </div>
-                            <div class="feature">
-                                <span class="feature-icon">🎯</span>
-                                <div class="feature-text">
-                                    <strong>Умные рекомендации</strong>
-                                    <p>Персональные подборки игр</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="about-links">
-                            <a href="#" class="about-link">Политика конфиденциальности</a>
-                            <a href="#" class="about-link">Условия использования</a>
-                            <a href="#" class="about-link">Поддержка</a>
-                        </div>
+                        <p>Хамстер v<span id="app-version">2.4.0</span></p>
+                        <p class="app-build">Build: <span id="app-build">2025.01.21</span></p>
                     </div>
                 </div>
             </section>
@@ -188,12 +108,6 @@
                 <span class="nav-label">Профиль</span>
             </button>
         </nav>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay hidden" id="loading-overlay">
-        <div class="loading-spinner"></div>
-        <p>Загрузка...</p>
     </div>
 
     <script src="script.js"></script>

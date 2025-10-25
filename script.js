@@ -1,355 +1,449 @@
-// API Configuration
-const API_BASE_URL = window.location.origin + '/api';
+// Конфигурация приложения
+const APP_CONFIG = {
+    version: '2.5.0',
+    build: '2024.02.15'
+};
 
-// Telegram Web App
-let tg = window.Telegram.WebApp;
-
-// Translations object
-const translations = {
-    ru: {
-        appTitle: "Games Verse",
-        settings: "Настройки",
-        theme: "Тема",
-        lightTheme: "Светлая",
-        darkTheme: "Темная",
-        language: "Язык",
-        russian: "Русский",
-        english: "English",
-        done: "Готово",
-        games: "Игры",
-        bestGames: "Лучшие игры Telegram",
-        hamsterGameDevDesc: "Создай свою студию",
-        hamsterKingDesc: "Стань королем хомяков",
-        hamsterFightClubDesc: "Бойцовский клуб хомяков",
-        bitquestDesc: "Приключения в мире крипты",
-        play: "Играть",
-        exchanges: "Биржи",
-        exchangesDesc: "Торгуйте криптовалютами безопасно",
-        bybitDesc: "Продвинутая торговая платформа",
-        bingxDesc: "Социальная торговля и копирование",
-        bitgetDesc: "Инновационная торговая платформа",
-        mexcDesc: "Глобальная биржа с низкими комиссиями",
-        user: "Пользователь",
-        shareWithFriends: "Поделиться с друзьями",
-        profile: "Профиль",
-        linkCopied: "Ссылка скопирована в буфер обмена!",
-        go: "Перейти",
-        tradeGameFi: "Торгуйте монетами GameFi на популярных криптобиржах",
-        gamesOpened: "Игр открыто",
-        streakDays: "Дней подряд",
-        friendsInvited: "Друзей",
-        editProfile: "Редактировать профиль",
-        achievements: "Достижения",
-        inviteTitle: "Пригласи друзей!",
-        inviteDesc: "Делись лучшими играми Telegram со своими друзьями",
-        shareLink: "Поделиться ссылкой"
+// Данные игр с правильными изображениями
+const GAMES_DATA = [
+    {
+        id: "1",
+        name: "Hamster Gamedev",
+        description: "Создай игровую студию и стань лидером индустрии",
+        players: "15.2K",
+        rating: "4.6",
+        url: "https://t.me/hamster_gamedev_bot/start",
+        image: "images/hunterer-gamesdev.jpg",
+        category: "popular"
     },
-    en: {
-        appTitle: "Games Verse",
-        settings: "Settings",
-        theme: "Theme",
-        lightTheme: "Light",
-        darkTheme: "Dark",
-        language: "Language",
-        russian: "Russian",
-        english: "English",
-        done: "Done",
-        games: "Games",
-        bestGames: "Best Telegram Games",
-        hamsterGameDevDesc: "Create your own studio",
-        hamsterKingDesc: "Become the hamster king",
-        hamsterFightClubDesc: "Hamster fighting club",
-        bitquestDesc: "Adventures in the crypto world",
-        play: "Play",
-        exchanges: "Exchanges",
-        exchangesDesc: "Trade cryptocurrencies safely",
-        bybitDesc: "Advanced trading platform",
-        bingxDesc: "Social trading and copy trading",
-        bitgetDesc: "Innovative trading platform",
-        mexcDesc: "Global exchange with low fees",
-        user: "User",
-        shareWithFriends: "Share with friends",
-        profile: "Profile",
-        linkCopied: "Link copied to clipboard!",
-        go: "Go",
-        tradeGameFi: "Trade GameFi coins on popular crypto exchanges",
-        gamesOpened: "Games opened",
-        streakDays: "Days streak",
-        friendsInvited: "Friends",
-        editProfile: "Edit profile",
-        achievements: "Achievements",
-        inviteTitle: "Invite friends!",
-        inviteDesc: "Share the best Telegram games with your friends",
-        shareLink: "Share link"
+    {
+        id: "2", 
+        name: "Hamster King",
+        description: "Стань королём в эпических битвах за монеты",
+        players: "8.7K",
+        rating: "4.7",
+        url: "https://t.me/hamster_king_bot/start",
+        image: "images/hamster_king.jpg",
+        category: "popular"
+    },
+    {
+        id: "3",
+        name: "Hamster Fight Club", 
+        description: "Бойцовский клуб для самых сильных хомяков",
+        players: "5.3K",
+        rating: "4.9",
+        url: "https://t.me/hamster_fight_club_bot/start",
+        image: "images/hunterer-fight-club.jpg",
+        category: "new"
+    },
+    {
+        id: "4",
+        name: "Bitquest",
+        description: "Крипто-приключение в фэнтези мире блокчейна",
+        players: "12.1K",
+        rating: "4.8",
+        url: "https://t.me/bitquest_bot/start",
+        image: "images/bitquest.jpg",
+        category: "popular"
+    },
+    {
+        id: "5",
+        name: "Crypto Hamsters",
+        description: "Собирай и развивай своих крипто-хомяков",
+        players: "3.2K",
+        rating: "4.5",
+        url: "https://t.me/crypto_hamsters_bot/start",
+        image: "images/crypto-hamsters.jpg",
+        category: "new"
+    },
+    {
+        id: "6",
+        name: "Hamster Racing",
+        description: "Гонки на хомяках с элементами стратегии",
+        players: "7.1K",
+        rating: "4.3",
+        url: "https://t.me/hamster_racing_bot/start",
+        image: "images/hamster-racing.jpg",
+        category: "popular"
+    }
+];
+
+// Данные бирж с правильными изображениями
+const EXCHANGES_DATA = [
+    {
+        id: "1",
+        name: "Binance",
+        description: "Крупнейшая мировая криптобиржа",
+        url: "https://www.binance.com",
+        logo: "images/binarace.png",
+        features: ["Spot", "Futures", "Earn"]
+    },
+    {
+        id: "2",
+        name: "Bybit",
+        description: "Лучшие условия для трейдинга",
+        url: "https://www.bybit.com",
+        logo: "images/bybel.jpg",
+        features: ["Futures", "Copy Trading", "Options"]
+    },
+    {
+        id: "3",
+        name: "OKX",
+        description: "Тысячи торговых пар",
+        url: "https://www.okx.com",
+        logo: "images/okx.png",
+        features: ["Spot", "DeFi", "NFT"]
+    },
+    {
+        id: "4",
+        name: "KuCoin",
+        description: "Низкие комиссии и большой выбор",
+        url: "https://www.kucoin.com",
+        logo: "images/kucoin.png",
+        features: ["Spot", "Margin", "Staking"]
+    }
+];
+
+// Данные новостей
+const NEWS_DATA = [
+    {
+        id: "1", 
+        title: "Hamster Verse запущен!",
+        content: "Новая игровая платформа с лучшими играми Telegram теперь доступна для всех! Открывайте, играйте и делитесь с друзьями.",
+        date: new Date().toISOString()
+    },
+    {
+        id: "2",
+        title: "Добавлены новые игры",
+        content: "В каталог добавлены популярные игры: Hamster Gamedev, Hamster King, Hamster Fight Club и многие другие. Обновляйте приложение!",
+        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+        id: "3",
+        title: "Система рекомендаций",
+        content: "Теперь приложение предлагает персонализированные рекомендации игр на основе ваших предпочтений и истории.",
+        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+    }
+];
+
+// Состояние приложения
+let appState = {
+    currentFilter: 'all',
+    searchQuery: '',
+    userStats: {
+        gamesPlayed: 0,
+        daysInApp: 0
     }
 };
 
-// Global variables
-let currentUser = null;
-let userTelegramId = null;
-
+// Инициализация приложения
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
 
-function vibrate() {
-    if (navigator.vibrate) {
-        navigator.vibrate(50);
-    }
-    if (tg.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('light');
-    }
-}
-
-async function initializeApp() {
-    // Initialize Telegram Web App
-    tg.ready();
-    tg.expand();
-
-    // Apply Telegram theme
-    applyTelegramTheme();
-
-    setupNavigation();
-    setupGameButtons();
-    setupExchangeButtons();
-    setupSettingsPanel();
-    loadThemePreference();
-    loadLanguagePreference();
-
-    // Load Telegram user data
-    await loadTelegramUserData();
-
-    setupShareButton();
-
-    // Check referral link
-    await checkReferral();
-
-    // Update streak on each visit
-    if (userTelegramId) {
-        await updateStreak();
-    }
-
-    // Smooth content loading
-    setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 100);
-}
-
-function applyTelegramTheme() {
-    if (tg.colorScheme === 'dark') {
-        document.body.classList.add('dark-theme');
-        updateSettingsThemeOptions('dark');
-    }
-
-    const themeParams = tg.themeParams;
-    if (themeParams) {
-        document.documentElement.style.setProperty('--tg-theme-bg-color', themeParams.bg_color || '#ffffff');
-        document.documentElement.style.setProperty('--tg-theme-text-color', themeParams.text_color || '#000000');
-        document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color || '#667eea');
-        document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color || '#ffffff');
-    }
-}
-
-async function loadTelegramUserData() {
-    const user = tg.initDataUnsafe?.user;
-
-    if (user) {
-        userTelegramId = user.id.toString();
-
-        // Update interface with user data
-        const userName = document.getElementById('user-name');
-        if (userName && user.first_name) {
-            userName.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-        }
-
-        const userUsername = document.getElementById('user-username');
-        if (userUsername && user.username) {
-            userUsername.textContent = '@' + user.username;
-        } else if (userUsername) {
-            userUsername.textContent = 'ID: ' + user.id;
-        }
-
-        // Update avatar
-        const avatarImg = document.getElementById('avatar-img');
-        const avatarFallback = document.getElementById('avatar-fallback');
-
-        if (user.photo_url) {
-            avatarImg.src = user.photo_url;
-            avatarImg.style.display = 'block';
-            avatarFallback.style.display = 'none';
-        } else if (user.first_name) {
-            avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
-        }
-
-        // Load or create user profile
-        await loadOrCreateUserProfile(user);
-    } else {
-        // Fallback for testing outside Telegram
-        console.log('Telegram user data not available - using test mode');
-        loadLocalStats();
-    }
-}
-
-async function loadOrCreateUserProfile(telegramUser) {
+function initializeApp() {
+    console.log('🚀 Hamster Verse v' + APP_CONFIG.version + ' initializing...');
+    
     try {
-        // Try to get user profile
-        const response = await fetch(`${API_BASE_URL}/users/${telegramUser.id}`);
-
-        if (response.ok) {
-            // User exists
-            currentUser = await response.json();
-            updateProfileStats();
-        } else if (response.status === 404) {
-            // User not found, create new profile
-            const newUser = {
-                telegram_id: telegramUser.id.toString(),
-                first_name: telegramUser.first_name,
-                last_name: telegramUser.last_name || null,
-                username: telegramUser.username || null,
-                photo_url: telegramUser.photo_url || null,
-                referred_by: localStorage.getItem('referredBy') || null
-            };
-
-            const createResponse = await fetch(`${API_BASE_URL}/users`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newUser)
-            });
-
-            if (createResponse.ok) {
-                currentUser = await createResponse.json();
-                updateProfileStats();
-            }
-        }
+        setupNavigation();
+        setupTelegramIntegration();
+        setupThemeToggle();
+        setupShareButton();
+        setupSearch();
+        setupFilters();
+        setupAboutSection();
+        
+        // Загрузка данных
+        displayGames(GAMES_DATA);
+        displayExchanges(EXCHANGES_DATA);
+        displayNews(NEWS_DATA);
+        
+        // Загрузка статистики пользователя
+        loadUserStats();
+        
+        document.getElementById('app-version').textContent = APP_CONFIG.version;
+        document.getElementById('app-build').textContent = APP_CONFIG.build;
+        
+        console.log('✅ Hamster Verse initialized successfully');
+        
     } catch (error) {
-        console.error('Error loading user profile:', error);
-        // Fallback to localStorage
-        loadLocalStats();
+        console.error('❌ App initialization failed:', error);
+        showError('Не удалось загрузить приложение. Пожалуйста, перезагрузите страницу.');
     }
 }
 
-function loadLocalStats() {
-    // Fallback loading from localStorage
-    const gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
-    const streak = parseInt(localStorage.getItem('streak') || '0');
-    const friendsInvited = parseInt(localStorage.getItem('friendsInvited') || '0');
+// ==================== UI FUNCTIONS ====================
 
-    document.getElementById('games-opened').textContent = gamesOpened;
-    document.getElementById('streak-days').textContent = streak;
-    document.getElementById('friends-invited').textContent = friendsInvited;
-}
-
-function updateProfileStats() {
-    if (currentUser) {
-        document.getElementById('games-opened').textContent = currentUser.games_opened || 0;
-        document.getElementById('streak-days').textContent = currentUser.streak_days || 0;
-        document.getElementById('friends-invited').textContent = currentUser.friends_invited || 0;
+function displayGames(games) {
+    const container = document.getElementById('games-container');
+    
+    if (!games || games.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🎮</div>
+                <h3>Игры не найдены</h3>
+                <p>Попробуйте изменить поисковый запрос или фильтр</p>
+            </div>
+        `;
+        return;
     }
+    
+    // Фильтрация и поиск
+    let filteredGames = games;
+    
+    if (appState.currentFilter !== 'all') {
+        filteredGames = filteredGames.filter(game => game.category === appState.currentFilter);
+    }
+    
+    if (appState.searchQuery) {
+        const query = appState.searchQuery.toLowerCase();
+        filteredGames = filteredGames.filter(game => 
+            game.name.toLowerCase().includes(query) || 
+            game.description.toLowerCase().includes(query)
+        );
+    }
+    
+    if (filteredGames.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>Игры не найдены</h3>
+                <p>Попробуйте изменить поисковый запрос или фильтр</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = filteredGames.map(game => `
+        <div class="game-card" data-game-id="${game.id}">
+            <div class="game-content">
+                <div class="game-image">
+                    <img src="${game.image}" alt="${game.name}" onerror="handleImageError(this)">
+                </div>
+                <div class="game-info">
+                    <h3 class="game-title">${game.name}</h3>
+                    <p class="game-description">${game.description}</p>
+                    <div class="game-footer">
+                        <div class="game-stats">
+                            <div class="game-players">
+                                <span>👥 ${game.players}</span>
+                            </div>
+                            <div class="game-rating">
+                                <span>⭐ ${game.rating}</span>
+                            </div>
+                        </div>
+                        <button class="play-button" data-url="${game.url}">
+                            Играть
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    setupGameButtons();
 }
 
-async function incrementGamesOpened() {
-    if (userTelegramId) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/users/${userTelegramId}/game-opened`, {
-                method: 'POST'
-            });
+function handleImageError(img) {
+    console.warn('Image failed to load:', img.src);
+    img.style.display = 'none';
+    const parent = img.parentElement;
+    parent.style.background = 'var(--accent-gradient)';
+    parent.innerHTML = '<div class="image-fallback">🎮</div>';
+}
 
-            if (response.ok) {
-                currentUser = await response.json();
-                updateProfileStats();
-            }
-        } catch (error) {
-            console.error('Error incrementing games opened:', error);
-            // Fallback to localStorage
-            let gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
-            gamesOpened++;
-            localStorage.setItem('gamesOpened', gamesOpened.toString());
-            document.getElementById('games-opened').textContent = gamesOpened;
+function displayExchanges(exchanges) {
+    const container = document.getElementById('exchanges-container');
+    
+    if (!exchanges || exchanges.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Биржи временно недоступны</p></div>';
+        return;
+    }
+    
+    container.innerHTML = exchanges.map(exchange => `
+        <a href="${exchange.url}" class="exchange-card" target="_blank" rel="noopener">
+            <div class="exchange-content">
+                <div class="exchange-logo">
+                    <img src="${exchange.logo}" alt="${exchange.name}" onerror="handleImageError(this)">
+                </div>
+                <div class="exchange-info">
+                    <h3 class="exchange-name">${exchange.name}</h3>
+                    <p class="exchange-description">${exchange.description}</p>
+                    <div class="exchange-features">
+                        ${exchange.features.map(feature => `
+                            <span class="exchange-feature">${feature}</span>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        </a>
+    `).join('');
+}
+
+function displayNews(news) {
+    const container = document.getElementById('news-container');
+    
+    if (!news || news.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Новости временно недоступны</p></div>';
+        return;
+    }
+    
+    container.innerHTML = news.map(item => `
+        <div class="news-item">
+            <span class="news-date">${formatDate(item.date)}</span>
+            <div class="news-title">${item.title}</div>
+            <div class="news-content">${item.content}</div>
+        </div>
+    `).join('');
+}
+
+function setupGameButtons() {
+    const playButtons = document.querySelectorAll('.play-button');
+    playButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const url = this.getAttribute('data-url');
+            openGame(url);
+        });
+    });
+    
+    const gameCards = document.querySelectorAll('.game-card');
+    gameCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const playButton = this.querySelector('.play-button');
+            const url = playButton.getAttribute('data-url');
+            openGame(url);
+        });
+    });
+}
+
+function openGame(url) {
+    // Обновляем статистику
+    updateUserStats('gamesPlayed');
+    
+    // Показываем индикатор загрузки
+    showLoading();
+    
+    setTimeout(() => {
+        hideLoading();
+        
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.openLink(url);
+        } else {
+            window.open(url, '_blank', 'noopener,noreferrer');
         }
+    }, 1000);
+}
+
+// ==================== SEARCH AND FILTER FUNCTIONS ====================
+
+function setupSearch() {
+    const searchToggle = document.getElementById('search-toggle');
+    const searchContainer = document.getElementById('search-container');
+    const searchInput = document.getElementById('search-input');
+    const searchClear = document.getElementById('search-clear');
+    
+    searchToggle.addEventListener('click', function() {
+        searchContainer.classList.toggle('hidden');
+        if (!searchContainer.classList.contains('hidden')) {
+            searchInput.focus();
+        }
+    });
+    
+    searchInput.addEventListener('input', function() {
+        appState.searchQuery = this.value;
+        searchClear.style.visibility = this.value ? 'visible' : 'hidden';
+        displayGames(GAMES_DATA);
+    });
+    
+    searchClear.addEventListener('click', function() {
+        searchInput.value = '';
+        appState.searchQuery = '';
+        this.style.visibility = 'hidden';
+        displayGames(GAMES_DATA);
+    });
+    
+    // Закрытие поиска при клике вне области
+    document.addEventListener('click', function(e) {
+        if (!searchContainer.contains(e.target) && !searchToggle.contains(e.target)) {
+            searchContainer.classList.add('hidden');
+        }
+    });
+}
+
+function setupFilters() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Убираем активный класс у всех кнопок
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Добавляем активный класс текущей кнопке
+            this.classList.add('active');
+            
+            // Обновляем состояние фильтра
+            appState.currentFilter = this.getAttribute('data-filter');
+            
+            // Обновляем отображение игр
+            displayGames(GAMES_DATA);
+        });
+    });
+}
+
+// ==================== USER STATISTICS ====================
+
+function loadUserStats() {
+    const savedStats = localStorage.getItem('hamsterUserStats');
+    if (savedStats) {
+        appState.userStats = JSON.parse(savedStats);
     } else {
-        // Fallback for testing
-        let gamesOpened = parseInt(localStorage.getItem('gamesOpened') || '0');
-        gamesOpened++;
-        localStorage.setItem('gamesOpened', gamesOpened.toString());
-        document.getElementById('games-opened').textContent = gamesOpened;
+        // Устанавливаем дату первого использования
+        localStorage.setItem('hamsterFirstUse', new Date().toISOString());
     }
+    updateStatsDisplay();
 }
 
-async function updateStreak() {
-    if (userTelegramId) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/users/${userTelegramId}/check-streak`, {
-                method: 'POST'
-            });
-
-            if (response.ok) {
-                currentUser = await response.json();
-                updateProfileStats();
-            }
-        } catch (error) {
-            console.error('Error updating streak:', error);
-            // Fallback to localStorage
-            updateStreakLocal();
-        }
-    } else {
-        updateStreakLocal();
+function updateUserStats(statType) {
+    if (statType === 'gamesPlayed') {
+        appState.userStats.gamesPlayed++;
     }
+    
+    // Обновляем дни в приложении
+    const firstUse = localStorage.getItem('hamsterFirstUse');
+    if (firstUse) {
+        const firstUseDate = new Date(firstUse);
+        const today = new Date();
+        const diffTime = Math.abs(today - firstUseDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        appState.userStats.daysInApp = diffDays;
+    }
+    
+    // Сохраняем в localStorage
+    localStorage.setItem('hamsterUserStats', JSON.stringify(appState.userStats));
+    
+    // Обновляем отображение
+    updateStatsDisplay();
 }
 
-function updateStreakLocal() {
-    const today = new Date().toDateString();
-    const lastVisit = localStorage.getItem('lastVisit');
-    let streak = parseInt(localStorage.getItem('streak') || '0');
-
-    if (lastVisit) {
-        const lastVisitDate = new Date(lastVisit);
-        const todayDate = new Date(today);
-        const diffTime = todayDate - lastVisitDate;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 1) {
-            streak++;
-        } else if (diffDays > 1) {
-            streak = 1;
-        }
-    } else {
-        streak = 1;
-    }
-
-    localStorage.setItem('streak', streak.toString());
-    localStorage.setItem('lastVisit', today);
-    document.getElementById('streak-days').textContent = streak;
+function updateStatsDisplay() {
+    document.querySelector('.stat:nth-child(1) .stat-value').textContent = appState.userStats.gamesPlayed;
+    document.querySelector('.stat:nth-child(2) .stat-value').textContent = appState.userStats.daysInApp;
 }
 
-async function checkReferral() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const refId = urlParams.get('ref') || urlParams.get('start');
-
-    if (refId && userTelegramId && refId !== userTelegramId) {
-        const hasBeenReferred = localStorage.getItem('hasBeenReferred');
-
-        if (!hasBeenReferred) {
-            localStorage.setItem('hasBeenReferred', 'true');
-            localStorage.setItem('referredBy', refId);
-            console.log('Invited by user:', refId);
-        }
-    }
-}
+// ==================== OTHER FUNCTIONS ====================
 
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
     const sections = document.querySelectorAll('.content-section');
-
+    
     navItems.forEach(item => {
         item.addEventListener('click', function() {
-            vibrate();
             const targetSection = this.getAttribute('data-section');
-
+            
             navItems.forEach(nav => nav.classList.remove('active'));
             this.classList.add('active');
-
+            
             sections.forEach(section => {
                 section.classList.remove('active');
                 if (section.id === targetSection) {
@@ -360,226 +454,191 @@ function setupNavigation() {
     });
 }
 
-function setupGameButtons() {
-    const playButtons = document.querySelectorAll('.play-button');
-
-    playButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.stopPropagation();
-            vibrate();
-            const botUsername = this.getAttribute('data-bot');
-            const gameId = this.getAttribute('data-game-id');
-
-            if (gameId) {
-                incrementGamesOpened();
-            }
-
-            if (botUsername) {
-                const telegramUrl = `https://t.me/${botUsername}?start=app`;
-
-                if (tg.openTelegramLink) {
-                    tg.openTelegramLink(telegramUrl);
-                } else {
-                    window.open(telegramUrl, '_blank');
-                }
-            }
-        });
-    });
-}
-
-function setupExchangeButtons() {
-    const exchangeButtons = document.querySelectorAll('.exchange-button');
-
-    exchangeButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.stopPropagation();
-            vibrate();
-            const exchangeUrl = this.getAttribute('data-url');
-            if (exchangeUrl) {
-                if (tg.openLink) {
-                    tg.openLink(exchangeUrl);
-                } else {
-                    window.open(exchangeUrl, '_blank');
-                }
-            }
-        });
-    });
-}
-
-function setupSettingsPanel() {
-    const settingsButton = document.getElementById('settings-button');
-    const settingsPanel = document.getElementById('settings-panel');
-    const closeSettings = document.getElementById('close-settings');
-
-    if (settingsButton) {
-        settingsButton.addEventListener('click', function() {
-            vibrate();
-            settingsPanel.classList.add('active');
+function setupTelegramIntegration() {
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        
+        tg.expand();
+        tg.enableClosingConfirmation();
+        
+        updateUserProfile(tg.initDataUnsafe.user);
+        
+        tg.ready();
+    } else {
+        console.log('Telegram WebApp not detected, running in browser mode');
+        updateUserProfile({
+            first_name: 'Пользователь',
+            username: 'user'
         });
     }
-
-    if (closeSettings) {
-        closeSettings.addEventListener('click', function() {
-            vibrate();
-            settingsPanel.classList.remove('active');
-        });
-    }
-
-    if (settingsPanel) {
-        settingsPanel.addEventListener('click', function(e) {
-            if (e.target === settingsPanel) {
-                settingsPanel.classList.remove('active');
-            }
-        });
-    }
-
-    const themeOptions = document.querySelectorAll('.theme-option');
-    themeOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            vibrate();
-            const theme = this.getAttribute('data-theme');
-
-            themeOptions.forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-            } else {
-                document.body.classList.remove('dark-theme');
-            }
-
-            localStorage.setItem('theme', theme);
-        });
-    });
-
-    const languageOptions = document.querySelectorAll('.language-option');
-    languageOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            vibrate();
-            const lang = this.getAttribute('data-lang');
-
-            languageOptions.forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-
-            setLanguage(lang);
-            localStorage.setItem('language', lang);
-        });
-    });
 }
 
-function setLanguage(lang) {
-    const elements = document.querySelectorAll('[data-i18n]');
-    elements.forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) {
-            element.textContent = translations[lang][key];
+function updateUserProfile(user) {
+    if (user) {
+        const name = user.first_name || 'Пользователь';
+        const username = user.username ? `@${user.username}` : 'Пользователь';
+        
+        document.getElementById('tg-name').textContent = name;
+        document.getElementById('tg-username').textContent = username;
+        
+        if (user.photo_url) {
+            document.getElementById('tg-avatar').innerHTML = `<img src="${user.photo_url}" alt="${name}">`;
+            document.getElementById('tg-avatar-large').innerHTML = `<img src="${user.photo_url}" alt="${name}">`;
         }
-    });
-}
-
-function loadThemePreference() {
-    const savedTheme = localStorage.getItem('theme') || (tg.colorScheme === 'dark' ? 'dark' : 'light');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-theme');
     }
-    updateSettingsThemeOptions(savedTheme);
 }
 
-function loadLanguagePreference() {
-    const savedLang = localStorage.getItem('language') || 'ru';
-    setLanguage(savedLang);
-    updateSettingsLanguageOptions(savedLang);
-}
-
-function updateSettingsThemeOptions(theme) {
-    const themeOptions = document.querySelectorAll('.theme-option');
-
-    themeOptions.forEach(option => {
-        option.classList.remove('active');
-        if (option.getAttribute('data-theme') === theme) {
-            option.classList.add('active');
-        }
+function setupThemeToggle() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = themeToggle.querySelector('.action-icon');
+    const themeText = themeToggle.querySelector('.action-text');
+    
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeButton(savedTheme);
+    
+    themeToggle.addEventListener('click', function() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeButton(newTheme);
     });
-}
-
-function updateSettingsLanguageOptions(lang) {
-    const languageOptions = document.querySelectorAll('.language-option');
-
-    languageOptions.forEach(option => {
-        option.classList.remove('active');
-        if (option.getAttribute('data-lang') === lang) {
-            option.classList.add('active');
+    
+    function updateThemeButton(theme) {
+        if (theme === 'dark') {
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'Светлая тема';
+        } else {
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'Темная тема';
         }
-    });
+    }
 }
 
 function setupShareButton() {
-    const shareButton = document.getElementById('share-friends-button');
-    const notification = document.getElementById('notification');
+    const shareButton = document.getElementById('share-button');
+    shareButton.addEventListener('click', shareApp);
+}
 
-    if (shareButton) {
-        shareButton.addEventListener('click', function() {
-            vibrate();
+function setupAboutSection() {
+    const aboutButton = document.getElementById('about-button');
+    const aboutBack = document.getElementById('about-back');
+    const profileSection = document.getElementById('profile-section');
+    const aboutSection = document.getElementById('about-section');
+    
+    aboutButton.addEventListener('click', function() {
+        profileSection.classList.remove('active');
+        aboutSection.classList.add('active');
+    });
+    
+    aboutBack.addEventListener('click', function() {
+        aboutSection.classList.remove('active');
+        profileSection.classList.add('active');
+    });
+}
 
-            const userId = userTelegramId || 'default';
-            const botUsername = 'games_verse_bot'; // Replace with your bot username
-            const shareUrl = `https://t.me/${botUsername}?start=${userId}`;
-            const shareText = 'Присоединяйся к Games Verse - лучшие игры Telegram в одном приложении! 🎮';
-
-            // Use Telegram Web App API for sharing
-            if (tg.openTelegramLink) {
-                const shareLink = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-                tg.openTelegramLink(shareLink);
-            } else if (navigator.share) {
-                navigator.share({
-                    title: 'Games Verse',
-                    text: shareText,
-                    url: shareUrl,
-                })
-                .then(() => {
-                    console.log('Successful sharing');
-                })
-                .catch((error) => console.log('Sharing error', error));
-            } else {
-                // Fallback: copy to clipboard
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(shareUrl).then(() => {
-                        showNotification(notification);
-                    }).catch(() => {
-                        fallbackCopyToClipboard(shareUrl, notification);
-                    });
-                } else {
-                    fallbackCopyToClipboard(shareUrl, notification);
-                }
-            }
+function shareApp() {
+    const shareText = "🎮 Открой для себя Hamster Verse - все лучшие игры Telegram в одном приложении!";
+    const shareUrl = window.location.href;
+    
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.shareUrl(shareUrl, shareText);
+    } else if (navigator.share) {
+        navigator.share({
+            title: 'Hamster Verse',
+            text: shareText,
+            url: shareUrl
+        });
+    } else {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            showNotification('Ссылка скопирована в буфер обмена!');
         });
     }
 }
 
-function fallbackCopyToClipboard(text, notification) {
-    try {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.opacity = '0';
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        showNotification(notification);
-    } catch (err) {
-        console.error('Copy failed:', err);
-        showNotification(notification, 'Failed to copy link');
-    }
+function showLoading() {
+    document.getElementById('loading-overlay').classList.remove('hidden');
 }
 
-function showNotification(notification, customMessage) {
-    if (customMessage) {
-        notification.textContent = customMessage;
-    }
+function hideLoading() {
+    document.getElementById('loading-overlay').classList.add('hidden');
+}
 
-    notification.classList.add('show');
+function showNotification(message) {
+    // Создаем элемент уведомления
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--accent-gradient);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: var(--shadow-hover);
+        z-index: 10000;
+        font-weight: 500;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Удаляем уведомление через 3 секунды
     setTimeout(() => {
-        notification.classList.remove('show');
-    }, 2000);
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
 }
+
+function showError(message) {
+    showNotification('❌ ' + message);
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const options = { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return date.toLocaleDateString('ru-RU', options);
+}
+
+// Глобальные функции
+window.handleImageError = handleImageError;
+
+// Добавляем стили для анимации уведомлений
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+        }
+    }
+`;
+document.head.appendChild(style);

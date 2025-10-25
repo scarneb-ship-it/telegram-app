@@ -5,6 +5,56 @@ const APP_CONFIG = {
     apiUrl: window.location.origin + '/api'
 };
 
+// Настройки по умолчанию
+const DEFAULT_SETTINGS = {
+    vibration: true,
+    language: 'ru'
+};
+
+// Переводы
+const TRANSLATIONS = {
+    ru: {
+        appTitle: "Хамстер",
+        appSubtitle: "Все игры Хамстер Комбат",
+        games: "Игры",
+        gamesSubtitle: "Выберите игру и начните играть",
+        exchanges: "Биржи",
+        exchangesSubtitle: "Топовые криптобиржи",
+        news: "Новости",
+        newsSubtitle: "Последние обновления платформы",
+        profile: "Профиль",
+        theme: "Сменить тему",
+        language: "Язык",
+        vibration: "Вибрация",
+        vibrationOn: "Вибрация: Вкл",
+        vibrationOff: "Вибрация: Выкл",
+        share: "Поделиться",
+        play: "Играть",
+        players: "игроков",
+        rating: "рейтинг"
+    },
+    en: {
+        appTitle: "Hamster",
+        appSubtitle: "All Hamster Combat Games",
+        games: "Games",
+        gamesSubtitle: "Choose a game and start playing",
+        exchanges: "Exchanges",
+        exchangesSubtitle: "Top crypto exchanges",
+        news: "News",
+        newsSubtitle: "Latest platform updates",
+        profile: "Profile",
+        theme: "Change theme",
+        language: "Language",
+        vibration: "Vibration",
+        vibrationOn: "Vibration: On",
+        vibrationOff: "Vibration: Off",
+        share: "Share",
+        play: "Play",
+        players: "players",
+        rating: "rating"
+    }
+};
+
 // Данные игр
 const GAMES_DATA = [
     {
@@ -82,9 +132,12 @@ function initializeApp() {
     console.log('🚀 Хамстер v' + APP_CONFIG.version + ' initializing...');
     
     try {
+        loadSettings();
         setupNavigation();
         setupTelegramIntegration();
         setupThemeToggle();
+        setupLanguageToggle();
+        setupVibrationToggle();
         setupShareButton();
         
         // Загрузка данных
@@ -102,10 +155,129 @@ function initializeApp() {
     }
 }
 
+// ==================== SETTINGS MANAGEMENT ====================
+
+function loadSettings() {
+    const settings = JSON.parse(localStorage.getItem('appSettings')) || DEFAULT_SETTINGS;
+    window.appSettings = settings;
+    applySettings();
+}
+
+function saveSettings() {
+    localStorage.setItem('appSettings', JSON.stringify(window.appSettings));
+    applySettings();
+}
+
+function applySettings() {
+    // Применяем язык
+    updateLanguage();
+    
+    // Применяем настройки вибрации
+    updateVibrationButton();
+}
+
+// ==================== LANGUAGE MANAGEMENT ====================
+
+function setupLanguageToggle() {
+    const languageToggle = document.getElementById('language-toggle');
+    languageToggle.addEventListener('click', function() {
+        vibrate();
+        toggleLanguage();
+    });
+}
+
+function toggleLanguage() {
+    const currentLang = window.appSettings.language;
+    const newLang = currentLang === 'ru' ? 'en' : 'ru';
+    
+    window.appSettings.language = newLang;
+    saveSettings();
+    updateLanguage();
+}
+
+function updateLanguage() {
+    const lang = window.appSettings.language;
+    const t = TRANSLATIONS[lang];
+    
+    // Обновляем статические тексты
+    document.querySelector('[data-translate="appTitle"]').textContent = t.appTitle;
+    document.querySelector('[data-translate="appSubtitle"]').textContent = t.appSubtitle;
+    document.querySelector('[data-translate="games"]').textContent = t.games;
+    document.querySelector('[data-translate="gamesSubtitle"]').textContent = t.gamesSubtitle;
+    document.querySelector('[data-translate="exchanges"]').textContent = t.exchanges;
+    document.querySelector('[data-translate="exchangesSubtitle"]').textContent = t.exchangesSubtitle;
+    document.querySelector('[data-translate="news"]').textContent = t.news;
+    document.querySelector('[data-translate="newsSubtitle"]').textContent = t.newsSubtitle;
+    document.querySelector('[data-translate="profile"]').textContent = t.profile;
+    document.querySelector('[data-translate="theme"]').textContent = t.theme;
+    document.querySelector('[data-translate="language"]').textContent = t.language;
+    document.querySelector('[data-translate="share"]').textContent = t.share;
+    
+    // Обновляем язык кнопки
+    const languageBtn = document.querySelector('#language-toggle .action-text');
+    languageBtn.textContent = lang === 'ru' ? 'Русский' : 'English';
+    
+    // Обновляем кнопки в играх
+    document.querySelectorAll('.play-button').forEach(btn => {
+        btn.textContent = t.play;
+    });
+}
+
+// ==================== VIBRATION MANAGEMENT ====================
+
+function setupVibrationToggle() {
+    const vibrationToggle = document.getElementById('vibration-toggle');
+    vibrationToggle.addEventListener('click', function() {
+        // Не добавляем вибрацию здесь, чтобы избежать рекурсии
+        toggleVibration();
+    });
+}
+
+function toggleVibration() {
+    window.appSettings.vibration = !window.appSettings.vibration;
+    saveSettings();
+    updateVibrationButton();
+    
+    // Вибрация при переключении (если включена)
+    if (window.appSettings.vibration) {
+        vibrate();
+    }
+}
+
+function updateVibrationButton() {
+    const vibrationBtn = document.querySelector('#vibration-toggle .action-text');
+    const lang = window.appSettings.language;
+    
+    if (window.appSettings.vibration) {
+        vibrationBtn.textContent = lang === 'ru' ? 'Вибрация: Вкл' : 'Vibration: On';
+    } else {
+        vibrationBtn.textContent = lang === 'ru' ? 'Вибрация: Выкл' : 'Vibration: Off';
+    }
+}
+
+function vibrate() {
+    if (!window.appSettings.vibration) return;
+    
+    // Визуальная вибрация для всех устройств
+    const elements = document.querySelectorAll('.nav-item.active, .play-button, .profile-action-btn');
+    elements.forEach(element => {
+        element.classList.add('vibrate');
+        setTimeout(() => {
+            element.classList.remove('vibrate');
+        }, 100);
+    });
+    
+    // Нативная вибрация для поддерживающих устройств
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
 // ==================== UI FUNCTIONS ====================
 
 function displayGames(games) {
     const container = document.getElementById('games-container');
+    const t = TRANSLATIONS[window.appSettings.language];
     
     if (!games || games.length === 0) {
         container.innerHTML = `
@@ -137,7 +309,7 @@ function displayGames(games) {
                             </div>
                         </div>
                         <button class="play-button" data-url="${game.url}">
-                            Играть
+                            ${t.play}
                         </button>
                     </div>
                 </div>
@@ -221,6 +393,7 @@ function setupGameButtons() {
     playButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
+            vibrate();
             const url = this.getAttribute('data-url');
             openGame(url);
         });
@@ -229,6 +402,7 @@ function setupGameButtons() {
     const gameCards = document.querySelectorAll('.game-card');
     gameCards.forEach(card => {
         card.addEventListener('click', function() {
+            vibrate();
             const playButton = this.querySelector('.play-button');
             const url = playButton.getAttribute('data-url');
             openGame(url);
@@ -252,6 +426,7 @@ function setupNavigation() {
     
     navItems.forEach(item => {
         item.addEventListener('click', function() {
+            vibrate();
             const targetSection = this.getAttribute('data-section');
             
             navItems.forEach(nav => nav.classList.remove('active'));
@@ -337,6 +512,7 @@ function setupThemeToggle() {
     updateThemeButton(savedTheme);
     
     themeToggle.addEventListener('click', function() {
+        vibrate();
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         
@@ -360,7 +536,10 @@ function setupThemeToggle() {
 
 function setupShareButton() {
     const shareButton = document.getElementById('share-button');
-    shareButton.addEventListener('click', shareApp);
+    shareButton.addEventListener('click', function() {
+        vibrate();
+        shareApp();
+    });
 }
 
 function shareApp() {

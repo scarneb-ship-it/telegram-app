@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Хамстер - Игровая платформа</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -13,8 +14,8 @@
         <header class="header fixed-header">
             <div class="header-content">
                 <div class="header-titles">
-                    <h1 class="app-title">Хамстер</h1>
-                    <p class="app-subtitle">Все игры Хамстер Комбат</p>
+                    <h1 class="app-title" data-translate="appTitle">Хамстер</h1>
+                    <p class="app-subtitle" data-translate="appSubtitle">Все игры Хамстер Комбат</p>
                 </div>
                 <div class="user-avatar" id="tg-avatar">
                     🐹
@@ -27,8 +28,8 @@
             <!-- Games Section -->
             <section id="games-section" class="content-section active">
                 <div class="section-header">
-                    <h2>Игры</h2>
-                    <p class="section-subtitle">Выберите игру и начните играть</p>
+                    <h2 data-translate="games">Игры</h2>
+                    <p class="section-subtitle" data-translate="gamesSubtitle">Выберите игру и начните играть</p>
                 </div>
                 <div class="games-container" id="games-container">
                     <!-- Games will be loaded here -->
@@ -38,8 +39,8 @@
             <!-- Exchanges Section -->
             <section id="exchanges-section" class="content-section">
                 <div class="section-header">
-                    <h2>Биржи</h2>
-                    <p class="section-subtitle">Топовые криптобиржи</p>
+                    <h2 data-translate="exchanges">Биржи</h2>
+                    <p class="section-subtitle" data-translate="exchangesSubtitle">Топовые криптобиржи</p>
                 </div>
                 <div class="exchanges-container" id="exchanges-container">
                     <!-- Exchanges will be loaded here -->
@@ -49,8 +50,8 @@
             <!-- News Section -->
             <section id="news-section" class="content-section">
                 <div class="section-header">
-                    <h2>Новости</h2>
-                    <p class="section-subtitle">Последние обновления платформы</p>
+                    <h2 data-translate="news">Новости</h2>
+                    <p class="section-subtitle" data-translate="newsSubtitle">Последние обновления платформы</p>
                 </div>
                 <div class="news-container" id="news-container">
                     <!-- News will be loaded here -->
@@ -67,26 +68,47 @@
                         <div class="profile-info">
                             <h2 id="tg-name">Пользователь</h2>
                             <p id="tg-username">@username</p>
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value">4</span>
+                                    <span class="stat-label" data-translate="games">Игры</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">128</span>
+                                    <span class="stat-label">Матчей</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">24</span>
+                                    <span class="stat-label">Дней</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="profile-actions">
-                        <button class="profile-action-btn" id="theme-toggle">
-                            <span class="action-icon">🌙</span>
-                            <span class="action-text">Сменить тему</span>
-                        </button>
-                        <button class="profile-action-btn" id="language-toggle">
-                            <span class="action-icon">🌐</span>
-                            <span class="action-text">Русский</span>
-                        </button>
-                        <button class="profile-action-btn" id="vibration-toggle">
-                            <span class="action-icon">📳</span>
-                            <span class="action-text">Вибрация: Вкл</span>
-                        </button>
-                        <button class="profile-action-btn" id="share-button">
-                            <span class="action-icon">📤</span>
-                            <span class="action-text">Поделиться</span>
-                        </button>
+                    <div class="settings-section">
+                        <h3 class="settings-title" data-translate="settings">Настройки</h3>
+                        <div class="profile-actions">
+                            <button class="profile-action-btn" id="theme-toggle">
+                                <span class="action-icon">🌙</span>
+                                <span class="action-text" data-translate="theme">Сменить тему</span>
+                                <span class="action-arrow">›</span>
+                            </button>
+                            <button class="profile-action-btn" id="language-toggle">
+                                <span class="action-icon">🌐</span>
+                                <span class="action-text" data-translate="language">Русский</span>
+                                <span class="action-arrow">›</span>
+                            </button>
+                            <button class="profile-action-btn" id="vibration-toggle">
+                                <span class="action-icon">📳</span>
+                                <span class="action-text" data-translate="vibration">Вибрация: Вкл</span>
+                                <span class="action-arrow">›</span>
+                            </button>
+                            <button class="profile-action-btn" id="share-button">
+                                <span class="action-icon">📤</span>
+                                <span class="action-text" data-translate="share">Поделиться</span>
+                                <span class="action-arrow">›</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="app-info">
@@ -101,19 +123,19 @@
         <nav class="bottom-nav">
             <button class="nav-item active" data-section="games-section">
                 <span class="nav-icon">🎮</span>
-                <span class="nav-label">Игры</span>
+                <span class="nav-label" data-translate="games">Игры</span>
             </button>
             <button class="nav-item" data-section="exchanges-section">
                 <span class="nav-icon">💱</span>
-                <span class="nav-label">Биржи</span>
+                <span class="nav-label" data-translate="exchanges">Биржи</span>
             </button>
             <button class="nav-item" data-section="news-section">
                 <span class="nav-icon">📰</span>
-                <span class="nav-label">Новости</span>
+                <span class="nav-label" data-translate="news">Новости</span>
             </button>
             <button class="nav-item" data-section="profile-section">
                 <span class="nav-icon">👤</span>
-                <span class="nav-label">Профиль</span>
+                <span class="nav-label" data-translate="profile">Профиль</span>
             </button>
         </nav>
     </div>

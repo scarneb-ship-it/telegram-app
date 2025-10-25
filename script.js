@@ -8,7 +8,8 @@ const APP_CONFIG = {
 // Настройки по умолчанию
 const DEFAULT_SETTINGS = {
     vibration: true,
-    language: 'ru'
+    language: 'ru',
+    theme: 'light'
 };
 
 // Переводы
@@ -23,7 +24,10 @@ const TRANSLATIONS = {
         news: "Новости",
         newsSubtitle: "Последние обновления платформы",
         profile: "Профиль",
+        settings: "Настройки",
         theme: "Сменить тему",
+        themeLight: "Светлая тема",
+        themeDark: "Темная тема",
         language: "Язык",
         vibration: "Вибрация",
         vibrationOn: "Вибрация: Вкл",
@@ -31,7 +35,9 @@ const TRANSLATIONS = {
         share: "Поделиться",
         play: "Играть",
         players: "игроков",
-        rating: "рейтинг"
+        rating: "рейтинг",
+        shareSuccess: "Ссылка скопирована!",
+        shareError: "Не удалось поделиться"
     },
     en: {
         appTitle: "Hamster",
@@ -43,7 +49,10 @@ const TRANSLATIONS = {
         news: "News",
         newsSubtitle: "Latest platform updates",
         profile: "Profile",
+        settings: "Settings",
         theme: "Change theme",
+        themeLight: "Light theme",
+        themeDark: "Dark theme",
         language: "Language",
         vibration: "Vibration",
         vibrationOn: "Vibration: On",
@@ -51,7 +60,9 @@ const TRANSLATIONS = {
         share: "Share",
         play: "Play",
         players: "players",
-        rating: "rating"
+        rating: "rating",
+        shareSuccess: "Link copied!",
+        shareError: "Failed to share"
     }
 };
 
@@ -169,11 +180,17 @@ function saveSettings() {
 }
 
 function applySettings() {
+    // Применяем тему
+    document.documentElement.setAttribute('data-theme', window.appSettings.theme);
+    
     // Применяем язык
     updateLanguage();
     
     // Применяем настройки вибрации
     updateVibrationButton();
+    
+    // Обновляем кнопку темы
+    updateThemeButton();
 }
 
 // ==================== LANGUAGE MANAGEMENT ====================
@@ -199,19 +216,13 @@ function updateLanguage() {
     const lang = window.appSettings.language;
     const t = TRANSLATIONS[lang];
     
-    // Обновляем статические тексты
-    document.querySelector('[data-translate="appTitle"]').textContent = t.appTitle;
-    document.querySelector('[data-translate="appSubtitle"]').textContent = t.appSubtitle;
-    document.querySelector('[data-translate="games"]').textContent = t.games;
-    document.querySelector('[data-translate="gamesSubtitle"]').textContent = t.gamesSubtitle;
-    document.querySelector('[data-translate="exchanges"]').textContent = t.exchanges;
-    document.querySelector('[data-translate="exchangesSubtitle"]').textContent = t.exchangesSubtitle;
-    document.querySelector('[data-translate="news"]').textContent = t.news;
-    document.querySelector('[data-translate="newsSubtitle"]').textContent = t.newsSubtitle;
-    document.querySelector('[data-translate="profile"]').textContent = t.profile;
-    document.querySelector('[data-translate="theme"]').textContent = t.theme;
-    document.querySelector('[data-translate="language"]').textContent = t.language;
-    document.querySelector('[data-translate="share"]').textContent = t.share;
+    // Обновляем все элементы с data-translate
+    document.querySelectorAll('[data-translate]').forEach(element => {
+        const key = element.getAttribute('data-translate');
+        if (t[key]) {
+            element.textContent = t[key];
+        }
+    });
     
     // Обновляем язык кнопки
     const languageBtn = document.querySelector('#language-toggle .action-text');
@@ -221,6 +232,12 @@ function updateLanguage() {
     document.querySelectorAll('.play-button').forEach(btn => {
         btn.textContent = t.play;
     });
+    
+    // Обновляем настройки вибрации
+    updateVibrationButton();
+    
+    // Обновляем настройки темы
+    updateThemeButton();
 }
 
 // ==================== VIBRATION MANAGEMENT ====================
@@ -247,11 +264,12 @@ function toggleVibration() {
 function updateVibrationButton() {
     const vibrationBtn = document.querySelector('#vibration-toggle .action-text');
     const lang = window.appSettings.language;
+    const t = TRANSLATIONS[lang];
     
     if (window.appSettings.vibration) {
-        vibrationBtn.textContent = lang === 'ru' ? 'Вибрация: Вкл' : 'Vibration: On';
+        vibrationBtn.textContent = t.vibrationOn;
     } else {
-        vibrationBtn.textContent = lang === 'ru' ? 'Вибрация: Выкл' : 'Vibration: Off';
+        vibrationBtn.textContent = t.vibrationOff;
     }
 }
 
@@ -357,18 +375,21 @@ function displayExchanges(exchanges) {
 }
 
 function loadNews() {
-    fetch(APP_CONFIG.apiUrl + '/news')
-        .then(response => response.json())
-        .then(news => displayNews(news))
-        .catch(error => {
-            console.error('Failed to load news:', error);
-            displayNews([{
-                id: "1", 
-                title: "Хамстер запущен!",
-                content: "Новая игровая платформа с лучшими играми Telegram теперь доступна для всех!",
-                date: new Date().toISOString()
-            }]);
-        });
+    // В реальном приложении здесь был бы fetch запрос
+    setTimeout(() => {
+        const news = [{
+            id: "1", 
+            title: "Хамстер запущен!",
+            content: "Новая игровая платформа с лучшими играми Telegram теперь доступна для всех! Присоединяйтесь к нашему сообществу.",
+            date: new Date().toISOString()
+        }, {
+            id: "2",
+            title: "Новая игра Hamster King",
+            content: "Станьте королём в эпических битвах за монеты. Новая механика, улучшенная графика и больше наград!",
+            date: new Date(Date.now() - 86400000).toISOString()
+        }];
+        displayNews(news);
+    }, 500);
 }
 
 function displayNews(news) {
@@ -483,52 +504,38 @@ function updateUserProfile(user) {
 }
 
 function registerUser(user) {
-    fetch(APP_CONFIG.apiUrl + '/users/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            user_id: user.id,
-            username: user.username || '',
-            first_name: user.first_name || '',
-            last_name: user.last_name || ''
-        })
-    })
-    .then(response => response.json())
-    .then(data => console.log('User registered:', data))
-    .catch(error => console.error('Failed to register user:', error));
+    // В реальном приложении здесь был бы fetch запрос
+    console.log('User registered:', user);
 }
 
 // ==================== THEME ====================
 
 function setupThemeToggle() {
     const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = themeToggle.querySelector('.action-icon');
-    const themeText = themeToggle.querySelector('.action-text');
-    
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeButton(savedTheme);
-    
     themeToggle.addEventListener('click', function() {
         vibrate();
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateThemeButton(newTheme);
+        toggleTheme();
     });
+}
+
+function toggleTheme() {
+    const currentTheme = window.appSettings.theme;
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     
-    function updateThemeButton(theme) {
-        if (theme === 'dark') {
-            themeIcon.textContent = '☀️';
-            themeText.textContent = 'Светлая тема';
-        } else {
-            themeIcon.textContent = '🌙';
-            themeText.textContent = 'Темная тема';
-        }
+    window.appSettings.theme = newTheme;
+    saveSettings();
+    updateThemeButton();
+}
+
+function updateThemeButton() {
+    const themeBtn = document.querySelector('#theme-toggle .action-text');
+    const lang = window.appSettings.language;
+    const t = TRANSLATIONS[lang];
+    
+    if (window.appSettings.theme === 'dark') {
+        themeBtn.textContent = t.themeLight;
+    } else {
+        themeBtn.textContent = t.themeDark;
     }
 }
 
@@ -545,27 +552,59 @@ function setupShareButton() {
 function shareApp() {
     const shareText = "🎮 Открой для себя Хамстер - все лучшие игры Telegram в одном приложении!";
     const shareUrl = window.location.href;
+    const t = TRANSLATIONS[window.appSettings.language];
     
     if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`);
+        showToast(t.shareSuccess);
     } else if (navigator.share) {
         navigator.share({
             title: 'Хамстер',
             text: shareText,
             url: shareUrl
-        }).catch(err => console.log('Share failed:', err));
+        }).then(() => {
+            showToast(t.shareSuccess);
+        }).catch(err => {
+            console.log('Share failed:', err);
+            showToast(t.shareError);
+        });
     } else {
         navigator.clipboard.writeText(shareUrl).then(() => {
-            alert('Ссылка скопирована в буфер!');
-        }).catch(err => console.error('Failed to copy:', err));
+            showToast(t.shareSuccess);
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            showToast(t.shareError);
+        });
     }
+}
+
+function showToast(message) {
+    // Удаляем существующие тосты
+    const existingToasts = document.querySelectorAll('.toast');
+    existingToasts.forEach(toast => toast.remove());
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    // Показываем тост
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Скрываем тост через 3 секунды
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 // ==================== UTILS ====================
 
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
+    const lang = window.appSettings.language;
+    
+    return date.toLocaleDateString(lang === 'ru' ? 'ru-RU' : 'en-US', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'

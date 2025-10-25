@@ -51,11 +51,22 @@ body {
     padding-bottom: 80px;
 }
 
-/* Header */
+/* Fixed Header */
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 400px;
+    z-index: 1000;
+    border-radius: 0 0 20px 20px;
+}
+
 .header {
     background: var(--header-bg);
     color: white;
-    padding: 20px 16px;
+    padding: 24px 16px;
     border-radius: 0 0 20px 20px;
     box-shadow: var(--shadow);
 }
@@ -72,27 +83,30 @@ body {
 }
 
 .app-title {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .app-subtitle {
-    font-size: 14px;
-    opacity: 0.9;
-    margin-top: 2px;
-    font-weight: 400;
+    font-size: 16px;
+    opacity: 0.95;
+    margin-top: 4px;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.2);
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
     backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .user-avatar img,
@@ -105,7 +119,7 @@ body {
 
 /* Main Content */
 .main-content {
-    padding: 20px 16px;
+    padding: 120px 16px 20px;
 }
 
 .content-section {
@@ -158,6 +172,10 @@ body {
 .game-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-hover);
+}
+
+.game-card:active {
+    transform: translateY(0);
 }
 
 .game-content {
@@ -253,6 +271,10 @@ body {
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
+.play-button:active {
+    transform: translateY(0);
+}
+
 /* Exchanges Container */
 .exchanges-container {
     display: flex;
@@ -276,6 +298,10 @@ body {
 .exchange-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-hover);
+}
+
+.exchange-card:active {
+    transform: translateY(0);
 }
 
 .exchange-content {
@@ -356,6 +382,10 @@ body {
 .news-item:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-hover);
+}
+
+.news-item:active {
+    transform: translateY(0);
 }
 
 .news-date {
@@ -452,6 +482,10 @@ body {
     box-shadow: var(--shadow-hover);
 }
 
+.profile-action-btn:active {
+    transform: translateY(0);
+}
+
 .action-icon {
     font-size: 18px;
 }
@@ -529,6 +563,10 @@ body {
     transform: translateY(-1px);
 }
 
+.nav-item:active {
+    transform: translateY(0);
+}
+
 /* App Info */
 .app-info {
     text-align: center;
@@ -600,6 +638,19 @@ body {
     font-size: 14px;
 }
 
+/* Vibration Animation */
+.vibrate {
+    animation: vibrate 0.1s linear;
+}
+
+@keyframes vibrate {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-1px); }
+    50% { transform: translateX(1px); }
+    75% { transform: translateX(-1px); }
+    100% { transform: translateX(0); }
+}
+
 /* Адаптивность */
 @media (max-width: 480px) {
     .app-container {
@@ -607,11 +658,19 @@ body {
     }
     
     .header {
-        padding: 16px 12px;
+        padding: 20px 12px;
+    }
+    
+    .app-title {
+        font-size: 24px;
+    }
+    
+    .app-subtitle {
+        font-size: 14px;
     }
     
     .main-content {
-        padding: 16px 12px;
+        padding: 110px 12px 16px;
     }
     
     .games-container {

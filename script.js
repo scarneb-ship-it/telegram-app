@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Translations object
 const translations = {
     ru: {
-        appTitle: "Games Verse",
+        appTitle: "Hamster Games",
         settings: "Настройки",
         theme: "Тема",
         lightTheme: "Светлая",
@@ -34,7 +34,7 @@ const translations = {
         go: "Перейти"
     },
     en: {
-        appTitle: "Games Verse",
+        appTitle: "Hamster Games",
         settings: "Settings",
         theme: "Theme",
         lightTheme: "Light",
@@ -342,12 +342,12 @@ function setupShareButton() {
         shareButton.addEventListener('click', function() {
             vibrate();
             const shareUrl = window.location.href;
-            const shareText = 'Открой для себя лучшие игры Telegram в одном приложении!';
+            const shareText = 'Открой для себя лучшие хомячьи игры Telegram в одном приложении!';
             
             // Check if Web Share API is available
             if (navigator.share) {
                 navigator.share({
-                    title: 'Games Verse',
+                    title: 'Hamster Games',
                     text: shareText,
                     url: shareUrl,
                 })

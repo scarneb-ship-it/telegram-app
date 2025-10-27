@@ -14,6 +14,7 @@
   --border-light: #e2e8f0;
   --border-dark: #2d3748;
   --success-color: #48bb78;
+  --warning-color: #ed8936;
   --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 }
@@ -262,7 +263,7 @@ body.dark-theme {
   color: var(--text-secondary-dark);
 }
 
-/* Games Grid - Уменьшенные карточки */
+/* Games Grid - Уменьшенные карточки с рейтингом */
 .games-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -345,15 +346,83 @@ body.dark-theme {
   text-overflow: ellipsis;
 }
 
-.game-info p {
+.game-description {
   font-size: 13px;
   color: var(--text-secondary-light);
+  margin-bottom: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.dark-theme .game-info p {
+.dark-theme .game-description {
+  color: var(--text-secondary-dark);
+}
+
+/* Game Stats - Рейтинг и игроки */
+.game-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stars {
+  display: flex;
+  gap: 1px;
+}
+
+.star {
+  color: #d1d5db;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.star.filled {
+  color: #f59e0b;
+}
+
+.star.half {
+  background: linear-gradient(90deg, #f59e0b 50%, #d1d5db 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.rating-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary-light);
+}
+
+.dark-theme .rating-value {
+  color: var(--text-secondary-dark);
+}
+
+.players {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.players-icon {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.players-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary-light);
+}
+
+.dark-theme .players-count {
   color: var(--text-secondary-dark);
 }
 

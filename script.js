@@ -31,7 +31,9 @@ const translations = {
         shareWithFriends: "Поделиться с друзьями",
         profile: "Профиль",
         linkCopied: "Ссылка скопирована в буфер обмена!",
-        go: "Перейти"
+        go: "Перейти",
+        gamesPlayed: "Игр сыграно",
+        friendsInvited: "Друзей приглашено"
     },
     en: {
         appTitle: "Games Verse",
@@ -60,7 +62,9 @@ const translations = {
         shareWithFriends: "Share with friends",
         profile: "Profile",
         linkCopied: "Link copied to clipboard!",
-        go: "Go"
+        go: "Go",
+        gamesPlayed: "Games played",
+        friendsInvited: "Friends invited"
     }
 };
 
@@ -287,6 +291,8 @@ function loadUserData() {
         const user = window.Telegram.WebApp.initDataUnsafe?.user;
         
         if (user) {
+            console.log('Telegram User Data:', user);
+            
             // Update user name
             const userName = document.getElementById('user-name');
             if (userName && user.first_name) {
@@ -317,7 +323,19 @@ function loadUserData() {
                 avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
                 avatarFallback.style.display = 'flex';
             }
+        } else {
+            console.log('No Telegram user data available');
         }
+    } else {
+        console.log('Telegram Web App not available');
+        // Fallback: show demo data
+        const userName = document.getElementById('user-name');
+        const userUsername = document.getElementById('user-username');
+        const avatarFallback = document.getElementById('avatar-fallback');
+        
+        if (userName) userName.textContent = 'Telegram User';
+        if (userUsername) userUsername.textContent = '@username';
+        if (avatarFallback) avatarFallback.textContent = 'T';
     }
 }
 
@@ -328,12 +346,13 @@ function setupShareButton() {
         shareButton.addEventListener('click', function() {
             vibrate();
             const shareUrl = window.location.href;
+            const shareText = 'Открой для себя лучшие игры Telegram в одном приложении!';
             
             // Check if Web Share API is available
             if (navigator.share) {
                 navigator.share({
                     title: 'Games Verse',
-                    text: 'Открой для себя лучшие игры Telegram в одном приложении!',
+                    text: shareText,
                     url: shareUrl,
                 })
                 .then(() => console.log('Успешный шаринг'))

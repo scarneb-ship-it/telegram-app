@@ -52,118 +52,8 @@
                     <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
                 </div>
                 
-                <div class="games-grid">
-                    <div class="game-card">
-                        <div class="game-image">
-                            <img src="images/hamster-gamedev.jpg" alt="Hamster GameDev" class="game-img" onerror="this.style.display='none'">
-                            <div class="image-fallback">🎮</div>
-                        </div>
-                        <div class="game-info">
-                            <h3>Hamster GameDev</h3>
-                            <p class="game-description" data-i18n="hamsterGameDevDesc">Создай свою студию</p>
-                            <div class="game-stats">
-                                <div class="rating">
-                                    <div class="stars">
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star half">★</span>
-                                    </div>
-                                    <span class="rating-value">4.7</span>
-                                </div>
-                                <div class="players">
-                                    <span class="players-icon">👥</span>
-                                    <span class="players-count">901К</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="play-button" data-bot="hamsterdev_bot" data-i18n="play">Играть</button>
-                    </div>
-
-                    <div class="game-card">
-                        <div class="game-image">
-                            <img src="images/hamster-king.jpg" alt="Hamster King" class="game-img" onerror="this.style.display='none'">
-                            <div class="image-fallback">👑</div>
-                        </div>
-                        <div class="game-info">
-                            <h3>Hamster King</h3>
-                            <p class="game-description" data-i18n="hamsterKingDesc">Стань королем хомяков</p>
-                            <div class="game-stats">
-                                <div class="rating">
-                                    <div class="stars">
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star">★</span>
-                                    </div>
-                                    <span class="rating-value">4.2</span>
-                                </div>
-                                <div class="players">
-                                    <span class="players-icon">👥</span>
-                                    <span class="players-count">581К</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="play-button" data-bot="hamsterking_bot" data-i18n="play">Играть</button>
-                    </div>
-
-                    <div class="game-card">
-                        <div class="game-image">
-                            <img src="images/hamster-fightclub.jpg" alt="Hamster Fight Club" class="game-img" onerror="this.style.display='none'">
-                            <div class="image-fallback">🥊</div>
-                        </div>
-                        <div class="game-info">
-                            <h3>Hamster Fight Club</h3>
-                            <p class="game-description" data-i18n="hamsterFightClubDesc">Бойцовский клуб хомяков</p>
-                            <div class="game-stats">
-                                <div class="rating">
-                                    <div class="stars">
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                    </div>
-                                    <span class="rating-value">4.9</span>
-                                </div>
-                                <div class="players">
-                                    <span class="players-icon">👥</span>
-                                    <span class="players-count">386К</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="play-button" data-bot="hamsterfightclub_bot" data-i18n="play">Играть</button>
-                    </div>
-
-                    <div class="game-card">
-                        <div class="game-image">
-                            <img src="images/bitquest.jpg" alt="BitQuest" class="game-img" onerror="this.style.display='none'">
-                            <div class="image-fallback">💰</div>
-                        </div>
-                        <div class="game-info">
-                            <h3>BitQuest</h3>
-                            <p class="game-description" data-i18n="bitquestDesc">Приключения в мире крипты</p>
-                            <div class="game-stats">
-                                <div class="rating">
-                                    <div class="stars">
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star filled">★</span>
-                                        <span class="star half">★</span>
-                                        <span class="star">★</span>
-                                    </div>
-                                    <span class="rating-value">3.8</span>
-                                </div>
-                                <div class="players">
-                                    <span class="players-icon">👥</span>
-                                    <span class="players-count">245K</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="play-button" data-bot="bitquest_bot" data-i18n="play">Играть</button>
-                    </div>
+                <div class="games-grid" id="games-grid">
+                    <!-- Games will be loaded dynamically -->
                 </div>
             </section>
 
@@ -195,54 +85,8 @@
                     </div>
                 </div>
                 
-                <div class="exchanges-list">
-                    <div class="exchange-card">
-                        <div class="exchange-logo">
-                            <img src="images/bybit.jpg" alt="Bybit" class="exchange-img" onerror="this.style.display='none'">
-                            <div class="image-fallback">💱</div>
-                        </div>
-                        <div class="exchange-info">
-                            <h3>Bybit</h3>
-                            <p data-i18n="bybitDesc">Продвинутая торговая платформа</p>
-                        </div>
-                        <button class="exchange-button" data-url="https://www.bybit.com" data-i18n="go">Перейти</button>
-                    </div>
-
-                    <div class="exchange-card">
-                        <div class="exchange-logo">
-                            <img src="images/bingx.jpg" alt="BingX" class="exchange-img" onerror="this.style.display='none'">
-                            <div class="image-fallback">📈</div>
-                        </div>
-                        <div class="exchange-info">
-                            <h3>BingX</h3>
-                            <p data-i18n="bingxDesc">Социальная торговля и копирование</p>
-                        </div>
-                        <button class="exchange-button" data-url="https://www.bingx.com" data-i18n="go">Перейти</button>
-                    </div>
-
-                    <div class="exchange-card">
-                        <div class="exchange-logo">
-                            <img src="images/bitget.jpg" alt="Bitget" class="exchange-img" onerror="this.style.display='none'">
-                            <div class="image-fallback">⚡</div>
-                        </div>
-                        <div class="exchange-info">
-                            <h3>Bitget</h3>
-                            <p data-i18n="bitgetDesc">Инновационная торговая платформа</p>
-                        </div>
-                        <button class="exchange-button" data-url="https://www.bitget.com" data-i18n="go">Перейти</button>
-                    </div>
-
-                    <div class="exchange-card">
-                        <div class="exchange-logo">
-                            <img src="images/mexc.jpg" alt="MEXC" class="exchange-img" onerror="this.style.display='none'">
-                            <div class="image-fallback">🌍</div>
-                        </div>
-                        <div class="exchange-info">
-                            <h3>MEXC</h3>
-                            <p data-i18n="mexcDesc">Глобальная биржа с низкими комиссиями</p>
-                        </div>
-                        <button class="exchange-button" data-url="https://www.mexc.com" data-i18n="go">Перейти</button>
-                    </div>
+                <div class="exchanges-list" id="exchanges-list">
+                    <!-- Exchanges will be loaded dynamically -->
                 </div>
             </section>
 
@@ -251,11 +95,11 @@
                 <div class="profile-header">
                     <div class="profile-avatar" id="user-avatar">
                         <img src="" alt="User Avatar" id="avatar-img" style="display: none;">
-                        <span id="avatar-fallback">U</span>
+                        <span id="avatar-fallback">T</span>
                     </div>
                     <div class="profile-info">
                         <h2 id="user-name" data-i18n="user">Пользователь</h2>
-                        <p id="user-username">@username</p>
+                        <p id="user-username">Открой в Telegram</p>
                     </div>
                 </div>
 

@@ -2,89 +2,183 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hamster Verse - Игровая платформа</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <title>Games Verse</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <div class="header-titles">
-                    <h1 class="app-title">Hamster Verse</h1>
-                    <p class="app-subtitle">Все игры Telegram в одном месте</p>
-                </div>
-                <div class="user-avatar" id="tg-avatar">
-                    🐹
-                </div>
+                <h1 class="app-title" data-i18n="appTitle">Games Verse</h1>
+                <button class="settings-button" id="settings-button" aria-label="Настройки">⚙️</button>
             </div>
         </header>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settings-panel">
+            <div class="settings-content">
+                <h3 class="settings-title" data-i18n="settings">Настройки</h3>
+                
+                <div class="setting-item">
+                    <span class="setting-label" data-i18n="theme">Тема</span>
+                    <div class="theme-switcher">
+                        <button class="theme-option active" data-theme="light" data-i18n="lightTheme">Светлая</button>
+                        <button class="theme-option" data-theme="dark" data-i18n="darkTheme">Темная</button>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <span class="setting-label" data-i18n="language">Язык</span>
+                    <div class="language-switcher">
+                        <button class="language-option active" data-lang="ru" data-i18n="russian">Русский</button>
+                        <button class="language-option" data-lang="en" data-i18n="english">English</button>
+                    </div>
+                </div>
+                
+                <button class="close-settings" id="close-settings" data-i18n="done">Готово</button>
+            </div>
+        </div>
 
         <!-- Main Content -->
         <main class="main-content">
             <!-- Games Section -->
             <section id="games-section" class="content-section active">
                 <div class="section-header">
-                    <h2>Игры</h2>
-                    <p class="section-subtitle">Выберите игру и начните играть</p>
+                    <h2 data-i18n="games">Игры</h2>
+                    <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
                 </div>
-                <div class="games-container" id="games-container">
-                    <!-- Games will be loaded here -->
+                
+                <div class="games-grid">
+                    <div class="game-card">
+                        <div class="game-image">
+                            <img src="images/hamster-gamedev.jpg" alt="Hamster GameDev" class="game-img" onerror="this.style.display='none'">
+                            <div class="image-fallback">🎮</div>
+                        </div>
+                        <div class="game-info">
+                            <h3>Hamster GameDev</h3>
+                            <p data-i18n="hamsterGameDevDesc">Создай свою студию</p>
+                        </div>
+                        <button class="play-button" data-bot="hamsterdev_bot" data-i18n="play">Играть</button>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-image">
+                            <img src="images/hamster-king.jpg" alt="Hamster King" class="game-img" onerror="this.style.display='none'">
+                            <div class="image-fallback">👑</div>
+                        </div>
+                        <div class="game-info">
+                            <h3>Hamster King</h3>
+                            <p data-i18n="hamsterKingDesc">Стань королем хомяков</p>
+                        </div>
+                        <button class="play-button" data-bot="hamsterking_bot" data-i18n="play">Играть</button>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-image">
+                            <img src="images/hamster-fightclub.jpg" alt="Hamster Fight Club" class="game-img" onerror="this.style.display='none'">
+                            <div class="image-fallback">🥊</div>
+                        </div>
+                        <div class="game-info">
+                            <h3>Hamster Fight Club</h3>
+                            <p data-i18n="hamsterFightClubDesc">Бойцовский клуб хомяков</p>
+                        </div>
+                        <button class="play-button" data-bot="hamsterfightclub_bot" data-i18n="play">Играть</button>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-image">
+                            <img src="images/bitquest.jpg" alt="BitQuest" class="game-img" onerror="this.style.display='none'">
+                            <div class="image-fallback">💰</div>
+                        </div>
+                        <div class="game-info">
+                            <h3>BitQuest</h3>
+                            <p data-i18n="bitquestDesc">Приключения в мире крипты</p>
+                        </div>
+                        <button class="play-button" data-bot="bitquest_bot" data-i18n="play">Играть</button>
+                    </div>
                 </div>
             </section>
 
             <!-- Exchanges Section -->
             <section id="exchanges-section" class="content-section">
                 <div class="section-header">
-                    <h2>Биржи</h2>
-                    <p class="section-subtitle">Топовые криптобиржи</p>
+                    <h2 data-i18n="exchanges">Крипто-биржи</h2>
+                    <span class="section-subtitle" data-i18n="exchangesDesc">Торгуйте криптовалютами безопасно</span>
                 </div>
-                <div class="exchanges-container" id="exchanges-container">
-                    <!-- Exchanges will be loaded here -->
-                </div>
-            </section>
+                
+                <div class="exchanges-list">
+                    <div class="exchange-card">
+                        <div class="exchange-logo">
+                            <img src="images/bybit.jpg" alt="Bybit" class="exchange-img" onerror="this.style.display='none'">
+                            <div class="image-fallback">💱</div>
+                        </div>
+                        <div class="exchange-info">
+                            <h3>Bybit</h3>
+                            <p data-i18n="bybitDesc">Продвинутая торговая платформа</p>
+                        </div>
+                        <button class="exchange-button" data-url="https://www.bybit.com" data-i18n="go">Перейти</button>
+                    </div>
 
-            <!-- News Section -->
-            <section id="news-section" class="content-section">
-                <div class="section-header">
-                    <h2>Новости</h2>
-                    <p class="section-subtitle">Последние обновления платформы</p>
-                </div>
-                <div class="news-container" id="news-container">
-                    <!-- News will be loaded here -->
+                    <div class="exchange-card">
+                        <div class="exchange-logo">
+                            <img src="images/bingx.jpg" alt="BingX" class="exchange-img" onerror="this.style.display='none'">
+                            <div class="image-fallback">📈</div>
+                        </div>
+                        <div class="exchange-info">
+                            <h3>BingX</h3>
+                            <p data-i18n="bingxDesc">Социальная торговля и копирование</p>
+                        </div>
+                        <button class="exchange-button" data-url="https://www.bingx.com" data-i18n="go">Перейти</button>
+                    </div>
+
+                    <div class="exchange-card">
+                        <div class="exchange-logo">
+                            <img src="images/bitget.jpg" alt="Bitget" class="exchange-img" onerror="this.style.display='none'">
+                            <div class="image-fallback">⚡</div>
+                        </div>
+                        <div class="exchange-info">
+                            <h3>Bitget</h3>
+                            <p data-i18n="bitgetDesc">Инновационная торговая платформа</p>
+                        </div>
+                        <button class="exchange-button" data-url="https://www.bitget.com" data-i18n="go">Перейти</button>
+                    </div>
+
+                    <div class="exchange-card">
+                        <div class="exchange-logo">
+                            <img src="images/mexc.jpg" alt="MEXC" class="exchange-img" onerror="this.style.display='none'">
+                            <div class="image-fallback">🌍</div>
+                        </div>
+                        <div class="exchange-info">
+                            <h3>MEXC</h3>
+                            <p data-i18n="mexcDesc">Глобальная биржа с низкими комиссиями</p>
+                        </div>
+                        <button class="exchange-button" data-url="https://www.mexc.com" data-i18n="go">Перейти</button>
+                    </div>
                 </div>
             </section>
 
             <!-- Profile Section -->
             <section id="profile-section" class="content-section">
-                <div class="profile-content">
-                    <div class="profile-header">
-                        <div class="profile-avatar" id="tg-avatar-large">
-                            🐹
-                        </div>
-                        <div class="profile-info">
-                            <h2 id="tg-name">Пользователь</h2>
-                            <p id="tg-username">@username</p>
-                        </div>
+                <div class="profile-header">
+                    <div class="profile-avatar" id="user-avatar">
+                        <img src="" alt="User Avatar" id="avatar-img" style="display: none;">
+                        <span id="avatar-fallback">U</span>
                     </div>
+                    <div class="profile-info">
+                        <h2 id="user-name" data-i18n="user">Пользователь</h2>
+                        <p id="user-username">@username</p>
+                    </div>
+                </div>
 
-                    <div class="profile-actions">
-                        <button class="profile-action-btn" id="theme-toggle">
-                            <span class="action-icon">🌙</span>
-                            <span class="action-text">Сменить тему</span>
-                        </button>
-                        <button class="profile-action-btn" id="share-button">
-                            <span class="action-icon">📤</span>
-                            <span class="action-text">Поделиться</span>
-                        </button>
-                    </div>
-
-                    <div class="app-info">
-                        <p>Hamster Verse v<span id="app-version">2.4.0</span></p>
-                        <p class="app-build">Build: <span id="app-build">2024.01.21</span></p>
-                    </div>
+                <div class="profile-actions">
+                    <button class="share-friends-button" id="share-friends-button">
+                        <span class="action-icon">👥</span>
+                        <span data-i18n="shareWithFriends">Поделиться с друзьями</span>
+                    </button>
                 </div>
             </section>
         </main>
@@ -93,21 +187,20 @@
         <nav class="bottom-nav">
             <button class="nav-item active" data-section="games-section">
                 <span class="nav-icon">🎮</span>
-                <span class="nav-label">Игры</span>
+                <span class="nav-label" data-i18n="games">Игры</span>
             </button>
             <button class="nav-item" data-section="exchanges-section">
-                <span class="nav-icon">💱</span>
-                <span class="nav-label">Биржи</span>
-            </button>
-            <button class="nav-item" data-section="news-section">
-                <span class="nav-icon">📰</span>
-                <span class="nav-label">Новости</span>
+                <span class="nav-icon">📊</span>
+                <span class="nav-label" data-i18n="exchanges">Биржи</span>
             </button>
             <button class="nav-item" data-section="profile-section">
                 <span class="nav-icon">👤</span>
-                <span class="nav-label">Профиль</span>
+                <span class="nav-label" data-i18n="profile">Профиль</span>
             </button>
         </nav>
+
+        <!-- Notification -->
+        <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
     </div>
 
     <script src="script.js"></script>

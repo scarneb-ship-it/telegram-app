@@ -243,11 +243,11 @@ body.dark-theme {
 
 /* Section Headers */
 .section-header {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .section-header h2 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 4px;
 }
@@ -262,20 +262,20 @@ body.dark-theme {
   color: var(--text-secondary-dark);
 }
 
-/* Games Grid */
+/* Games Grid - Уменьшенные карточки */
 .games-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
 .game-card {
   background: var(--card-light);
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-light);
@@ -289,7 +289,7 @@ body.dark-theme {
 }
 
 .game-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-light);
   background: #ffffff;
 }
@@ -300,9 +300,9 @@ body.dark-theme {
 }
 
 .game-image {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
   overflow: hidden;
   flex-shrink: 0;
   box-shadow: var(--shadow-light);
@@ -327,24 +327,50 @@ body.dark-theme {
 
 .image-fallback {
   position: absolute;
-  font-size: 24px;
+  font-size: 20px;
   z-index: 0;
 }
 
-/* Exchanges List */
+.game-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.game-info h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-info p {
+  font-size: 13px;
+  color: var(--text-secondary-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dark-theme .game-info p {
+  color: var(--text-secondary-dark);
+}
+
+/* Exchanges List - Уменьшенные карточки */
 .exchanges-list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
 .exchange-card {
   background: var(--card-light);
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-light);
   cursor: default;
@@ -358,7 +384,7 @@ body.dark-theme {
 }
 
 .exchange-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-light);
   background: #ffffff;
 }
@@ -369,9 +395,9 @@ body.dark-theme {
 }
 
 .exchange-logo {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -394,28 +420,65 @@ body.dark-theme {
   z-index: 1;
 }
 
+.exchange-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.exchange-info h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.exchange-info p {
+  font-size: 13px;
+  color: var(--text-secondary-light);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dark-theme .exchange-info p {
+  color: var(--text-secondary-dark);
+}
+
 /* Profile Section */
 .profile-header {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: var(--card-light);
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+}
+
+.dark-theme .profile-header {
+  background: var(--card-dark);
+  border-color: var(--border-dark);
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   background: var(--primary-gradient);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
   color: white;
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
   overflow: hidden;
   position: relative;
+  flex-shrink: 0;
 }
 
 .dark-theme .profile-avatar {
@@ -431,21 +494,85 @@ body.dark-theme {
   z-index: 1;
 }
 
+.profile-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
 .profile-info h2 {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile-info p {
   color: var(--text-secondary-light);
   font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dark-theme .profile-info p {
   color: var(--text-secondary-dark);
 }
 
+/* Profile Stats */
+.profile-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-item {
+  background: var(--card-light);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+}
+
+.dark-theme .stat-item {
+  background: var(--card-dark);
+  border-color: var(--border-dark);
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-light);
+}
+
+.dark-theme .stat-item:hover {
+  box-shadow: var(--shadow-dark);
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-light);
+  margin-bottom: 4px;
+}
+
+.dark-theme .stat-number {
+  color: var(--primary-dark);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-secondary-light);
+  font-weight: 500;
+}
+
+.dark-theme .stat-label {
+  color: var(--text-secondary-dark);
+}
+
+/* Profile Actions */
 .profile-actions {
   display: flex;
   flex-direction: column;
@@ -453,32 +580,31 @@ body.dark-theme {
 }
 
 /* Buttons */
-.play-button, .exchange-button, .share-friends-button {
+.play-button, .exchange-button {
   background: var(--primary-gradient);
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 14px;
+  padding: 8px 16px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 13px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .dark-theme .play-button,
-.dark-theme .exchange-button,
-.dark-theme .share-friends-button {
+.dark-theme .exchange-button {
   background: var(--primary-dark);
-  box-shadow: 0 4px 15px rgba(74, 85, 104, 0.3);
+  box-shadow: 0 4px 12px rgba(74, 85, 104, 0.3);
 }
 
 .play-button::after,
-.exchange-button::after,
-.share-friends-button::after {
+.exchange-button::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -491,8 +617,7 @@ body.dark-theme {
 }
 
 .play-button:active::after,
-.exchange-button:active::after,
-.share-friends-button:active::after {
+.exchange-button:active::after {
   width: 100px;
   height: 100px;
   top: -20px;
@@ -500,31 +625,76 @@ body.dark-theme {
 }
 
 .play-button:hover,
-.exchange-button:hover,
-.share-friends-button:hover {
+.exchange-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
 .dark-theme .play-button:hover,
-.dark-theme .exchange-button:hover,
-.dark-theme .share-friends-button:hover {
-  box-shadow: 0 6px 20px rgba(74, 85, 104, 0.4);
+.dark-theme .exchange-button:hover {
+  box-shadow: 0 6px 16px rgba(74, 85, 104, 0.4);
 }
 
+/* Улучшенная кнопка "Поделиться" */
 .share-friends-button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   width: 100%;
-  padding: 18px;
-  font-size: 16px;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
   border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  position: relative;
+  overflow: hidden;
 }
 
-.action-icon {
-  font-size: 20px;
+.dark-theme .share-friends-button {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4b9a 100%);
+  box-shadow: 0 8px 25px rgba(74, 85, 104, 0.4);
+}
+
+.share-friends-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.share-friends-button:hover::before {
+  left: 100%;
+}
+
+.share-friends-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+}
+
+.dark-theme .share-friends-button:hover {
+  box-shadow: 0 12px 30px rgba(74, 85, 104, 0.5);
+}
+
+.share-friends-button:active {
+  transform: translateY(-1px);
+}
+
+.share-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
 }
 
 /* Bottom Navigation */
@@ -627,21 +797,26 @@ body.dark-theme {
   }
   
   .games-grid, .exchanges-list {
-    gap: 12px;
+    gap: 10px;
   }
   
   .game-card, .exchange-card {
-    padding: 16px;
+    padding: 14px;
   }
   
   .profile-avatar {
-    width: 70px;
-    height: 70px;
-    font-size: 28px;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+  
+  .profile-info h2 {
+    font-size: 18px;
   }
   
   .share-friends-button {
-    padding: 16px;
+    padding: 16px 20px;
+    font-size: 15px;
   }
   
   .settings-content {

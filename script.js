@@ -15,7 +15,7 @@ const translations = {
         english: "English",
         done: "Готово",
         games: "Игры",
-        bestGames: "Лучшие игры Telegram",
+        bestGames: "Лучшие хомячьи игры Telegram",
         hamsterGameDevDesc: "Создай свою студию",
         hamsterKingDesc: "Стань королем хомяков",
         hamsterFightClubDesc: "Бойцовский клуб хомяков",

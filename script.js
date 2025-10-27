@@ -1,8 +1,86 @@
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-});
+// ==================== КОНФИГУРАЦИЯ ====================
+// Легко меняйте игры и биржи здесь!
 
-// Translations object
+const GAMES_DATA = [
+    {
+        id: 1,
+        name: "Hamster GameDev",
+        bot: "hamsterdev_bot",
+        description: "Создай свою студию",
+        rating: 4.7,
+        players: "901K",
+        image: "images/hamster-gamedev.jpg",
+        fallback: "🎮"
+    },
+    {
+        id: 2,
+        name: "Hamster King",
+        bot: "hamsterking_bot",
+        description: "Стань королем хомяков",
+        rating: 4.2,
+        players: "581K",
+        image: "images/hamster-king.jpg",
+        fallback: "👑"
+    },
+    {
+        id: 3,
+        name: "Hamster Fight Club",
+        bot: "hamsterfightclub_bot",
+        description: "Бойцовский клуб хомяков",
+        rating: 4.9,
+        players: "386K",
+        image: "images/hamster-fightclub.jpg",
+        fallback: "🥊"
+    },
+    {
+        id: 4,
+        name: "BitQuest",
+        bot: "bitquest_bot",
+        description: "Приключения в мире крипты",
+        rating: 3.8,
+        players: "245K",
+        image: "images/bitquest.jpg",
+        fallback: "💰"
+    }
+];
+
+const EXCHANGES_DATA = [
+    {
+        id: 1,
+        name: "Bybit",
+        url: "https://www.bybit.com",
+        description: "Продвинутая торговая платформа",
+        image: "images/bybit.jpg",
+        fallback: "💱"
+    },
+    {
+        id: 2,
+        name: "BingX",
+        url: "https://www.bingx.com",
+        description: "Социальная торговля и копирование",
+        image: "images/bingx.jpg",
+        fallback: "📈"
+    },
+    {
+        id: 3,
+        name: "Bitget",
+        url: "https://www.bitget.com",
+        description: "Инновационная торговая платформа",
+        image: "images/bitget.jpg",
+        fallback: "⚡"
+    },
+    {
+        id: 4,
+        name: "MEXC",
+        url: "https://www.mexc.com",
+        description: "Глобальная биржа с низкими комиссиями",
+        image: "images/mexc.jpg",
+        fallback: "🌍"
+    }
+];
+
+// ==================== ПЕРЕВОДЫ ====================
+
 const translations = {
     ru: {
         appTitle: "Hamster Games",
@@ -15,7 +93,7 @@ const translations = {
         english: "English",
         done: "Готово",
         games: "Игры",
-        bestGames: "Лучшие хомячьи игры Telegram",
+        bestGames: "Лучшие игры Telegram",
         hamsterGameDevDesc: "Создай свою студию",
         hamsterKingDesc: "Стань королем хомяков",
         hamsterFightClubDesc: "Бойцовский клуб хомяков",
@@ -64,6 +142,12 @@ const translations = {
     }
 };
 
+// ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
 function vibrate() {
     if (navigator.vibrate) {
         navigator.vibrate(50);
@@ -72,8 +156,8 @@ function vibrate() {
 
 function initializeApp() {
     setupNavigation();
-    setupGameButtons();
-    setupExchangeButtons();
+    initializeGames();
+    initializeExchanges();
     setupSettingsPanel();
     loadThemePreference();
     loadLanguagePreference();
@@ -98,6 +182,208 @@ function initializeApp() {
         }
     }
 }
+
+// ==================== ИНИЦИАЛИЗАЦИЯ ИГР ====================
+
+function initializeGames() {
+    const gamesGrid = document.getElementById('games-grid');
+    if (!gamesGrid) return;
+    
+    gamesGrid.innerHTML = GAMES_DATA.map(game => `
+        <div class="game-card" data-game-id="${game.id}">
+            <div class="game-image">
+                <img src="${game.image}" alt="${game.name}" class="game-img" onerror="this.style.display='none'">
+                <div class="image-fallback">${game.fallback}</div>
+            </div>
+            <div class="game-info">
+                <h3>${game.name}</h3>
+                <p class="game-description">${game.description}</p>
+                <div class="game-stats">
+                    <div class="rating">
+                        <div class="stars">
+                            ${generateStars(game.rating)}
+                        </div>
+                        <span class="rating-value">${game.rating}</span>
+                    </div>
+                    <div class="players">
+                        <span class="players-icon">👥</span>
+                        <span class="players-count">${game.players}</span>
+                    </div>
+                </div>
+            </div>
+            <button class="play-button" data-bot="${game.bot}">
+                ${getTranslation('play')}
+            </button>
+        </div>
+    `).join('');
+    
+    setupGameButtons();
+}
+
+function generateStars(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    
+    let stars = '';
+    
+    // Заполненные звезды
+    for (let i = 0; i < fullStars; i++) {
+        stars += '<span class="star filled">★</span>';
+    }
+    
+    // Половина звезды
+    if (hasHalfStar) {
+        stars += '<span class="star half">★</span>';
+    }
+    
+    // Пустые звезды
+    for (let i = 0; i < emptyStars; i++) {
+        stars += '<span class="star">★</span>';
+    }
+    
+    return stars;
+}
+
+// ==================== ИНИЦИАЛИЗАЦИЯ БИРЖ ====================
+
+function initializeExchanges() {
+    const exchangesList = document.getElementById('exchanges-list');
+    if (!exchangesList) return;
+    
+    exchangesList.innerHTML = EXCHANGES_DATA.map(exchange => `
+        <div class="exchange-card" data-exchange-id="${exchange.id}">
+            <div class="exchange-logo">
+                <img src="${exchange.image}" alt="${exchange.name}" class="exchange-img" onerror="this.style.display='none'">
+                <div class="image-fallback">${exchange.fallback}</div>
+            </div>
+            <div class="exchange-info">
+                <h3>${exchange.name}</h3>
+                <p>${exchange.description}</p>
+            </div>
+            <button class="exchange-button" data-url="${exchange.url}">
+                ${getTranslation('go')}
+            </button>
+        </div>
+    `).join('');
+    
+    setupExchangeButtons();
+}
+
+// ==================== ПРОФИЛЬ TELEGRAM ====================
+
+function loadUserData() {
+    if (window.Telegram && window.Telegram.WebApp) {
+        const user = window.Telegram.WebApp.initDataUnsafe?.user;
+        
+        if (user) {
+            updateProfileDisplay(user);
+            
+            // Показываем расширенную информацию в консоли для отладки
+            console.log('🔍 Telegram User Data:', {
+                id: user.id,
+                firstName: user.first_name,
+                lastName: user.last_name,
+                username: user.username,
+                languageCode: user.language_code,
+                photoUrl: user.photo_url,
+                isPremium: user.is_premium
+            });
+        } else {
+            showFallbackProfile();
+            console.log('⚠️ Telegram user data not available');
+        }
+    } else {
+        showFallbackProfile();
+        console.log('🌐 Telegram Web App not available - running in browser');
+    }
+}
+
+function updateProfileDisplay(user) {
+    // Обновляем имя
+    const userName = document.getElementById('user-name');
+    if (userName) {
+        const fullName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+        userName.textContent = fullName;
+    }
+    
+    // Обновляем username
+    const userUsername = document.getElementById('user-username');
+    if (userUsername) {
+        if (user.username) {
+            userUsername.textContent = '@' + user.username;
+        } else {
+            userUsername.textContent = 'Telegram User';
+        }
+    }
+    
+    // Обновляем аватар
+    updateUserAvatar(user);
+    
+    // Показываем премиум статус если есть
+    if (user.is_premium) {
+        showPremiumBadge();
+    }
+}
+
+function updateUserAvatar(user) {
+    const userAvatar = document.getElementById('user-avatar');
+    const avatarImg = document.getElementById('avatar-img');
+    const avatarFallback = document.getElementById('avatar-fallback');
+    
+    if (!userAvatar) return;
+    
+    if (user.photo_url) {
+        // Загружаем аватарку
+        avatarImg.src = user.photo_url;
+        avatarImg.style.display = 'block';
+        avatarImg.alt = `${user.first_name}'s Avatar`;
+        avatarImg.onerror = () => {
+            // Если изображение не загрузилось, показываем fallback
+            avatarImg.style.display = 'none';
+            showAvatarFallback(user, avatarFallback);
+        };
+        avatarFallback.style.display = 'none';
+    } else {
+        // Показываем fallback аватар
+        avatarImg.style.display = 'none';
+        showAvatarFallback(user, avatarFallback);
+    }
+}
+
+function showAvatarFallback(user, avatarFallback) {
+    if (user.first_name) {
+        avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
+    } else {
+        avatarFallback.textContent = 'T';
+    }
+    avatarFallback.style.display = 'flex';
+}
+
+function showPremiumBadge() {
+    const profileInfo = document.querySelector('.profile-info');
+    if (profileInfo && !document.querySelector('.premium-badge')) {
+        const premiumBadge = document.createElement('div');
+        premiumBadge.className = 'premium-badge';
+        premiumBadge.innerHTML = '⭐ Premium';
+        profileInfo.appendChild(premiumBadge);
+    }
+}
+
+function showFallbackProfile() {
+    const userName = document.getElementById('user-name');
+    const userUsername = document.getElementById('user-username');
+    const avatarFallback = document.getElementById('avatar-fallback');
+    
+    if (userName) userName.textContent = 'Telegram User';
+    if (userUsername) userUsername.textContent = 'Открой в Telegram';
+    if (avatarFallback) {
+        avatarFallback.textContent = 'T';
+        avatarFallback.style.display = 'flex';
+    }
+}
+
+// ==================== НАВИГАЦИЯ И КНОПКИ ====================
 
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
@@ -162,6 +448,8 @@ function setupExchangeButtons() {
         });
     });
 }
+
+// ==================== НАСТРОЙКИ ====================
 
 function setupSettingsPanel() {
     const settingsButton = document.getElementById('settings-button');
@@ -245,6 +533,11 @@ function setLanguage(lang) {
     });
 }
 
+function getTranslation(key) {
+    const currentLang = localStorage.getItem('language') || 'ru';
+    return translations[currentLang]?.[key] || key;
+}
+
 function loadThemePreference() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     if (savedTheme === 'dark') {
@@ -281,59 +574,7 @@ function updateSettingsLanguageOptions(lang) {
     });
 }
 
-function loadUserData() {
-    // Try to get user data from Telegram Web App
-    if (window.Telegram && window.Telegram.WebApp) {
-        const user = window.Telegram.WebApp.initDataUnsafe?.user;
-        
-        if (user) {
-            console.log('Telegram User Data:', user);
-            
-            // Update user name
-            const userName = document.getElementById('user-name');
-            if (userName && user.first_name) {
-                const fullName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-                userName.textContent = fullName;
-            }
-            
-            // Update username
-            const userUsername = document.getElementById('user-username');
-            if (userUsername && user.username) {
-                userUsername.textContent = '@' + user.username;
-            } else if (userUsername) {
-                userUsername.textContent = 'Telegram User';
-            }
-            
-            // Update avatar
-            const userAvatar = document.getElementById('user-avatar');
-            const avatarImg = document.getElementById('avatar-img');
-            const avatarFallback = document.getElementById('avatar-fallback');
-            
-            if (userAvatar && user.photo_url) {
-                avatarImg.src = user.photo_url;
-                avatarImg.style.display = 'block';
-                avatarImg.alt = 'User Avatar';
-                avatarFallback.style.display = 'none';
-            } else if (userAvatar && user.first_name) {
-                // Show first letter of first name as fallback
-                avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
-                avatarFallback.style.display = 'flex';
-            }
-        } else {
-            console.log('No Telegram user data available');
-        }
-    } else {
-        console.log('Telegram Web App not available');
-        // Fallback: show demo data
-        const userName = document.getElementById('user-name');
-        const userUsername = document.getElementById('user-username');
-        const avatarFallback = document.getElementById('avatar-fallback');
-        
-        if (userName) userName.textContent = 'Telegram User';
-        if (userUsername) userUsername.textContent = '@username';
-        if (avatarFallback) avatarFallback.textContent = 'T';
-    }
-}
+// ==================== ШАРИНГ ====================
 
 function setupShareButton() {
     const shareButton = document.getElementById('share-friends-button');
@@ -397,3 +638,27 @@ function showNotification(customMessage) {
         notification.classList.remove('show');
     }, 2000);
 }
+
+// ==================== ДЛЯ ТЕСТИРОВАНИЯ В БРАУЗЕРЕ ====================
+// Раскомментируйте эти строки для тестирования профиля Telegram в браузере:
+
+/*
+window.Telegram = {
+    WebApp: {
+        initDataUnsafe: {
+            user: {
+                id: 123456789,
+                first_name: "Иван",
+                last_name: "Тестовый",
+                username: "ivan_test",
+                language_code: "ru",
+                photo_url: "https://via.placeholder.com/200",
+                is_premium: true
+            }
+        },
+        expand: () => console.log('App expanded'),
+        openTelegramLink: (url) => window.open(url, '_blank'),
+        openLink: (url) => window.open(url, '_blank')
+    }
+};
+*/

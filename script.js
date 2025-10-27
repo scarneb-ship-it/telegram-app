@@ -31,9 +31,7 @@ const translations = {
         shareWithFriends: "Поделиться с друзьями",
         profile: "Профиль",
         linkCopied: "Ссылка скопирована в буфер обмена!",
-        go: "Перейти",
-        gamesPlayed: "Игр сыграно",
-        friendsInvited: "Друзей приглашено"
+        go: "Перейти"
     },
     en: {
         appTitle: "Games Verse",
@@ -62,9 +60,7 @@ const translations = {
         shareWithFriends: "Share with friends",
         profile: "Profile",
         linkCopied: "Link copied to clipboard!",
-        go: "Go",
-        gamesPlayed: "Games played",
-        friendsInvited: "Friends invited"
+        go: "Go"
     }
 };
 

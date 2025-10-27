@@ -426,15 +426,16 @@ body.dark-theme {
   color: var(--text-secondary-dark);
 }
 
-/* GameFi Banner */
+/* GameFi Banner - Улучшенная версия */
 .gamefi-banner {
   position: relative;
   border-radius: 20px;
   overflow: hidden;
   margin-bottom: 20px;
   box-shadow: var(--shadow-light);
-  height: 140px;
+  height: 160px;
   transition: all 0.3s ease;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .dark-theme .gamefi-banner {
@@ -442,20 +443,20 @@ body.dark-theme {
 }
 
 .gamefi-banner:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
 }
 
 .gamefi-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.8) saturate(1.2);
-  transition: filter 0.3s ease;
+  filter: brightness(0.7) saturate(1.3) hue-rotate(-10deg);
+  transition: all 0.3s ease;
 }
 
 .gamefi-banner:hover .gamefi-image {
-  filter: brightness(0.9) saturate(1.3);
+  filter: brightness(0.8) saturate(1.4) hue-rotate(-5deg);
 }
 
 .gamefi-overlay {
@@ -466,29 +467,59 @@ body.dark-theme {
   bottom: 0;
   background: linear-gradient(
     135deg,
-    rgba(102, 126, 234, 0.3) 0%,
-    rgba(118, 75, 162, 0.3) 100%
+    rgba(102, 126, 234, 0.85) 0%,
+    rgba(118, 75, 162, 0.85) 100%
   );
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   padding: 20px;
 }
 
 .gamefi-content {
   color: white;
+  width: 100%;
 }
 
 .gamefi-title {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 6px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 8px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
 }
 
 .gamefi-description {
   font-size: 14px;
+  opacity: 0.95;
+  margin-bottom: 12px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  line-height: 1.3;
+}
+
+.gamefi-stats {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.stat-number {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 2px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.stat-label {
+  font-size: 11px;
   opacity: 0.9;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-weight: 500;
 }
 
 /* Exchanges List - Уменьшенные карточки */
@@ -887,7 +918,7 @@ body.dark-theme {
   }
   
   .gamefi-banner {
-    height: 120px;
+    height: 140px;
     margin-bottom: 16px;
   }
   
@@ -901,6 +932,18 @@ body.dark-theme {
   
   .gamefi-description {
     font-size: 13px;
+  }
+  
+  .gamefi-stats {
+    gap: 16px;
+  }
+  
+  .stat-number {
+    font-size: 16px;
+  }
+  
+  .stat-label {
+    font-size: 10px;
   }
   
   .profile-avatar {

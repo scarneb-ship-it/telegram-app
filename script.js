@@ -155,6 +155,9 @@ function vibrate() {
 }
 
 function initializeApp() {
+    // Инициализация Telegram WebApp
+    initializeTelegramWebApp();
+    
     setupNavigation();
     initializeGames();
     initializeExchanges();
@@ -168,18 +171,36 @@ function initializeApp() {
     setTimeout(() => {
         document.body.style.opacity = '1';
     }, 100);
-    
-    // Telegram Web App integration
+}
+
+function initializeTelegramWebApp() {
     if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.expand();
+        const tg = window.Telegram.WebApp;
         
-        const themeParams = window.Telegram.WebApp.themeParams;
+        // Развернуть приложение на весь экран
+        tg.ready();
+        tg.expand();
+        
+        // Применить цвета темы из Telegram
+        const themeParams = tg.themeParams;
         if (themeParams) {
-            document.documentElement.style.setProperty('--tg-theme-bg-color', themeParams.bg_color || '#ffffff');
-            document.documentElement.style.setProperty('--tg-theme-text-color', themeParams.text_color || '#000000');
-            document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color || '#667eea');
-            document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color || '#ffffff');
+            if (themeParams.bg_color) {
+                document.documentElement.style.setProperty('--tg-theme-bg-color', themeParams.bg_color);
+            }
+            if (themeParams.text_color) {
+                document.documentElement.style.setProperty('--tg-theme-text-color', themeParams.text_color);
+            }
+            if (themeParams.button_color) {
+                document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color);
+            }
+            if (themeParams.button_text_color) {
+                document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color);
+            }
         }
+        
+        console.log('✅ Telegram WebApp инициализирован');
+    } else {
+        console.log('⚠️ Telegram WebApp недоступен');
     }
 }
 
@@ -582,23 +603,41 @@ function setupShareButton() {
     if (shareButton) {
         shareButton.addEventListener('click', function() {
             vibrate();
-            const shareUrl = window.location.href;
-            const shareText = 'Открой для себя лучшие хомячьи игры Telegram в одном приложении!';
             
-            // Check if Web Share API is available
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Hamster Games',
-                    text: shareText,
-                    url: shareUrl,
-                })
-                .then(() => console.log('Успешный шаринг'))
-                .catch((error) => {
-                    console.log('Ошибка шаринга', error);
-                    fallbackCopyToClipboard(shareUrl);
-                });
+            const botUrl = 'https://t.me/khamster_kombat_bot';
+            const shareText = 'Открой для себя лучшие хомячьи игры Telegram в одном приложении! 🎮';
+            
+            // Проверяем доступность Telegram WebApp
+            if (window.Telegram && window.Telegram.WebApp) {
+                // Используем Telegram Share URL для открытия списка контактов
+                const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`;
+                
+                try {
+                    // Открываем окно шаринга в Telegram
+                    window.Telegram.WebApp.openTelegramLink(shareUrl);
+                    console.log('✅ Открыто окно шаринга Telegram');
+                } catch (error) {
+                    console.error('Ошибка при открытии шаринга:', error);
+                    // Fallback: копируем ссылку
+                    fallbackCopyToClipboard(botUrl);
+                }
             } else {
-                fallbackCopyToClipboard(shareUrl);
+                // Если WebApp недоступен, пробуем Web Share API
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Hamster Games',
+                        text: shareText,
+                        url: botUrl,
+                    })
+                    .then(() => console.log('Успешный шаринг'))
+                    .catch((error) => {
+                        console.log('Ошибка шаринга', error);
+                        fallbackCopyToClipboard(botUrl);
+                    });
+                } else {
+                    // Fallback: копируем ссылку
+                    fallbackCopyToClipboard(botUrl);
+                }
             }
         });
     }
@@ -638,27 +677,3 @@ function showNotification(customMessage) {
         notification.classList.remove('show');
     }, 2000);
 }
-
-// ==================== ДЛЯ ТЕСТИРОВАНИЯ В БРАУЗЕРЕ ====================
-// Раскомментируйте эти строки для тестирования профиля Telegram в браузере:
-
-/*
-window.Telegram = {
-    WebApp: {
-        initDataUnsafe: {
-            user: {
-                id: 123456789,
-                first_name: "Иван",
-                last_name: "Тестовый",
-                username: "ivan_test",
-                language_code: "ru",
-                photo_url: "https://via.placeholder.com/200",
-                is_premium: true
-            }
-        },
-        expand: () => console.log('App expanded'),
-        openTelegramLink: (url) => window.open(url, '_blank'),
-        openLink: (url) => window.open(url, '_blank')
-    }
-};
-*/

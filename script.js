@@ -1,72 +1,10 @@
 // Конфигурация приложения
 const APP_CONFIG = {
     version: '2.4.0',
-    build: '2025.01.21',
-    apiUrl: window.location.origin + '/api'
+    build: '2024.01.21'
 };
 
-// Настройки по умолчанию
-const DEFAULT_SETTINGS = {
-    vibration: true,
-    language: 'ru',
-    theme: 'light'
-};
-
-// Переводы
-const TRANSLATIONS = {
-    ru: {
-        appTitle: "Хамстер",
-        appSubtitle: "Все игры Хамстер Комбат",
-        games: "Игры",
-        gamesSubtitle: "Выберите игру и начните играть",
-        exchanges: "Биржи",
-        exchangesSubtitle: "Топовые криптобиржи",
-        news: "Новости",
-        newsSubtitle: "Последние обновления платформы",
-        profile: "Профиль",
-        settings: "Настройки",
-        theme: "Сменить тему",
-        themeLight: "Светлая тема",
-        themeDark: "Темная тема",
-        language: "Язык",
-        vibration: "Вибрация",
-        vibrationOn: "Вибрация: Вкл",
-        vibrationOff: "Вибрация: Выкл",
-        share: "Поделиться",
-        play: "Играть",
-        players: "игроков",
-        rating: "рейтинг",
-        shareSuccess: "Ссылка скопирована!",
-        shareError: "Не удалось поделиться"
-    },
-    en: {
-        appTitle: "Hamster",
-        appSubtitle: "All Hamster Combat Games",
-        games: "Games",
-        gamesSubtitle: "Choose a game and start playing",
-        exchanges: "Exchanges",
-        exchangesSubtitle: "Top crypto exchanges",
-        news: "News",
-        newsSubtitle: "Latest platform updates",
-        profile: "Profile",
-        settings: "Settings",
-        theme: "Change theme",
-        themeLight: "Light theme",
-        themeDark: "Dark theme",
-        language: "Language",
-        vibration: "Vibration",
-        vibrationOn: "Vibration: On",
-        vibrationOff: "Vibration: Off",
-        share: "Share",
-        play: "Play",
-        players: "players",
-        rating: "rating",
-        shareSuccess: "Link copied!",
-        shareError: "Failed to share"
-    }
-};
-
-// Данные игр
+// Данные игр с правильными изображениями
 const GAMES_DATA = [
     {
         id: "1",
@@ -75,7 +13,7 @@ const GAMES_DATA = [
         players: "15.2K",
         rating: "4.6",
         url: "https://t.me/hamster_gamedev_bot/start",
-        image: "https://via.placeholder.com/80x80/667eea/ffffff?text=HG"
+        image: "images/hamster-gamedev.jpg"
     },
     {
         id: "2", 
@@ -84,7 +22,7 @@ const GAMES_DATA = [
         players: "8.7K",
         rating: "4.7",
         url: "https://t.me/hamster_king_bot/start",
-        image: "https://via.placeholder.com/80x80/764ba2/ffffff?text=HK"
+        image: "images/hamster-king.jpg"
     },
     {
         id: "3",
@@ -93,7 +31,7 @@ const GAMES_DATA = [
         players: "5.3K",
         rating: "4.9",
         url: "https://t.me/hamster_fight_club_bot/start",
-        image: "https://via.placeholder.com/80x80/667eea/ffffff?text=HFC"
+        image: "images/hamster-fight-club.jpg"
     },
     {
         id: "4",
@@ -102,18 +40,18 @@ const GAMES_DATA = [
         players: "12.1K",
         rating: "4.8",
         url: "https://t.me/bitquest_bot/start",
-        image: "https://via.placeholder.com/80x80/764ba2/ffffff?text=BQ"
+        image: "images/bitquest.jpg"
     }
 ];
 
-// Данные бирж
+// Данные бирж с правильными изображениями
 const EXCHANGES_DATA = [
     {
         id: "1",
         name: "Binance",
         description: "Крупнейшая мировая криптобиржа",
         url: "https://www.binance.com",
-        logo: "https://via.placeholder.com/50x50/F3BA2F/000000?text=B",
+        logo: "images/binance.png",
         features: ["Spot", "Futures", "Earn"]
     },
     {
@@ -121,7 +59,7 @@ const EXCHANGES_DATA = [
         name: "Bybit",
         description: "Лучшие условия для трейдинга",
         url: "https://www.bybit.com",
-        logo: "https://via.placeholder.com/50x50/F7A600/000000?text=BY",
+        logo: "images/bybit.jpg",
         features: ["Futures", "Copy Trading", "Options"]
     },
     {
@@ -129,8 +67,24 @@ const EXCHANGES_DATA = [
         name: "OKX",
         description: "Тысячи торговых пар",
         url: "https://www.okx.com",
-        logo: "https://via.placeholder.com/50x50/000000/ffffff?text=OK",
+        logo: "images/okx.png",
         features: ["Spot", "DeFi", "NFT"]
+    }
+];
+
+// Данные новостей
+const NEWS_DATA = [
+    {
+        id: "1", 
+        title: "Hamster Verse запущен!",
+        content: "Новая игровая платформа с лучшими играми Telegram теперь доступна для всех!",
+        date: new Date().toISOString()
+    },
+    {
+        id: "2",
+        title: "Добавлены новые игры",
+        content: "В каталог добавлены популярные игры: Hamster Gamedev, Hamster King и другие.",
+        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
     }
 ];
 
@@ -140,154 +94,26 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
-    console.log('🚀 Хамстер v' + APP_CONFIG.version + ' initializing...');
+    console.log('🚀 Hamster Verse v' + APP_CONFIG.version + ' initializing...');
     
     try {
-        loadSettings();
         setupNavigation();
         setupTelegramIntegration();
         setupThemeToggle();
-        setupLanguageToggle();
-        setupVibrationToggle();
         setupShareButton();
         
         // Загрузка данных
         displayGames(GAMES_DATA);
         displayExchanges(EXCHANGES_DATA);
-        loadNews();
+        displayNews(NEWS_DATA);
         
         document.getElementById('app-version').textContent = APP_CONFIG.version;
         document.getElementById('app-build').textContent = APP_CONFIG.build;
         
-        console.log('✅ Хамстер initialized successfully');
+        console.log('✅ Hamster Verse initialized successfully');
         
     } catch (error) {
         console.error('❌ App initialization failed:', error);
-    }
-}
-
-// ==================== SETTINGS MANAGEMENT ====================
-
-function loadSettings() {
-    const settings = JSON.parse(localStorage.getItem('appSettings')) || DEFAULT_SETTINGS;
-    window.appSettings = settings;
-    applySettings();
-}
-
-function saveSettings() {
-    localStorage.setItem('appSettings', JSON.stringify(window.appSettings));
-    applySettings();
-}
-
-function applySettings() {
-    // Применяем тему
-    document.documentElement.setAttribute('data-theme', window.appSettings.theme);
-    
-    // Применяем язык
-    updateLanguage();
-    
-    // Применяем настройки вибрации
-    updateVibrationButton();
-    
-    // Обновляем кнопку темы
-    updateThemeButton();
-}
-
-// ==================== LANGUAGE MANAGEMENT ====================
-
-function setupLanguageToggle() {
-    const languageToggle = document.getElementById('language-toggle');
-    languageToggle.addEventListener('click', function() {
-        vibrate();
-        toggleLanguage();
-    });
-}
-
-function toggleLanguage() {
-    const currentLang = window.appSettings.language;
-    const newLang = currentLang === 'ru' ? 'en' : 'ru';
-    
-    window.appSettings.language = newLang;
-    saveSettings();
-    updateLanguage();
-}
-
-function updateLanguage() {
-    const lang = window.appSettings.language;
-    const t = TRANSLATIONS[lang];
-    
-    // Обновляем все элементы с data-translate
-    document.querySelectorAll('[data-translate]').forEach(element => {
-        const key = element.getAttribute('data-translate');
-        if (t[key]) {
-            element.textContent = t[key];
-        }
-    });
-    
-    // Обновляем язык кнопки
-    const languageBtn = document.querySelector('#language-toggle .action-text');
-    languageBtn.textContent = lang === 'ru' ? 'Русский' : 'English';
-    
-    // Обновляем кнопки в играх
-    document.querySelectorAll('.play-button').forEach(btn => {
-        btn.textContent = t.play;
-    });
-    
-    // Обновляем настройки вибрации
-    updateVibrationButton();
-    
-    // Обновляем настройки темы
-    updateThemeButton();
-}
-
-// ==================== VIBRATION MANAGEMENT ====================
-
-function setupVibrationToggle() {
-    const vibrationToggle = document.getElementById('vibration-toggle');
-    vibrationToggle.addEventListener('click', function() {
-        // Не добавляем вибрацию здесь, чтобы избежать рекурсии
-        toggleVibration();
-    });
-}
-
-function toggleVibration() {
-    window.appSettings.vibration = !window.appSettings.vibration;
-    saveSettings();
-    updateVibrationButton();
-    
-    // Вибрация при переключении (если включена)
-    if (window.appSettings.vibration) {
-        vibrate();
-    }
-}
-
-function updateVibrationButton() {
-    const vibrationBtn = document.querySelector('#vibration-toggle .action-text');
-    const lang = window.appSettings.language;
-    const t = TRANSLATIONS[lang];
-    
-    if (window.appSettings.vibration) {
-        vibrationBtn.textContent = t.vibrationOn;
-    } else {
-        vibrationBtn.textContent = t.vibrationOff;
-    }
-}
-
-function vibrate() {
-    if (!window.appSettings.vibration) return;
-    
-    // Визуальная вибрация для всех устройств
-    const elements = document.querySelectorAll('.nav-item.active, .play-button, .profile-action-btn');
-    elements.forEach(element => {
-        element.classList.add('vibrate');
-        setTimeout(() => {
-            element.classList.remove('vibrate');
-        }, 100);
-    });
-    
-    // Нативная вибрация для поддерживающих устройств
-    if (navigator.vibrate) {
-        navigator.vibrate(10);
     }
 }
 
@@ -295,7 +121,6 @@ function vibrate() {
 
 function displayGames(games) {
     const container = document.getElementById('games-container');
-    const t = TRANSLATIONS[window.appSettings.language];
     
     if (!games || games.length === 0) {
         container.innerHTML = `
@@ -327,7 +152,7 @@ function displayGames(games) {
                             </div>
                         </div>
                         <button class="play-button" data-url="${game.url}">
-                            ${t.play}
+                            Играть
                         </button>
                     </div>
                 </div>
@@ -374,24 +199,6 @@ function displayExchanges(exchanges) {
     `).join('');
 }
 
-function loadNews() {
-    // В реальном приложении здесь был бы fetch запрос
-    setTimeout(() => {
-        const news = [{
-            id: "1", 
-            title: "Хамстер запущен!",
-            content: "Новая игровая платформа с лучшими играми Telegram теперь доступна для всех! Присоединяйтесь к нашему сообществу.",
-            date: new Date().toISOString()
-        }, {
-            id: "2",
-            title: "Новая игра Hamster King",
-            content: "Станьте королём в эпических битвах за монеты. Новая механика, улучшенная графика и больше наград!",
-            date: new Date(Date.now() - 86400000).toISOString()
-        }];
-        displayNews(news);
-    }, 500);
-}
-
 function displayNews(news) {
     const container = document.getElementById('news-container');
     
@@ -414,7 +221,6 @@ function setupGameButtons() {
     playButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
-            vibrate();
             const url = this.getAttribute('data-url');
             openGame(url);
         });
@@ -423,7 +229,6 @@ function setupGameButtons() {
     const gameCards = document.querySelectorAll('.game-card');
     gameCards.forEach(card => {
         card.addEventListener('click', function() {
-            vibrate();
             const playButton = this.querySelector('.play-button');
             const url = playButton.getAttribute('data-url');
             openGame(url);
@@ -439,7 +244,7 @@ function openGame(url) {
     }
 }
 
-// ==================== NAVIGATION ====================
+// ==================== OTHER FUNCTIONS ====================
 
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
@@ -447,7 +252,6 @@ function setupNavigation() {
     
     navItems.forEach(item => {
         item.addEventListener('click', function() {
-            vibrate();
             const targetSection = this.getAttribute('data-section');
             
             navItems.forEach(nav => nav.classList.remove('active'));
@@ -463,8 +267,6 @@ function setupNavigation() {
     });
 }
 
-// ==================== TELEGRAM INTEGRATION ====================
-
 function setupTelegramIntegration() {
     if (window.Telegram && window.Telegram.WebApp) {
         const tg = window.Telegram.WebApp;
@@ -472,11 +274,7 @@ function setupTelegramIntegration() {
         tg.expand();
         tg.enableClosingConfirmation();
         
-        const user = tg.initDataUnsafe.user;
-        if (user) {
-            updateUserProfile(user);
-            registerUser(user);
-        }
+        updateUserProfile(tg.initDataUnsafe.user);
         
         tg.ready();
     } else {
@@ -503,112 +301,62 @@ function updateUserProfile(user) {
     }
 }
 
-function registerUser(user) {
-    // В реальном приложении здесь был бы fetch запрос
-    console.log('User registered:', user);
-}
-
-// ==================== THEME ====================
-
 function setupThemeToggle() {
     const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = themeToggle.querySelector('.action-icon');
+    const themeText = themeToggle.querySelector('.action-text');
+    
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeButton(savedTheme);
+    
     themeToggle.addEventListener('click', function() {
-        vibrate();
-        toggleTheme();
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeButton(newTheme);
     });
-}
-
-function toggleTheme() {
-    const currentTheme = window.appSettings.theme;
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     
-    window.appSettings.theme = newTheme;
-    saveSettings();
-    updateThemeButton();
-}
-
-function updateThemeButton() {
-    const themeBtn = document.querySelector('#theme-toggle .action-text');
-    const lang = window.appSettings.language;
-    const t = TRANSLATIONS[lang];
-    
-    if (window.appSettings.theme === 'dark') {
-        themeBtn.textContent = t.themeLight;
-    } else {
-        themeBtn.textContent = t.themeDark;
+    function updateThemeButton(theme) {
+        if (theme === 'dark') {
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'Светлая тема';
+        } else {
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'Темная тема';
+        }
     }
 }
-
-// ==================== SHARE ====================
 
 function setupShareButton() {
     const shareButton = document.getElementById('share-button');
-    shareButton.addEventListener('click', function() {
-        vibrate();
-        shareApp();
-    });
+    shareButton.addEventListener('click', shareApp);
 }
 
 function shareApp() {
-    const shareText = "🎮 Открой для себя Хамстер - все лучшие игры Telegram в одном приложении!";
+    const shareText = "🎮 Открой для себя Hamster Verse - все лучшие игры Telegram в одном приложении!";
     const shareUrl = window.location.href;
-    const t = TRANSLATIONS[window.appSettings.language];
     
     if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`);
-        showToast(t.shareSuccess);
+        window.Telegram.WebApp.shareUrl(shareUrl, shareText);
     } else if (navigator.share) {
         navigator.share({
-            title: 'Хамстер',
+            title: 'Hamster Verse',
             text: shareText,
             url: shareUrl
-        }).then(() => {
-            showToast(t.shareSuccess);
-        }).catch(err => {
-            console.log('Share failed:', err);
-            showToast(t.shareError);
         });
     } else {
         navigator.clipboard.writeText(shareUrl).then(() => {
-            showToast(t.shareSuccess);
-        }).catch(err => {
-            console.error('Failed to copy:', err);
-            showToast(t.shareError);
+            alert('Ссылка скопирована в буфер!');
         });
     }
 }
 
-function showToast(message) {
-    // Удаляем существующие тосты
-    const existingToasts = document.querySelectorAll('.toast');
-    existingToasts.forEach(toast => toast.remove());
-    
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    // Показываем тост
-    setTimeout(() => toast.classList.add('show'), 10);
-    
-    // Скрываем тост через 3 секунды
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-// ==================== UTILS ====================
-
 function formatDate(dateString) {
     const date = new Date(dateString);
-    const lang = window.appSettings.language;
-    
-    return date.toLocaleDateString(lang === 'ru' ? 'ru-RU' : 'en-US', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
+    return date.toLocaleDateString('ru-RU');
 }
 
 // Глобальные функции

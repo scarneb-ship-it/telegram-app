@@ -62,7 +62,7 @@ const EXCHANGES_DATA = [
     {
         id: 1,
         name: "Bybit",
-        url: "https://www.bybit.com",
+        url: "https://www.bybit.com/invite?ref=57KXPMO",
         description: "Продвинутая торговая платформа",
         image: "images/bybit.jpg",
         fallback: "💱"
@@ -70,7 +70,7 @@ const EXCHANGES_DATA = [
     {
         id: 2,
         name: "BingX",
-        url: "https://www.bingx.com",
+        url: "https://bingxdao.com/referral-program/V2TZVA?activityId=g_1529293499868241925",
         description: "Социальная торговля и копирование",
         image: "images/bingx.jpg",
         fallback: "📈"
@@ -78,7 +78,7 @@ const EXCHANGES_DATA = [
     {
         id: 3,
         name: "Bitget",
-        url: "https://www.bitget.com",
+        url: "https://www.bitgetapps.com/ru/referral/register?clacCode=40FSP70H&from=%2Fru%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter",
         description: "Инновационная торговая платформа",
         image: "images/bitget.jpg",
         fallback: "⚡"
@@ -86,7 +86,7 @@ const EXCHANGES_DATA = [
     {
         id: 4,
         name: "MEXC",
-        url: "https://www.mexc.com",
+        url: "https://promote.mexc.com/r/aTSLfdm54W",
         description: "Глобальная биржа с низкими комиссиями",
         image: "images/mexc.jpg",
         fallback: "🌍"

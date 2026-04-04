@@ -12,7 +12,7 @@ const GAMES_DATA = [
         description: "Строй свой пиксельный мир",
         rating: 4.8,
         players: "125K",
-        image: "images/pixel-world.jpg",
+        image: "images/photo_2026-02-17_13-44-55.jpg",
         fallback: "🌍",
         badge: "Beta",
         highlight: true

@@ -12,7 +12,7 @@ const GAMES_DATA = [
         description: "Строй свой пиксельный мир",
         rating: 4.8,
         players: "125K",
-        image: "https://github.com/scarneb-ship-it/telegram-app/blob/main/images/photo_2026-02-17_13-44-55.jpg",
+        image: "images/pixel-world.jpg",
         fallback: "🌍",
         badge: "Beta",      // Бейдж "Beta"
         highlight: true     // Визуальное выделение карточки

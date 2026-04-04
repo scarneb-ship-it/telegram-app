@@ -3,6 +3,17 @@
 
 const GAMES_DATA = [
     {
+        id: "pixelworld",   // уникальный ID для выделения стилем
+        name: "Pixel World",
+        link: "https://t.me/pixelworld/play?startapp=r6823288584",  // прямая реферальная ссылка
+        description: "Строй свой мир в Pixel World Beta",
+        rating: 4.9,
+        players: "1.2M",
+        image: "images/pixelworld.jpg",
+        fallback: "🌍",
+        isBeta: true          // маркер для бейджа BETA
+    },
+    {
         id: 1,
         name: "Hamster GameDev",
         bot: "hamsterdev_bot",
@@ -83,7 +94,7 @@ const EXCHANGES_DATA = [
 
 const translations = {
     ru: {
-        appTitle: "Hamster Games",
+        appTitle: "Games Verse",
         settings: "Настройки",
         theme: "Тема",
         lightTheme: "Светлая",
@@ -98,6 +109,7 @@ const translations = {
         hamsterKingDesc: "Стань королем хомяков",
         hamsterFightClubDesc: "Бойцовский клуб хомяков",
         bitquestDesc: "Приключения в мире крипты",
+        pixelWorldDesc: "Строй свой мир в Pixel World Beta",
         play: "Играть",
         exchanges: "Биржи",
         exchangesDesc: "Торгуйте криптовалютами безопасно",
@@ -112,7 +124,7 @@ const translations = {
         go: "Перейти"
     },
     en: {
-        appTitle: "Hamster Games",
+        appTitle: "Games Verse",
         settings: "Settings",
         theme: "Theme",
         lightTheme: "Light",
@@ -127,6 +139,7 @@ const translations = {
         hamsterKingDesc: "Become the hamster king",
         hamsterFightClubDesc: "Hamster fighting club",
         bitquestDesc: "Adventures in the crypto world",
+        pixelWorldDesc: "Build your world in Pixel World Beta",
         play: "Play",
         exchanges: "Exchanges",
         exchangesDesc: "Trade cryptocurrencies safely",
@@ -210,33 +223,42 @@ function initializeGames() {
     const gamesGrid = document.getElementById('games-grid');
     if (!gamesGrid) return;
     
-    gamesGrid.innerHTML = GAMES_DATA.map(game => `
-        <div class="game-card" data-game-id="${game.id}">
-            <div class="game-image">
-                <img src="${game.image}" alt="${game.name}" class="game-img" onerror="this.style.display='none'">
-                <div class="image-fallback">${game.fallback}</div>
-            </div>
-            <div class="game-info">
-                <h3>${game.name}</h3>
-                <p class="game-description">${game.description}</p>
-                <div class="game-stats">
-                    <div class="rating">
-                        <div class="stars">
-                            ${generateStars(game.rating)}
+    gamesGrid.innerHTML = GAMES_DATA.map(game => {
+        // Генерируем HTML для карточки
+        let betaBadge = '';
+        if (game.isBeta) {
+            betaBadge = '<span class="beta-badge">BETA</span>';
+        }
+        
+        return `
+            <div class="game-card" data-game-id="${game.id}">
+                ${betaBadge}
+                <div class="game-image">
+                    <img src="${game.image}" alt="${game.name}" class="game-img" onerror="this.style.display='none'">
+                    <div class="image-fallback">${game.fallback}</div>
+                </div>
+                <div class="game-info">
+                    <h3>${game.name}</h3>
+                    <p class="game-description">${game.description}</p>
+                    <div class="game-stats">
+                        <div class="rating">
+                            <div class="stars">
+                                ${generateStars(game.rating)}
+                            </div>
+                            <span class="rating-value">${game.rating}</span>
                         </div>
-                        <span class="rating-value">${game.rating}</span>
-                    </div>
-                    <div class="players">
-                        <span class="players-icon">👥</span>
-                        <span class="players-count">${game.players}</span>
+                        <div class="players">
+                            <span class="players-icon">👥</span>
+                            <span class="players-count">${game.players}</span>
+                        </div>
                     </div>
                 </div>
+                <button class="play-button" data-link="${game.link || ''}" data-bot="${game.bot || ''}">
+                    ${getTranslation('play')}
+                </button>
             </div>
-            <button class="play-button" data-bot="${game.bot}">
-                ${getTranslation('play')}
-            </button>
-        </div>
-    `).join('');
+        `;
+    }).join('');
     
     setupGameButtons();
 }
@@ -437,15 +459,27 @@ function setupGameButtons() {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             vibrate();
-            const botUsername = this.getAttribute('data-bot');
-            if (botUsername) {
-                const telegramUrl = `https://t.me/${botUsername}?start=app`;
-                
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.openTelegramLink(telegramUrl);
-                } else {
-                    window.open(telegramUrl, '_blank');
-                }
+            
+            const link = this.getAttribute('data-link');
+            const bot = this.getAttribute('data-bot');
+            
+            let url = '';
+            if (link) {
+                // Если есть прямая ссылка (например, реферальная на игру)
+                url = link;
+            } else if (bot) {
+                // Стандартный запуск бота
+                url = `https://t.me/${bot}?start=app`;
+            } else {
+                console.error('Нет ссылки или бота для игры');
+                return;
+            }
+            
+            if (window.Telegram && window.Telegram.WebApp) {
+                // Пробуем открыть встроенную ссылку Telegram
+                window.Telegram.WebApp.openTelegramLink(url);
+            } else {
+                window.open(url, '_blank');
             }
         });
     });
@@ -625,7 +659,7 @@ function setupShareButton() {
                 // Если WebApp недоступен, пробуем Web Share API
                 if (navigator.share) {
                     navigator.share({
-                        title: 'Hamster Games',
+                        title: 'Games Verse',
                         text: shareText,
                         url: botUrl,
                     })

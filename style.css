@@ -1302,3 +1302,57 @@ body {
 .main-content {
     overflow-x: hidden;
 }
+
+/* Компактный режим для страницы профиля без хедера */
+.header {
+    transition: display 0.2s;
+}
+.profile-section .main-content {
+    padding-top: 8px;
+}
+
+/* Уменьшаем отступы в профиле для экономии места */
+.profile-header {
+    margin-bottom: 16px;
+    padding: 12px;
+}
+.profile-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+}
+.profile-info h2 {
+    font-size: 16px;
+}
+.share-friends-button {
+    padding: 12px 18px;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+.game-2048-container {
+    margin-top: 12px;
+    padding: 10px;
+}
+.game-board-2048 {
+    gap: 6px;
+    padding: 6px;
+}
+.tile-cell {
+    border-radius: 10px;
+}
+.game-header-2048 {
+    margin-bottom: 10px;
+}
+.game-title-2048 {
+    font-size: 20px;
+}
+.score-box {
+    padding: 3px 10px;
+    min-width: 50px;
+}
+.score-value {
+    font-size: 16px;
+}
+.game-controls {
+    margin-top: 0;
+}

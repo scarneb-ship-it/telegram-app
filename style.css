@@ -665,7 +665,7 @@ body.dark-theme {
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
   padding: 18px;
   background: var(--card-light);
   border-radius: 18px;
@@ -756,195 +756,6 @@ body.dark-theme {
   display: flex;
   flex-direction: column;
   gap: 15px;
-}
-
-/* ========== НОВАЯ ИГРА В ПРОФИЛЕ (TAP MINER) ========== */
-.game-miner {
-  background: var(--card-light);
-  border-radius: 24px;
-  padding: 20px 16px;
-  margin-bottom: 20px;
-  text-align: center;
-  border: 1px solid var(--border-light);
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.dark-theme .game-miner {
-  background: var(--card-dark);
-  border-color: var(--border-dark);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.game-miner-header {
-  margin-bottom: 16px;
-}
-
-.game-miner-title {
-  font-size: 22px;
-  font-weight: 700;
-  background: var(--primary-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
-}
-
-.dark-theme .game-miner-title {
-  background: linear-gradient(135deg, #a0aec0, #cbd5e0);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-
-.game-miner-subtitle {
-  font-size: 13px;
-  color: var(--text-secondary-light);
-  margin-top: 4px;
-}
-
-.dark-theme .game-miner-subtitle {
-  color: var(--text-secondary-dark);
-}
-
-.coin-display {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 15px 0;
-}
-
-.coin-icon {
-  font-size: 90px;
-  cursor: pointer;
-  transition: transform 0.1s ease, filter 0.2s;
-  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
-  animation: floatCoin 3s infinite ease-in-out;
-}
-
-.coin-icon:active {
-  transform: scale(0.92);
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-}
-
-@keyframes floatCoin {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-  100% { transform: translateY(0px); }
-}
-
-.score-container {
-  margin-top: 12px;
-  background: rgba(102, 126, 234, 0.12);
-  padding: 10px 20px;
-  border-radius: 60px;
-  backdrop-filter: blur(4px);
-}
-
-.dark-theme .score-container {
-  background: rgba(102, 126, 234, 0.25);
-}
-
-.score-label {
-  font-size: 15px;
-  font-weight: 500;
-  margin-right: 8px;
-}
-
-.score-value {
-  font-size: 32px;
-  font-weight: 800;
-  background: var(--primary-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.miner-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--surface-light);
-  padding: 12px 16px;
-  border-radius: 60px;
-  margin: 12px 0 8px;
-  border: 1px solid var(--border-light);
-}
-
-.dark-theme .miner-stats {
-  background: var(--surface-dark);
-  border-color: var(--border-dark);
-}
-
-.stat-badge {
-  display: flex;
-  gap: 8px;
-  font-size: 14px;
-  align-items: baseline;
-}
-
-.stat-badge span {
-  color: var(--text-secondary-light);
-}
-
-.stat-badge strong {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--primary-light);
-}
-
-.reset-score-btn {
-  background: rgba(237, 137, 54, 0.15);
-  border: none;
-  padding: 6px 14px;
-  border-radius: 40px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--warning-color);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.reset-score-btn:active {
-  transform: scale(0.96);
-  background: rgba(237, 137, 54, 0.3);
-}
-
-.game-hint {
-  font-size: 12px;
-  color: var(--text-secondary-light);
-  margin-top: 10px;
-  opacity: 0.7;
-}
-
-/* Анимация всплывающих +1 */
-.fly-number {
-  position: fixed;
-  font-size: 28px;
-  font-weight: 800;
-  background: var(--primary-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  pointer-events: none;
-  z-index: 1000;
-  animation: flyUp 0.6s ease-out forwards;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-
-@keyframes flyUp {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(0.8);
-  }
-  70% {
-    opacity: 0.8;
-    transform: translate(-50%, -80px) scale(1.2);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -120px) scale(1);
-  }
 }
 
 /* Buttons */
@@ -1224,16 +1035,6 @@ body.dark-theme {
   .settings-panel {
     padding: 60px 12px 0 0;
   }
-
-  .coin-icon {
-    font-size: 70px;
-  }
-  .score-value {
-    font-size: 26px;
-  }
-  .game-miner {
-    padding: 16px;
-  }
 }
 
 /* Animations */
@@ -1286,99 +1087,206 @@ button:focus-visible {
   outline-color: var(--primary-dark);
 }
 
-/* ========== PROFILE GAME SECTION ========== */
-.profile-game-section {
+/* ==================== 2048 GAME STYLES ==================== */
+.game-2048-container {
+    margin-top: 24px;
     background: var(--card-light);
     border-radius: 24px;
     padding: 16px;
-    margin: 20px 0;
     border: 1px solid var(--border-light);
     transition: all 0.3s ease;
 }
 
-.dark-theme .profile-game-section {
+.dark-theme .game-2048-container {
     background: var(--card-dark);
     border-color: var(--border-dark);
 }
 
-.profile-game-section .game-header {
+.game-header-2048 {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 12px;
+    align-items: center;
+    margin-bottom: 20px;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
 }
 
-.profile-game-section .game-header h3 {
-    font-size: 18px;
-    font-weight: 700;
-    background: var(--primary-gradient);
+.game-title-2048 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e67e22, #f39c12);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    margin: 0;
 }
 
-.game-stats-display {
+.game-scores {
     display: flex;
-    gap: 16px;
-    font-size: 14px;
+    gap: 12px;
+}
+
+.score-box {
+    background: var(--primary-gradient);
+    border-radius: 16px;
+    padding: 6px 14px;
+    text-align: center;
+    min-width: 70px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.score-label {
+    font-size: 11px;
     font-weight: 600;
-    background: rgba(102, 126, 234, 0.1);
-    padding: 4px 12px;
-    border-radius: 40px;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.5px;
 }
 
-.game-stats-display span {
-    color: var(--text-primary-light);
+.score-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
 }
 
-.dark-theme .game-stats-display span {
-    color: var(--text-primary-dark);
+.game-board-2048 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    background-color: #bbada0;
+    border-radius: 16px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background: #bbada0;
+}
+
+.dark-theme .game-board-2048 {
+    background: #8f7a66;
+}
+
+.tile-cell {
+    aspect-ratio: 1 / 1;
+    background-color: rgba(238, 228, 218, 0.35);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 28px;
+    transition: all 0.15s ease-in-out;
+    position: relative;
+}
+
+/* Цвета плиток (яркие, сочные) */
+.tile-2 { background: #eee4da; color: #776e65; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.tile-4 { background: #ede0c8; color: #776e65; }
+.tile-8 { background: #f2b179; color: #f9f6f2; }
+.tile-16 { background: #f59563; color: #f9f6f2; }
+.tile-32 { background: #f67c5f; color: #f9f6f2; }
+.tile-64 { background: #f65e3b; color: #f9f6f2; }
+.tile-128 { background: #edcf72; color: #f9f6f2; font-size: 24px; }
+.tile-256 { background: #edcc61; color: #f9f6f2; font-size: 24px; }
+.tile-512 { background: #edc850; color: #f9f6f2; font-size: 24px; }
+.tile-1024 { background: #edc53f; color: #f9f6f2; font-size: 20px; }
+.tile-2048 { background: #edc22e; color: #f9f6f2; font-size: 20px; }
+.tile-super { background: #3c3a32; color: #f9f6f2; font-size: 18px; }
+
+/* Анимация появления */
+.tile-new {
+    animation: pop 0.2s ease-in-out;
+}
+
+@keyframes pop {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Анимация слияния */
+.tile-merge {
+    animation: merge 0.2s ease-in-out;
+}
+
+@keyframes merge {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); background: #f5d76e; }
+    100% { transform: scale(1); }
 }
 
 .game-controls {
     display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin: 16px 0 12px;
-}
-
-.game-btn {
-    background: var(--primary-gradient);
-    border: none;
-    color: white;
-    font-weight: 600;
-    padding: 8px 20px;
-    border-radius: 40px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-}
-
-.game-btn:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.game-instruction {
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-secondary-light);
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
     margin-top: 8px;
 }
 
-.dark-theme .game-instruction {
+.new-game-btn {
+    background: linear-gradient(135deg, #8f7a66, #776e65);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 40px;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.new-game-btn:active {
+    transform: scale(0.96);
+}
+
+.game-status {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 40px;
+    background: rgba(0,0,0,0.05);
+    color: var(--text-primary-light);
+}
+
+.dark-theme .game-status {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-primary-dark);
+}
+
+.swipe-hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-secondary-light);
+    margin-top: 12px;
+    opacity: 0.7;
+}
+
+.dark-theme .swipe-hint {
     color: var(--text-secondary-dark);
 }
 
-#game-canvas {
-    cursor: pointer;
-    background: #f8fafc;
-    transition: background 0.2s;
-}
-
-.dark-theme #game-canvas {
-    background: #0f172a;
+/* Адаптив для маленьких экранов */
+@media (max-width: 480px) {
+    .game-board-2048 {
+        gap: 8px;
+        padding: 8px;
+    }
+    .tile-cell {
+        font-size: 22px;
+    }
+    .tile-128, .tile-256, .tile-512 {
+        font-size: 18px;
+    }
+    .tile-1024, .tile-2048 {
+        font-size: 16px;
+    }
+    .game-title-2048 {
+        font-size: 24px;
+    }
+    .score-value {
+        font-size: 18px;
+    }
+    .score-box {
+        padding: 4px 10px;
+        min-width: 60px;
+    }
 }

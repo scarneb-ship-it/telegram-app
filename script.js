@@ -807,3 +807,60 @@ document.addEventListener('DOMContentLoaded', function() {
         initGame2048();
     }, 300);
 });
+
+// ==================== СКРЫТИЕ HEADER НА СТРАНИЦЕ ПРОФИЛЯ ====================
+const headerElement = document.querySelector('.header');
+const mainContent = document.querySelector('.main-content');
+
+function toggleHeaderForSection(sectionId) {
+    if (!headerElement) return;
+    if (sectionId === 'profile-section') {
+        headerElement.style.display = 'none';
+        // Добавляем класс для компактного отступа, если нужно
+        mainContent.style.paddingTop = '8px';
+    } else {
+        headerElement.style.display = 'block';
+        mainContent.style.paddingTop = '';
+    }
+}
+
+// Перехватываем навигацию
+const originalSetupNavigation = setupNavigation;
+setupNavigation = function() {
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.content-section');
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            vibrate();
+            const targetSection = this.getAttribute('data-section');
+            navItems.forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === targetSection) section.classList.add('active');
+            });
+            // Скрываем/показываем header
+            toggleHeaderForSection(targetSection);
+        });
+    });
+    // При загрузке проверяем активную секцию
+    const activeSection = document.querySelector('.content-section.active');
+    if (activeSection) toggleHeaderForSection(activeSection.id);
+};
+
+// Вызываем новую навигацию после инициализации
+// Переопределяем initializeApp, чтобы не сломать порядок
+const originalInitializeApp = initializeApp;
+initializeApp = function() {
+    originalInitializeApp();
+    // После стандартной инициализации навешиваем навигацию снова (поверх старой)
+    setupNavigation();
+    // Дополнительно: скрыть header, если профиль активен
+    const activeSection = document.querySelector('.content-section.active');
+    if (activeSection && activeSection.id === 'profile-section') {
+        toggleHeaderForSection('profile-section');
+    }
+};
+
+// Вызываем заново (переинициализируем)
+initializeApp();

@@ -17,8 +17,7 @@
   --warning-color: #ed8936;
   --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --beta-bg: #ff9800;
-  --beta-text: #fff;
+  --highlight-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
 }
 
 * {
@@ -302,35 +301,61 @@ body.dark-theme {
   box-shadow: var(--shadow-dark);
 }
 
-/* Beta badge */
-.beta-badge {
+/* Выделенная карточка (Pixel World) */
+.game-card.highlight {
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1));
+  border: 1px solid rgba(245, 87, 108, 0.5);
+  box-shadow: 0 0 0 2px rgba(245, 87, 108, 0.2), var(--shadow-light);
+  position: relative;
+}
+
+.dark-theme .game-card.highlight {
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.15), rgba(245, 87, 108, 0.15));
+  border-color: rgba(245, 87, 108, 0.7);
+  box-shadow: 0 0 0 2px rgba(245, 87, 108, 0.3), var(--shadow-dark);
+}
+
+.game-card.highlight::before {
+  content: '';
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: var(--beta-bg);
-  color: var(--beta-text);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--highlight-gradient);
+}
+
+/* Заголовок игры с бейджем */
+.game-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.game-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-badge {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  color: white;
   font-size: 10px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 2px 6px;
   border-radius: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  z-index: 2;
+  text-transform: uppercase;
   letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-.dark-theme .beta-badge {
-  background: #ff9800;
-  color: #000;
-}
-
-/* Легкое выделение карточки новой игры */
-.game-card[data-game-id="pixelworld"] {
-  background: linear-gradient(145deg, #fff9e6, var(--card-light));
-  border-left: 4px solid var(--beta-bg);
-}
-
-.dark-theme .game-card[data-game-id="pixelworld"] {
-  background: linear-gradient(145deg, #2a2a2a, var(--card-dark));
+.dark-theme .game-badge {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 .game-image {
@@ -368,15 +393,6 @@ body.dark-theme {
 .game-info {
   flex-grow: 1;
   min-width: 0;
-}
-
-.game-info h3 {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .game-description {

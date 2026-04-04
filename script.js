@@ -121,7 +121,8 @@ const translations = {
         shareWithFriends: "Поделиться с друзьями",
         profile: "Профиль",
         linkCopied: "Ссылка скопирована в буфер обмена!",
-        go: "Перейти"
+        go: "Перейти",
+        promoCodeCopied: "Промокод HADRON скопирован! 🎁"
     },
     en: {
         appTitle: "Games Verse",
@@ -142,7 +143,8 @@ const translations = {
         shareWithFriends: "Share with friends",
         profile: "Profile",
         linkCopied: "Link copied to clipboard!",
-        go: "Go"
+        go: "Go",
+        promoCodeCopied: "Promo code HADRON copied! 🎁"
     }
 };
 
@@ -168,6 +170,7 @@ function initializeApp() {
     loadLanguagePreference();
     loadUserData(); // Загружает данные пользователя и устанавливает currentUserId
     setupShareButton(); // Теперь использует currentUserId
+    setupPromoMarquee(); // НОВОЕ: обработчик клика по баннеру с промокодом
     setTimeout(() => {
         document.body.style.opacity = '1';
     }, 100);
@@ -495,6 +498,24 @@ function setupShareButton() {
     }
 }
 
+// ==================== НОВАЯ ФУНКЦИЯ ДЛЯ ПРОМОКОДА ====================
+
+function setupPromoMarquee() {
+    const promoElement = document.getElementById('promoMarquee');
+    if (promoElement) {
+        promoElement.addEventListener('click', function() {
+            vibrate();
+            const promoCode = 'HADRON';
+            // Копируем промокод в буфер
+            fallbackCopyToClipboard(promoCode);
+            // Показываем специальное уведомление
+            const currentLang = localStorage.getItem('language') || 'ru';
+            const message = translations[currentLang].promoCodeCopied || 'Промокод HADRON скопирован! 🎁';
+            showCustomNotification(message);
+        });
+    }
+}
+
 function fallbackCopyToClipboard(text) {
     try {
         const textArea = document.createElement('textarea');
@@ -505,10 +526,9 @@ function fallbackCopyToClipboard(text) {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        showNotification();
     } catch (err) {
         console.error('Copy failed:', err);
-        showNotification('Не удалось скопировать ссылку');
+        showCustomNotification('Не удалось скопировать промокод');
     }
 }
 
@@ -520,6 +540,16 @@ function showNotification(customMessage) {
         const currentLang = localStorage.getItem('language') || 'ru';
         notification.textContent = translations[currentLang].linkCopied;
     }
+    notification.classList.add('show');
+    setTimeout(() => notification.classList.remove('show'), 2000);
+}
+
+// Заменяем старую функцию showNotification, чтобы не сломать другие вызовы,
+// но добавляем новую для удобства
+function showCustomNotification(message) {
+    const notification = document.getElementById('notification');
+    if (!notification) return;
+    notification.textContent = message;
     notification.classList.add('show');
     setTimeout(() => notification.classList.remove('show'), 2000);
 }

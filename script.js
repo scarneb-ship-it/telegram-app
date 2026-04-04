@@ -11,7 +11,7 @@ const GAMES_DATA = [
         fullLink: "https://t.me/pixelworld/play?startapp=r6823288584",
         description: "Первый 3D-шутер в Telegram",
         rating: 4.9,
-        players: "125K",
+        players: "34K",
         image: "images/photo_2026-02-17_13-44-55.jpg",
         fallback: "🌍",
         badge: "Beta",
@@ -23,7 +23,7 @@ const GAMES_DATA = [
         fullLink: "https://t.me/Hamster_GAme_Dev_bot/start?startapp=kentId6823288584",
         description: "Создай свою студию",
         rating: 4.7,
-        players: "901K",
+        players: "368K",
         image: "images/hamster-gamedev.jpg",
         fallback: "🎮"
     },
@@ -33,7 +33,7 @@ const GAMES_DATA = [
         fullLink: "https://t.me/hamsterking_game_bot?startapp=6823288584",
         description: "Стань королем хомяков",
         rating: 4.2,
-        players: "581K",
+        players: "188K",
         image: "images/hamster-king.jpg",
         fallback: "👑"
     },
@@ -43,7 +43,7 @@ const GAMES_DATA = [
         fullLink: "https://t.me/hamster_fightclub_bot?startapp=NWE1YjA2YWUtZTAyMS01ZjA1LTg4ZTYtMGZmZjUwNDQwNjU5",
         description: "Бойцовский клуб хомяков",
         rating: 4.9,
-        players: "386K",
+        players: "85K",
         image: "images/hamster-fightclub.jpg",
         fallback: "🥊"
     },
@@ -53,7 +53,7 @@ const GAMES_DATA = [
         fullLink: "https://t.me/BitquestGameSBot/start?startapp=kentId_6823288584",
         description: "Приключения в мире крипты",
         rating: 3.8,
-        players: "245K",
+        players: "281K",
         image: "images/bitquest.jpg",
         fallback: "💰"
     }

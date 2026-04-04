@@ -51,8 +51,6 @@ const GAMES_DATA = [
         id: 4,
         name: "BitQuest",
         bot: "https://t.me/BitquestGameSBot/start?startapp=kentId_6823288584",
-
-Присоединяйся ко мне в BitQuest и выигрывай крутые подарки в Telegram!
         description: "Приключения в мире крипты",
         rating: 3.8,
         players: "245K",

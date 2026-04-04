@@ -20,7 +20,7 @@ const GAMES_DATA = [
     {
         id: 1,
         name: "Hamster GameDev",
-        bot: "https://t.me/Hamster_GAme_Dev_bot/start?startapp=kentId6823288584",
+        fullLink: "https://t.me/Hamster_GAme_Dev_bot/start?startapp=kentId6823288584",
         description: "Создай свою студию",
         rating: 4.7,
         players: "901K",
@@ -30,7 +30,7 @@ const GAMES_DATA = [
     {
         id: 2,
         name: "Hamster King",
-        bot: "https://t.me/hamsterking_game_bot?startapp=6823288584",
+        fullLink: "https://t.me/hamsterking_game_bot?startapp=6823288584",
         description: "Стань королем хомяков",
         rating: 4.2,
         players: "581K",
@@ -40,7 +40,7 @@ const GAMES_DATA = [
     {
         id: 3,
         name: "Hamster Fight Club",
-        bot: "https://t.me/hamster_fightclub_bot?startapp=NWE1YjA2YWUtZTAyMS01ZjA1LTg4ZTYtMGZmZjUwNDQwNjU5",
+        fullLink: "https://t.me/hamster_fightclub_bot?startapp=NWE1YjA2YWUtZTAyMS01ZjA1LTg4ZTYtMGZmZjUwNDQwNjU5",
         description: "Бойцовский клуб хомяков",
         rating: 4.9,
         players: "386K",
@@ -50,7 +50,7 @@ const GAMES_DATA = [
     {
         id: 4,
         name: "BitQuest",
-        bot: "https://t.me/BitquestGameSBot/start?startapp=kentId_6823288584",
+        fullLink: "https://t.me/BitquestGameSBot/start?startapp=kentId_6823288584",
         description: "Приключения в мире крипты",
         rating: 3.8,
         players: "245K",
@@ -58,7 +58,6 @@ const GAMES_DATA = [
         fallback: "💰"
     }
 ];
-
 const EXCHANGES_DATA = [
     {
         id: 1,

@@ -17,7 +17,7 @@
   --warning-color: #ed8936;
   --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --highlight-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --highlight-gradient: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
 }
 
 * {
@@ -301,18 +301,18 @@ body.dark-theme {
   box-shadow: var(--shadow-dark);
 }
 
-/* Выделенная карточка (Pixel World) */
+/* Выделенная карточка (Pixel World) - зелёная тема */
 .game-card.highlight {
-  background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1));
-  border: 1px solid rgba(245, 87, 108, 0.5);
-  box-shadow: 0 0 0 2px rgba(245, 87, 108, 0.2), var(--shadow-light);
+  background: linear-gradient(135deg, rgba(0, 176, 155, 0.1), rgba(150, 201, 61, 0.1));
+  border: 1px solid rgba(0, 176, 155, 0.5);
+  box-shadow: 0 0 0 2px rgba(0, 176, 155, 0.2), var(--shadow-light);
   position: relative;
 }
 
 .dark-theme .game-card.highlight {
-  background: linear-gradient(135deg, rgba(240, 147, 251, 0.15), rgba(245, 87, 108, 0.15));
-  border-color: rgba(245, 87, 108, 0.7);
-  box-shadow: 0 0 0 2px rgba(245, 87, 108, 0.3), var(--shadow-dark);
+  background: linear-gradient(135deg, rgba(0, 176, 155, 0.15), rgba(150, 201, 61, 0.15));
+  border-color: rgba(0, 176, 155, 0.7);
+  box-shadow: 0 0 0 2px rgba(0, 176, 155, 0.3), var(--shadow-dark);
 }
 
 .game-card.highlight::before {
@@ -343,7 +343,7 @@ body.dark-theme {
 }
 
 .game-badge {
-  background: linear-gradient(135deg, #f093fb, #f5576c);
+  background: linear-gradient(135deg, #00b09b, #96c93d);
   color: white;
   font-size: 10px;
   font-weight: 700;

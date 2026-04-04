@@ -23,6 +23,7 @@
         <div class="settings-panel" id="settings-panel">
             <div class="settings-content">
                 <h3 class="settings-title" data-i18n="settings">Настройки</h3>
+                
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="theme">Тема</span>
                     <div class="theme-switcher">
@@ -30,6 +31,7 @@
                         <button class="theme-option" data-theme="dark" data-i18n="darkTheme">Темная</button>
                     </div>
                 </div>
+                
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="language">Язык</span>
                     <div class="language-switcher">
@@ -37,15 +39,8 @@
                         <button class="language-option" data-lang="en" data-i18n="english">English</button>
                     </div>
                 </div>
+                
                 <button class="close-settings" id="close-settings" data-i18n="done">Готово</button>
-            </div>
-        </div>
-
-        <!-- PROMO MARQUEE -->
-        <div class="promo-marquee" id="promoMarquee">
-            <div class="marquee-content">
-                <span>✨ Введи промокод <strong>HADRON</strong> в игре Pixel World и получи <strong>300 монет</strong> и <strong>рюкзак</strong>! ✨</span>
-                <span>✨ Введи промокод <strong>HADRON</strong> в игре Pixel World и получи <strong>300 монет</strong> и <strong>рюкзак</strong>! ✨</span>
             </div>
         </div>
 
@@ -57,7 +52,10 @@
                     <h2 data-i18n="games">Игры</h2>
                     <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
                 </div>
-                <div class="games-grid" id="games-grid"></div>
+                
+                <div class="games-grid" id="games-grid">
+                    <!-- Games will be loaded dynamically -->
+                </div>
             </section>
 
             <!-- Exchanges Section -->
@@ -66,6 +64,8 @@
                     <h2 data-i18n="exchanges">Крипто-биржи</h2>
                     <span class="section-subtitle" data-i18n="exchangesDesc">Торгуйте криптовалютами безопасно</span>
                 </div>
+
+                <!-- GameFi Banner Card -->
                 <div class="gamefi-banner">
                     <img src="images/gamefi.jpg" alt="GameFi Trading" class="gamefi-image">
                     <div class="gamefi-overlay">
@@ -85,10 +85,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="exchanges-list" id="exchanges-list"></div>
+                
+                <div class="exchanges-list" id="exchanges-list">
+                    <!-- Exchanges will be loaded dynamically -->
+                </div>
             </section>
 
-            <!-- Profile Section with 2048 Game -->
+            <!-- Profile Section with Mini Game -->
             <section id="profile-section" class="content-section">
                 <div class="profile-header">
                     <div class="profile-avatar" id="user-avatar">
@@ -101,25 +104,29 @@
                     </div>
                 </div>
 
-                <!-- 2048 GAME SECTION -->
-                <div class="game2048-container">
-                    <div class="game2048-header">
-                        <h3 class="game2048-title">🎮 2048</h3>
-                        <div class="game2048-scores">
-                            <div class="score-box">
-                                <span class="score-label" data-i18n="score">Счёт</span>
-                                <span id="game-score">0</span>
-                            </div>
-                            <div class="score-box">
-                                <span class="score-label" data-i18n="best">Рекорд</span>
-                                <span id="game-best">0</span>
-                            </div>
+                <!-- ========== НОВАЯ ИГРА В ПРОФИЛЕ ========== -->
+                <div class="game-miner">
+                    <div class="game-miner-header">
+                        <h3 class="game-miner-title">⛏️ Tap Miner</h3>
+                        <p class="game-miner-subtitle">Кликай по монете — зарабатывай очки!</p>
+                    </div>
+                    <div class="coin-display">
+                        <div class="coin-icon" id="coin-clicker">
+                            🪙
+                        </div>
+                        <div class="score-container">
+                            <span class="score-label" data-i18n="yourScore">Твой счёт:</span>
+                            <span class="score-value" id="miner-score">0</span>
                         </div>
                     </div>
-                    <div class="game2048-board" id="game-board">
-                        <!-- 4x4 grid will be created dynamically -->
+                    <div class="miner-stats">
+                        <div class="stat-badge">
+                            <span>💎 Всего кликов</span>
+                            <strong id="total-clicks">0</strong>
+                        </div>
+                        <button class="reset-score-btn" id="reset-score">Сбросить</button>
                     </div>
-                    <button class="game2048-new-btn" id="new-game-btn" data-i18n="newGame">Новая игра</button>
+                    <div class="game-hint">👇 Нажми на монету 👇</div>
                 </div>
 
                 <div class="profile-actions">
@@ -156,7 +163,7 @@
         </nav>
 
         <!-- Notification -->
-        <div id="notification" class="notification">Ссылка скопирована</div>
+        <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
     </div>
 
     <script src="script.js"></script>

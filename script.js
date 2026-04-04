@@ -597,3 +597,313 @@ function showNotification(customMessage) {
     notification.classList.add('show');
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
+
+// ==================== БЕСКОНЕЧНЫЙ РАННЕР (DODGE GAME) ====================
+(function initDodgeGame() {
+    // DOM элементы
+    const canvas = document.getElementById('game-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const scoreSpan = document.getElementById('game-score');
+    const highScoreSpan = document.getElementById('game-highscore');
+    const startBtn = document.getElementById('game-start-btn');
+    const restartBtn = document.getElementById('game-restart-btn');
+
+    // Размеры canvas (фиксированные для расчётов)
+    canvas.width = 350;
+    canvas.height = 400;
+    let width = canvas.width;
+    let height = canvas.height;
+
+    // Параметры игры
+    let gameRunning = false;
+    let animationId = null;
+    let player = { x: width/2, y: height - 40, radius: 12 };
+    let obstacles = [];
+    let score = 0;
+    let highScore = localStorage.getItem('dodgeHighScore') ? parseInt(localStorage.getItem('dodgeHighScore')) : 0;
+    let baseSpeed = 2.5;
+    let currentSpeed = baseSpeed;
+    let speedIncreasePerSecond = 0.4;
+    let lastTimestamp = 0;
+    let lastSpeedIncreaseTime = 0;
+    let lastScoreUpdateTime = 0;
+    let spawnCounter = 0;
+    let minSpawnDelay = 25;  // кадров
+    let maxSpawnDelay = 45;
+    
+    // Управление (мышь / тач)
+    let controlActive = false;
+
+    // Инициализация рекорда в UI
+    if (highScoreSpan) highScoreSpan.innerText = highScore;
+
+    // Получение цветов в зависимости от темы
+    function getThemeColors() {
+        const isDark = document.body.classList.contains('dark-theme');
+        return {
+            bg: isDark ? '#0f172a' : '#f8fafc',
+            player: isDark ? '#60a5fa' : '#3b82f6',
+            obstacle: '#ef4444',
+            text: isDark ? '#f1f5f9' : '#1e293b',
+            stroke: isDark ? '#334155' : '#cbd5e1'
+        };
+    }
+
+    // Сброс состояния игры
+    function resetGameState() {
+        obstacles = [];
+        score = 0;
+        currentSpeed = baseSpeed;
+        if (scoreSpan) scoreSpan.innerText = '0';
+        player.x = width/2;
+        // Пересчёт спавна
+        spawnCounter = randomSpawnDelay();
+        lastSpeedIncreaseTime = performance.now();
+        lastScoreUpdateTime = performance.now();
+    }
+
+    function randomSpawnDelay() {
+        return Math.floor(Math.random() * (maxSpawnDelay - minSpawnDelay + 1) + minSpawnDelay);
+    }
+
+    // Создание нового препятствия
+    function spawnObstacle() {
+        const radius = 8 + Math.random() * 4;
+        obstacles.push({
+            x: Math.random() * (width - 2 * radius) + radius,
+            y: -radius,
+            radius: radius
+        });
+    }
+
+    // Обновление счёта и скорости по времени
+    function updateGameLogic(now) {
+        if (!gameRunning) return;
+        
+        // Увеличение скорости каждую секунду
+        if (now - lastSpeedIncreaseTime >= 1000) {
+            currentSpeed += speedIncreasePerSecond;
+            lastSpeedIncreaseTime = now;
+            // Увеличиваем частоту спавна (уменьшаем задержку)
+            if (minSpawnDelay > 12) minSpawnDelay -= 1;
+            if (maxSpawnDelay > 25) maxSpawnDelay -= 1;
+        }
+        
+        // Увеличение счета каждую секунду
+        if (now - lastScoreUpdateTime >= 1000) {
+            score++;
+            if (scoreSpan) scoreSpan.innerText = score;
+            if (score > highScore) {
+                highScore = score;
+                if (highScoreSpan) highScoreSpan.innerText = highScore;
+                localStorage.setItem('dodgeHighScore', highScore);
+            }
+            lastScoreUpdateTime = now;
+        }
+        
+        // Движение препятствий и проверка столкновений
+        for (let i = 0; i < obstacles.length; i++) {
+            const obs = obstacles[i];
+            obs.y += currentSpeed;
+            
+            // Столкновение с игроком
+            const dx = player.x - obs.x;
+            const dy = player.y - obs.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < player.radius + obs.radius) {
+                gameOver();
+                return;
+            }
+        }
+        
+        // Удаление вышедших за границы
+        obstacles = obstacles.filter(obs => obs.y - obs.radius < height + 50);
+        
+        // Спавн новых препятствий
+        if (spawnCounter <= 0) {
+            spawnObstacle();
+            spawnCounter = randomSpawnDelay();
+        } else {
+            spawnCounter--;
+        }
+    }
+
+    // Отрисовка всего
+    function draw() {
+        if (!ctx) return;
+        const colors = getThemeColors();
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = colors.bg;
+        ctx.fillRect(0, 0, width, height);
+        
+        // Рисуем препятствия
+        for (const obs of obstacles) {
+            ctx.beginPath();
+            ctx.arc(obs.x, obs.y, obs.radius, 0, Math.PI * 2);
+            ctx.fillStyle = colors.obstacle;
+            ctx.fill();
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = "rgba(0,0,0,0.3)";
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+        
+        // Рисуем игрока
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+        ctx.fillStyle = colors.player;
+        ctx.fill();
+        ctx.shadowBlur = 6;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.beginPath();
+        ctx.arc(player.x - 3, player.y - 3, 3, 0, Math.PI * 2);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(player.x + 3, player.y - 3, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#1e293b";
+        ctx.beginPath();
+        ctx.arc(player.x - 3, player.y - 3, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(player.x + 3, player.y - 3, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Если игра не запущена, рисуем overlay
+        if (!gameRunning) {
+            ctx.fillStyle = "rgba(0,0,0,0.5)";
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 20px Inter";
+            ctx.textAlign = "center";
+            ctx.fillText("⚡ НАЖМИ СТАРТ", width/2, height/2);
+        }
+    }
+    
+    // Игровой цикл
+    function gameLoop(now) {
+        if (!gameRunning) return;
+        updateGameLogic(now);
+        draw();
+        animationId = requestAnimationFrame(gameLoop);
+    }
+    
+    function startGame() {
+        if (gameRunning) return;
+        resetGameState();
+        gameRunning = true;
+        lastSpeedIncreaseTime = performance.now();
+        lastScoreUpdateTime = performance.now();
+        if (animationId) cancelAnimationFrame(animationId);
+        animationId = requestAnimationFrame(gameLoop);
+    }
+    
+    function stopGame() {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+        gameRunning = false;
+        draw(); // показать экран "СТАРТ"
+    }
+    
+    function gameOver() {
+        if (!gameRunning) return;
+        stopGame();
+        // Мгновенная перерисовка с сообщением
+        if (ctx) {
+            const colors = getThemeColors();
+            ctx.fillStyle = "rgba(0,0,0,0.7)";
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 20px Inter";
+            ctx.textAlign = "center";
+            ctx.fillText("GAME OVER", width/2, height/2 - 20);
+            ctx.font = "14px Inter";
+            ctx.fillText("Нажми Старт", width/2, height/2 + 20);
+        }
+        // Вибрация, если доступна
+        if (navigator.vibrate) navigator.vibrate(200);
+    }
+    
+    function restartGame() {
+        stopGame();
+        resetGameState();
+        startGame();
+    }
+    
+    // Управление мышью / тачем
+    function handleMove(clientX) {
+        if (!gameRunning) return;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        let canvasX = (clientX - rect.left) * scaleX;
+        canvasX = Math.min(Math.max(canvasX, player.radius), width - player.radius);
+        player.x = canvasX;
+    }
+    
+    function onMouseMove(e) {
+        if (!controlActive && gameRunning) {
+            controlActive = true;
+        }
+        handleMove(e.clientX);
+    }
+    
+    function onTouchMove(e) {
+        e.preventDefault();
+        if (!controlActive && gameRunning) controlActive = true;
+        const touch = e.touches[0];
+        handleMove(touch.clientX);
+    }
+    
+    function onStartControl() {
+        controlActive = true;
+    }
+    
+    function onEndControl() {
+        controlActive = false;
+    }
+    
+    // Привязка событий
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+    canvas.addEventListener('mousedown', onStartControl);
+    canvas.addEventListener('mouseup', onEndControl);
+    canvas.addEventListener('touchstart', onStartControl);
+    canvas.addEventListener('touchend', onEndControl);
+    
+    startBtn.addEventListener('click', () => {
+        if (navigator.vibrate) navigator.vibrate(50);
+        startGame();
+    });
+    restartBtn.addEventListener('click', () => {
+        if (navigator.vibrate) navigator.vibrate(50);
+        restartGame();
+    });
+    
+    // Останавливаем игру при уходе с вкладки Профиль
+    const originalNavSetup = setupNavigation;
+    window.setupNavigation = function() {
+        if (originalNavSetup) originalNavSetup();
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const target = this.getAttribute('data-section');
+                if (target !== 'profile-section') {
+                    if (gameRunning) stopGame();
+                }
+            });
+        });
+    };
+    if (typeof setupNavigation === 'function') setupNavigation();
+    
+    // Начальная отрисовка без игры
+    draw();
+    
+    // Обновление цветов при смене темы (перерисовка)
+    const observer = new MutationObserver(() => draw());
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+})();

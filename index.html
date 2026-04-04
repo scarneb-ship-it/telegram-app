@@ -91,7 +91,7 @@
                 </div>
             </section>
 
-            <!-- Profile Section with Mini Game -->
+            <!-- Profile Section with Game -->
             <section id="profile-section" class="content-section">
                 <div class="profile-header">
                     <div class="profile-avatar" id="user-avatar">
@@ -104,29 +104,21 @@
                     </div>
                 </div>
 
-                <!-- ========== НОВАЯ ИГРА В ПРОФИЛЕ ========== -->
-                <div class="game-miner">
-                    <div class="game-miner-header">
-                        <h3 class="game-miner-title">⛏️ Tap Miner</h3>
-                        <p class="game-miner-subtitle">Кликай по монете — зарабатывай очки!</p>
-                    </div>
-                    <div class="coin-display">
-                        <div class="coin-icon" id="coin-clicker">
-                            🪙
-                        </div>
-                        <div class="score-container">
-                            <span class="score-label" data-i18n="yourScore">Твой счёт:</span>
-                            <span class="score-value" id="miner-score">0</span>
+                <!-- GAME BLOCK -->
+                <div class="profile-game-section">
+                    <div class="game-header">
+                        <h3>🐹 Dodge & Run</h3>
+                        <div class="game-stats-display">
+                            <span>Счет: <span id="game-score">0</span></span>
+                            <span>Рекорд: <span id="game-highscore">0</span></span>
                         </div>
                     </div>
-                    <div class="miner-stats">
-                        <div class="stat-badge">
-                            <span>💎 Всего кликов</span>
-                            <strong id="total-clicks">0</strong>
-                        </div>
-                        <button class="reset-score-btn" id="reset-score">Сбросить</button>
+                    <canvas id="game-canvas" width="350" height="400" style="width:100%; height:auto; max-width:350px; margin:0 auto; display:block; border-radius:12px; box-shadow:var(--shadow-light);"></canvas>
+                    <div class="game-controls">
+                        <button id="game-start-btn" class="game-btn">▶ Старт</button>
+                        <button id="game-restart-btn" class="game-btn">🔄 Рестарт</button>
                     </div>
-                    <div class="game-hint">👇 Нажми на монету 👇</div>
+                    <div class="game-instruction">Управляй персонажем, уклоняйся от препятствий!</div>
                 </div>
 
                 <div class="profile-actions">

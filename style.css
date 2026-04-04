@@ -1087,14 +1087,16 @@ button:focus-visible {
   outline-color: var(--primary-dark);
 }
 
-/* ==================== 2048 GAME STYLES ==================== */
+/* ==================== 2048 GAME STYLES (fully responsive) ==================== */
 .game-2048-container {
-    margin-top: 24px;
+    margin-top: 20px;
     background: var(--card-light);
-    border-radius: 24px;
-    padding: 16px;
+    border-radius: 20px;
+    padding: 12px;
     border: 1px solid var(--border-light);
     transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .dark-theme .game-2048-container {
@@ -1106,13 +1108,13 @@ button:focus-visible {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
 }
 
 .game-title-2048 {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 800;
     background: linear-gradient(135deg, #e67e22, #f39c12);
     -webkit-background-clip: text;
@@ -1123,27 +1125,27 @@ button:focus-visible {
 
 .game-scores {
     display: flex;
-    gap: 12px;
+    gap: 10px;
 }
 
 .score-box {
     background: var(--primary-gradient);
-    border-radius: 16px;
-    padding: 6px 14px;
+    border-radius: 14px;
+    padding: 4px 12px;
     text-align: center;
-    min-width: 70px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    min-width: 60px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .score-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     color: rgba(255,255,255,0.8);
     letter-spacing: 0.5px;
 }
 
 .score-value {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 800;
     color: white;
     line-height: 1.2;
@@ -1152,12 +1154,13 @@ button:focus-visible {
 .game-board-2048 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 8px;
     background-color: #bbada0;
     border-radius: 16px;
-    padding: 10px;
-    margin-bottom: 20px;
-    background: #bbada0;
+    padding: 8px;
+    margin-bottom: 16px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .dark-theme .game-board-2048 {
@@ -1166,50 +1169,50 @@ button:focus-visible {
 
 .tile-cell {
     aspect-ratio: 1 / 1;
+    width: 100%;
     background-color: rgba(238, 228, 218, 0.35);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 28px;
-    transition: all 0.15s ease-in-out;
-    position: relative;
+    font-size: clamp(18px, 6vw, 28px);
+    transition: all 0.1s ease;
+    box-sizing: border-box;
+    word-break: break-word;
+    text-align: center;
+    padding: 4px;
 }
 
-/* Цвета плиток (яркие, сочные) */
-.tile-2 { background: #eee4da; color: #776e65; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+/* Яркие цвета плиток (адаптивный шрифт) */
+.tile-2 { background: #eee4da; color: #776e65; }
 .tile-4 { background: #ede0c8; color: #776e65; }
 .tile-8 { background: #f2b179; color: #f9f6f2; }
 .tile-16 { background: #f59563; color: #f9f6f2; }
 .tile-32 { background: #f67c5f; color: #f9f6f2; }
 .tile-64 { background: #f65e3b; color: #f9f6f2; }
-.tile-128 { background: #edcf72; color: #f9f6f2; font-size: 24px; }
-.tile-256 { background: #edcc61; color: #f9f6f2; font-size: 24px; }
-.tile-512 { background: #edc850; color: #f9f6f2; font-size: 24px; }
-.tile-1024 { background: #edc53f; color: #f9f6f2; font-size: 20px; }
-.tile-2048 { background: #edc22e; color: #f9f6f2; font-size: 20px; }
-.tile-super { background: #3c3a32; color: #f9f6f2; font-size: 18px; }
+.tile-128 { background: #edcf72; color: #f9f6f2; font-size: clamp(16px, 5vw, 24px); }
+.tile-256 { background: #edcc61; color: #f9f6f2; font-size: clamp(16px, 5vw, 24px); }
+.tile-512 { background: #edc850; color: #f9f6f2; font-size: clamp(16px, 5vw, 24px); }
+.tile-1024 { background: #edc53f; color: #f9f6f2; font-size: clamp(14px, 4.5vw, 20px); }
+.tile-2048 { background: #edc22e; color: #f9f6f2; font-size: clamp(14px, 4.5vw, 20px); }
+.tile-super { background: #3c3a32; color: #f9f6f2; font-size: clamp(12px, 4vw, 18px); }
 
-/* Анимация появления */
+/* Анимации */
 .tile-new {
     animation: pop 0.2s ease-in-out;
 }
-
 @keyframes pop {
     0% { transform: scale(0); opacity: 0; }
-    80% { transform: scale(1.1); }
+    80% { transform: scale(1.05); }
     100% { transform: scale(1); opacity: 1; }
 }
-
-/* Анимация слияния */
 .tile-merge {
     animation: merge 0.2s ease-in-out;
 }
-
 @keyframes merge {
     0% { transform: scale(1); }
-    50% { transform: scale(1.15); background: #f5d76e; }
+    50% { transform: scale(1.1); background: #f5d76e; }
     100% { transform: scale(1); }
 }
 
@@ -1217,36 +1220,34 @@ button:focus-visible {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 15px;
-    margin-top: 8px;
+    gap: 12px;
+    margin-top: 4px;
 }
 
 .new-game-btn {
     background: linear-gradient(135deg, #8f7a66, #776e65);
     border: none;
-    padding: 10px 20px;
+    padding: 8px 16px;
     border-radius: 40px;
     color: white;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-
 .new-game-btn:active {
     transform: scale(0.96);
 }
 
 .game-status {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    padding: 6px 12px;
+    padding: 4px 12px;
     border-radius: 40px;
     background: rgba(0,0,0,0.05);
     color: var(--text-primary-light);
 }
-
 .dark-theme .game-status {
     background: rgba(255,255,255,0.1);
     color: var(--text-primary-dark);
@@ -1254,39 +1255,50 @@ button:focus-visible {
 
 .swipe-hint {
     text-align: center;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-secondary-light);
-    margin-top: 12px;
+    margin-top: 10px;
     opacity: 0.7;
 }
-
 .dark-theme .swipe-hint {
     color: var(--text-secondary-dark);
 }
 
-/* Адаптив для маленьких экранов */
-@media (max-width: 480px) {
+/* Дополнительная адаптация для очень узких экранов (меньше 360px) */
+@media (max-width: 400px) {
     .game-board-2048 {
-        gap: 8px;
-        padding: 8px;
+        gap: 6px;
+        padding: 6px;
     }
     .tile-cell {
-        font-size: 22px;
+        border-radius: 10px;
     }
-    .tile-128, .tile-256, .tile-512 {
-        font-size: 18px;
+    .game-header-2048 {
+        margin-bottom: 12px;
     }
-    .tile-1024, .tile-2048 {
+    .score-box {
+        min-width: 50px;
+        padding: 3px 8px;
+    }
+    .score-value {
         font-size: 16px;
     }
     .game-title-2048 {
-        font-size: 24px;
+        font-size: 20px;
     }
-    .score-value {
-        font-size: 18px;
+    .new-game-btn {
+        padding: 6px 14px;
+        font-size: 12px;
     }
-    .score-box {
-        padding: 4px 10px;
-        min-width: 60px;
-    }
+}
+
+/* Убираем горизонтальный скролл у всего приложения */
+.app-container {
+    overflow-x: hidden;
+}
+body {
+    overflow-x: hidden;
+}
+.main-content {
+    overflow-x: hidden;
 }

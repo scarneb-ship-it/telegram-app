@@ -9,7 +9,7 @@ const GAMES_DATA = [
         id: 0,
         name: "Pixel World",
         fullLink: "https://t.me/pixelworld/play?startapp=r6823288584",
-        description: "Строй свой пиксельный мир",
+        description: "Первый 3D-шутер в Telegram",
         rating: 4.9,
         players: "125K",
         image: "images/photo_2026-02-17_13-44-55.jpg",

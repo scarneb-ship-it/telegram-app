@@ -10,7 +10,7 @@ const GAMES_DATA = [
         name: "Pixel World",
         fullLink: "https://t.me/pixelworld/play?startapp=r6823288584",
         description: "Строй свой пиксельный мир",
-        rating: 4.8,
+        rating: 4.9,
         players: "125K",
         image: "images/photo_2026-02-17_13-44-55.jpg",
         fallback: "🌍",

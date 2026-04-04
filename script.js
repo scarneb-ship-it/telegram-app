@@ -4,6 +4,12 @@
 // или fullLink (прямая ссылка, например реферальная)
 // Для бирж: используется url
 
+// Имя бота для реферальной ссылки (без @)
+const BOT_USERNAME = 'khadron_bot';
+
+// Глобальная переменная для хранения ID текущего пользователя
+let currentUserId = null;
+
 const GAMES_DATA = [
     {
         id: 0,
@@ -160,8 +166,8 @@ function initializeApp() {
     setupSettingsPanel();
     loadThemePreference();
     loadLanguagePreference();
-    loadUserData();
-    setupShareButton();
+    loadUserData(); // Загружает данные пользователя и устанавливает currentUserId
+    setupShareButton(); // Теперь использует currentUserId
     setTimeout(() => {
         document.body.style.opacity = '1';
     }, 100);
@@ -256,12 +262,17 @@ function loadUserData() {
         const user = window.Telegram.WebApp.initDataUnsafe?.user;
         if (user) {
             updateProfileDisplay(user);
+            // Сохраняем ID текущего пользователя для реферальной ссылки
+            currentUserId = user.id;
             console.log('🔍 Telegram User Data:', user);
+            console.log('✅ Реферальный ID установлен:', currentUserId);
         } else {
             showFallbackProfile();
+            currentUserId = null;
         }
     } else {
         showFallbackProfile();
+        currentUserId = null;
     }
 }
 
@@ -438,7 +449,7 @@ function updateSettingsLanguageOptions(lang) {
     });
 }
 
-// ==================== ШАРИНГ (изменён текст и ссылка) ====================
+// ==================== ШАРИНГ С РЕФЕРАЛЬНОЙ ССЫЛКОЙ ====================
 
 function setupShareButton() {
     const shareButton = document.getElementById('share-friends-button');
@@ -446,9 +457,18 @@ function setupShareButton() {
         shareButton.addEventListener('click', function() {
             vibrate();
             
-            // Новая ссылка на бота
-            const botUrl = 'https://t.me/khadron_bot';
-            // Новый текст шаринга
+            // Формируем реферальную ссылку на бота
+            let botUrl;
+            if (currentUserId) {
+                // Уникальная ссылка с ID пользователя
+                botUrl = `https://t.me/${BOT_USERNAME}?start=ref_${currentUserId}`;
+                console.log(`🔗 Создана реферальная ссылка для пользователя ${currentUserId}: ${botUrl}`);
+            } else {
+                // Fallback: просто ссылка на бота без реферального параметра
+                botUrl = `https://t.me/${BOT_USERNAME}`;
+                console.log(`⚠️ ID пользователя не найден, используется обычная ссылка: ${botUrl}`);
+            }
+            
             const shareText = 'Играй в лучшие мини-игры Telegram вместе с HADRON! 🎮';
             
             if (window.Telegram && window.Telegram.WebApp) {

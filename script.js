@@ -1,22 +1,26 @@
 // ==================== КОНФИГУРАЦИЯ ====================
 // Легко меняйте игры и биржи здесь!
+// Для игр: можно указать bot (будет открыто t.me/bot?start=app) 
+// или fullLink (прямая ссылка, например реферальная)
+// Для бирж: используется url
 
 const GAMES_DATA = [
     {
-        id: "pixelworld",   // уникальный ID для выделения стилем
+        id: 0,
         name: "Pixel World",
-        link: "https://t.me/pixelworld/play?startapp=r6823288584",  // прямая реферальная ссылка
-        description: "Строй свой мир в Pixel World Beta",
-        rating: 4.9,
-        players: "1.2M",
-        image: "images/pixelworld.jpg",
+        fullLink: "https://t.me/pixelworld/play?startapp=r6823288584", // Реферальная ссылка
+        description: "Строй свой пиксельный мир",
+        rating: 4.8,
+        players: "125K",
+        image: "images/pixel-world.jpg",
         fallback: "🌍",
-        isBeta: true          // маркер для бейджа BETA
+        badge: "Beta",      // Бейдж "Beta"
+        highlight: true     // Визуальное выделение карточки
     },
     {
         id: 1,
         name: "Hamster GameDev",
-        bot: "https://t.me/Hamster_GAme_Dev_bot/start?startapp=kentId6823288584",
+        bot: "hamsterdev_bot",
         description: "Создай свою студию",
         rating: 4.7,
         players: "901K",
@@ -26,7 +30,7 @@ const GAMES_DATA = [
     {
         id: 2,
         name: "Hamster King",
-        bot: "https://t.me/hamsterking_game_bot?startapp=6823288584",
+        bot: "hamsterking_bot",
         description: "Стань королем хомяков",
         rating: 4.2,
         players: "581K",
@@ -36,7 +40,7 @@ const GAMES_DATA = [
     {
         id: 3,
         name: "Hamster Fight Club",
-        bot: "https://t.me/hamster_fightclub_bot?startapp=NWE1YjA2YWUtZTAyMS01ZjA1LTg4ZTYtMGZmZjUwNDQwNjU5",
+        bot: "hamsterfightclub_bot",
         description: "Бойцовский клуб хомяков",
         rating: 4.9,
         players: "386K",
@@ -46,9 +50,7 @@ const GAMES_DATA = [
     {
         id: 4,
         name: "BitQuest",
-        bot: "https://t.me/BitquestGameSBot/start?startapp=kentId_6823288584
-
-Присоединяйся ко мне в BitQuest и выигрывай крутые подарки в Telegram!",
+        bot: "bitquest_bot",
         description: "Приключения в мире крипты",
         rating: 3.8,
         players: "245K",
@@ -111,7 +113,6 @@ const translations = {
         hamsterKingDesc: "Стань королем хомяков",
         hamsterFightClubDesc: "Бойцовский клуб хомяков",
         bitquestDesc: "Приключения в мире крипты",
-        pixelWorldDesc: "Строй свой мир в Pixel World Beta",
         play: "Играть",
         exchanges: "Биржи",
         exchangesDesc: "Торгуйте криптовалютами безопасно",
@@ -141,7 +142,6 @@ const translations = {
         hamsterKingDesc: "Become the hamster king",
         hamsterFightClubDesc: "Hamster fighting club",
         bitquestDesc: "Adventures in the crypto world",
-        pixelWorldDesc: "Build your world in Pixel World Beta",
         play: "Play",
         exchanges: "Exchanges",
         exchangesDesc: "Trade cryptocurrencies safely",
@@ -225,42 +225,36 @@ function initializeGames() {
     const gamesGrid = document.getElementById('games-grid');
     if (!gamesGrid) return;
     
-    gamesGrid.innerHTML = GAMES_DATA.map(game => {
-        // Генерируем HTML для карточки
-        let betaBadge = '';
-        if (game.isBeta) {
-            betaBadge = '<span class="beta-badge">BETA</span>';
-        }
-        
-        return `
-            <div class="game-card" data-game-id="${game.id}">
-                ${betaBadge}
-                <div class="game-image">
-                    <img src="${game.image}" alt="${game.name}" class="game-img" onerror="this.style.display='none'">
-                    <div class="image-fallback">${game.fallback}</div>
-                </div>
-                <div class="game-info">
+    gamesGrid.innerHTML = GAMES_DATA.map(game => `
+        <div class="game-card ${game.highlight ? 'highlight' : ''}" data-game-id="${game.id}">
+            <div class="game-image">
+                <img src="${game.image}" alt="${game.name}" class="game-img" onerror="this.style.display='none'">
+                <div class="image-fallback">${game.fallback}</div>
+            </div>
+            <div class="game-info">
+                <div class="game-header">
                     <h3>${game.name}</h3>
-                    <p class="game-description">${game.description}</p>
-                    <div class="game-stats">
-                        <div class="rating">
-                            <div class="stars">
-                                ${generateStars(game.rating)}
-                            </div>
-                            <span class="rating-value">${game.rating}</span>
+                    ${game.badge ? `<span class="game-badge">${game.badge}</span>` : ''}
+                </div>
+                <p class="game-description">${game.description}</p>
+                <div class="game-stats">
+                    <div class="rating">
+                        <div class="stars">
+                            ${generateStars(game.rating)}
                         </div>
-                        <div class="players">
-                            <span class="players-icon">👥</span>
-                            <span class="players-count">${game.players}</span>
-                        </div>
+                        <span class="rating-value">${game.rating}</span>
+                    </div>
+                    <div class="players">
+                        <span class="players-icon">👥</span>
+                        <span class="players-count">${game.players}</span>
                     </div>
                 </div>
-                <button class="play-button" data-link="${game.link || ''}" data-bot="${game.bot || ''}">
-                    ${getTranslation('play')}
-                </button>
             </div>
-        `;
-    }).join('');
+            <button class="play-button" data-link="${game.fullLink || (game.bot ? 'https://t.me/' + game.bot + '?start=app' : '')}">
+                ${getTranslation('play')}
+            </button>
+        </div>
+    `).join('');
     
     setupGameButtons();
 }
@@ -461,27 +455,18 @@ function setupGameButtons() {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             vibrate();
-            
             const link = this.getAttribute('data-link');
-            const bot = this.getAttribute('data-bot');
-            
-            let url = '';
             if (link) {
-                // Если есть прямая ссылка (например, реферальная на игру)
-                url = link;
-            } else if (bot) {
-                // Стандартный запуск бота
-                url = `https://t.me/${bot}?start=app`;
-            } else {
-                console.error('Нет ссылки или бота для игры');
-                return;
-            }
-            
-            if (window.Telegram && window.Telegram.WebApp) {
-                // Пробуем открыть встроенную ссылку Telegram
-                window.Telegram.WebApp.openTelegramLink(url);
-            } else {
-                window.open(url, '_blank');
+                if (window.Telegram && window.Telegram.WebApp) {
+                    // Для ссылок вида https://t.me/... используем openTelegramLink
+                    if (link.startsWith('https://t.me/')) {
+                        window.Telegram.WebApp.openTelegramLink(link);
+                    } else {
+                        window.Telegram.WebApp.openLink(link);
+                    }
+                } else {
+                    window.open(link, '_blank');
+                }
             }
         });
     });

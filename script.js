@@ -122,7 +122,13 @@ const translations = {
         profile: "Профиль",
         linkCopied: "Ссылка скопирована в буфер обмена!",
         go: "Перейти",
-        yourScore: "Твой счёт:"
+        game2048: "2048",
+        score: "Счёт",
+        best: "Лучший",
+        newGame: "Новая игра",
+        swipeHint: "👆 Свайпайте пальцем или используйте стрелки",
+        gameWin: "Вы победили! 🎉",
+        gameLose: "Игра окончена! 😔"
     },
     en: {
         appTitle: "Games Verse",
@@ -144,7 +150,13 @@ const translations = {
         profile: "Profile",
         linkCopied: "Link copied to clipboard!",
         go: "Go",
-        yourScore: "Your score:"
+        game2048: "2048",
+        score: "Score",
+        best: "Best",
+        newGame: "New Game",
+        swipeHint: "👆 Swipe or use arrow keys",
+        gameWin: "You win! 🎉",
+        gameLose: "Game over! 😔"
     }
 };
 
@@ -170,7 +182,6 @@ function initializeApp() {
     loadLanguagePreference();
     loadUserData(); // Загружает данные пользователя и устанавливает currentUserId
     setupShareButton(); // Теперь использует currentUserId
-    initTapMiner();    // <-- НОВАЯ ИГРА В ПРОФИЛЕ
     setTimeout(() => {
         document.body.style.opacity = '1';
     }, 100);
@@ -452,77 +463,6 @@ function updateSettingsLanguageOptions(lang) {
     });
 }
 
-// ==================== НОВАЯ ИГРА TAP MINER ====================
-function initTapMiner() {
-    const coinElement = document.getElementById('coin-clicker');
-    const scoreSpan = document.getElementById('miner-score');
-    const totalClicksSpan = document.getElementById('total-clicks');
-    const resetBtn = document.getElementById('reset-score');
-    
-    if (!coinElement) return;
-
-    // Загрузка сохранённых данных
-    let currentScore = parseInt(localStorage.getItem('tapMinerScore')) || 0;
-    let totalClicks = parseInt(localStorage.getItem('tapMinerTotalClicks')) || 0;
-    
-    function updateUI() {
-        if (scoreSpan) scoreSpan.innerText = currentScore;
-        if (totalClicksSpan) totalClicksSpan.innerText = totalClicks;
-        localStorage.setItem('tapMinerScore', currentScore);
-        localStorage.setItem('tapMinerTotalClicks', totalClicks);
-    }
-    
-    function createFloatingNumber(x, y, value = '+1') {
-        const fly = document.createElement('div');
-        fly.className = 'fly-number';
-        fly.textContent = value;
-        fly.style.left = x + 'px';
-        fly.style.top = y + 'px';
-        document.body.appendChild(fly);
-        setTimeout(() => fly.remove(), 600);
-    }
-    
-    function handleTap(e) {
-        vibrate();
-        // Увеличиваем счёт
-        currentScore += 1;
-        totalClicks += 1;
-        updateUI();
-        
-        // Анимация всплывающей цифры
-        let clientX, clientY;
-        if (e.touches) {
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-        } else {
-            clientX = e.clientX;
-            clientY = e.clientY;
-        }
-        createFloatingNumber(clientX, clientY);
-        
-        // Мини-эффект пульсации монеты
-        coinElement.style.transform = 'scale(0.9)';
-        setTimeout(() => { coinElement.style.transform = ''; }, 100);
-    }
-    
-    coinElement.addEventListener('click', handleTap);
-    coinElement.addEventListener('touchstart', handleTap, { passive: false });
-    
-    if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-            if (confirm('Сбросить весь прогресс в игре?')) {
-                currentScore = 0;
-                totalClicks = 0;
-                updateUI();
-                vibrate();
-                showNotification('Счёт сброшен!');
-            }
-        });
-    }
-    
-    updateUI();
-}
-
 // ==================== ШАРИНГ С РЕФЕРАЛЬНОЙ ССЫЛКОЙ ====================
 
 function setupShareButton() {
@@ -598,312 +538,272 @@ function showNotification(customMessage) {
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
 
-// ==================== БЕСКОНЕЧНЫЙ РАННЕР (DODGE GAME) ====================
-(function initDodgeGame() {
-    // DOM элементы
-    const canvas = document.getElementById('game-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const scoreSpan = document.getElementById('game-score');
-    const highScoreSpan = document.getElementById('game-highscore');
-    const startBtn = document.getElementById('game-start-btn');
-    const restartBtn = document.getElementById('game-restart-btn');
-
-    // Размеры canvas (фиксированные для расчётов)
-    canvas.width = 350;
-    canvas.height = 400;
-    let width = canvas.width;
-    let height = canvas.height;
-
-    // Параметры игры
-    let gameRunning = false;
-    let animationId = null;
-    let player = { x: width/2, y: height - 40, radius: 12 };
-    let obstacles = [];
-    let score = 0;
-    let highScore = localStorage.getItem('dodgeHighScore') ? parseInt(localStorage.getItem('dodgeHighScore')) : 0;
-    let baseSpeed = 2.5;
-    let currentSpeed = baseSpeed;
-    let speedIncreasePerSecond = 0.4;
-    let lastTimestamp = 0;
-    let lastSpeedIncreaseTime = 0;
-    let lastScoreUpdateTime = 0;
-    let spawnCounter = 0;
-    let minSpawnDelay = 25;  // кадров
-    let maxSpawnDelay = 45;
-    
-    // Управление (мышь / тач)
-    let controlActive = false;
-
-    // Инициализация рекорда в UI
-    if (highScoreSpan) highScoreSpan.innerText = highScore;
-
-    // Получение цветов в зависимости от темы
-    function getThemeColors() {
-        const isDark = document.body.classList.contains('dark-theme');
-        return {
-            bg: isDark ? '#0f172a' : '#f8fafc',
-            player: isDark ? '#60a5fa' : '#3b82f6',
-            obstacle: '#ef4444',
-            text: isDark ? '#f1f5f9' : '#1e293b',
-            stroke: isDark ? '#334155' : '#cbd5e1'
-        };
+// ==================== 2048 GAME IMPLEMENTATION ====================
+class Game2048 {
+    constructor(boardElement, scoreElement, bestScoreElement, statusElement) {
+        this.boardElement = boardElement;
+        this.scoreElement = scoreElement;
+        this.bestScoreElement = bestScoreElement;
+        this.statusElement = statusElement;
+        this.size = 4;
+        this.grid = [];
+        this.score = 0;
+        this.bestScore = localStorage.getItem('bestScore2048') ? parseInt(localStorage.getItem('bestScore2048')) : 0;
+        this.updateBestScoreUI();
+        this.init();
+        this.setupSwipeEvents();
+        this.setupKeyboardEvents();
     }
 
-    // Сброс состояния игры
-    function resetGameState() {
-        obstacles = [];
-        score = 0;
-        currentSpeed = baseSpeed;
-        if (scoreSpan) scoreSpan.innerText = '0';
-        player.x = width/2;
-        // Пересчёт спавна
-        spawnCounter = randomSpawnDelay();
-        lastSpeedIncreaseTime = performance.now();
-        lastScoreUpdateTime = performance.now();
+    init() {
+        this.grid = Array(this.size).fill().map(() => Array(this.size).fill(0));
+        this.score = 0;
+        this.updateScoreUI();
+        this.statusElement.textContent = '';
+        this.addRandomTile();
+        this.addRandomTile();
+        this.render();
     }
 
-    function randomSpawnDelay() {
-        return Math.floor(Math.random() * (maxSpawnDelay - minSpawnDelay + 1) + minSpawnDelay);
-    }
-
-    // Создание нового препятствия
-    function spawnObstacle() {
-        const radius = 8 + Math.random() * 4;
-        obstacles.push({
-            x: Math.random() * (width - 2 * radius) + radius,
-            y: -radius,
-            radius: radius
-        });
-    }
-
-    // Обновление счёта и скорости по времени
-    function updateGameLogic(now) {
-        if (!gameRunning) return;
-        
-        // Увеличение скорости каждую секунду
-        if (now - lastSpeedIncreaseTime >= 1000) {
-            currentSpeed += speedIncreasePerSecond;
-            lastSpeedIncreaseTime = now;
-            // Увеличиваем частоту спавна (уменьшаем задержку)
-            if (minSpawnDelay > 12) minSpawnDelay -= 1;
-            if (maxSpawnDelay > 25) maxSpawnDelay -= 1;
-        }
-        
-        // Увеличение счета каждую секунду
-        if (now - lastScoreUpdateTime >= 1000) {
-            score++;
-            if (scoreSpan) scoreSpan.innerText = score;
-            if (score > highScore) {
-                highScore = score;
-                if (highScoreSpan) highScoreSpan.innerText = highScore;
-                localStorage.setItem('dodgeHighScore', highScore);
-            }
-            lastScoreUpdateTime = now;
-        }
-        
-        // Движение препятствий и проверка столкновений
-        for (let i = 0; i < obstacles.length; i++) {
-            const obs = obstacles[i];
-            obs.y += currentSpeed;
-            
-            // Столкновение с игроком
-            const dx = player.x - obs.x;
-            const dy = player.y - obs.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < player.radius + obs.radius) {
-                gameOver();
-                return;
+    addRandomTile() {
+        const emptyCells = [];
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.grid[i][j] === 0) emptyCells.push({x: i, y: j});
             }
         }
-        
-        // Удаление вышедших за границы
-        obstacles = obstacles.filter(obs => obs.y - obs.radius < height + 50);
-        
-        // Спавн новых препятствий
-        if (spawnCounter <= 0) {
-            spawnObstacle();
-            spawnCounter = randomSpawnDelay();
-        } else {
-            spawnCounter--;
+        if (emptyCells.length > 0) {
+            const {x, y} = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            this.grid[x][y] = Math.random() < 0.9 ? 2 : 4;
+            this.lastAddedTile = {x, y};
+            return true;
         }
+        return false;
     }
 
-    // Отрисовка всего
-    function draw() {
-        if (!ctx) return;
-        const colors = getThemeColors();
-        ctx.clearRect(0, 0, width, height);
-        ctx.fillStyle = colors.bg;
-        ctx.fillRect(0, 0, width, height);
-        
-        // Рисуем препятствия
-        for (const obs of obstacles) {
-            ctx.beginPath();
-            ctx.arc(obs.x, obs.y, obs.radius, 0, Math.PI * 2);
-            ctx.fillStyle = colors.obstacle;
-            ctx.fill();
-            ctx.shadowBlur = 4;
-            ctx.shadowColor = "rgba(0,0,0,0.3)";
-            ctx.fill();
-            ctx.shadowBlur = 0;
-        }
-        
-        // Рисуем игрока
-        ctx.beginPath();
-        ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
-        ctx.fillStyle = colors.player;
-        ctx.fill();
-        ctx.shadowBlur = 6;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.beginPath();
-        ctx.arc(player.x - 3, player.y - 3, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "white";
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(player.x + 3, player.y - 3, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#1e293b";
-        ctx.beginPath();
-        ctx.arc(player.x - 3, player.y - 3, 1.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(player.x + 3, player.y - 3, 1.5, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Если игра не запущена, рисуем overlay
-        if (!gameRunning) {
-            ctx.fillStyle = "rgba(0,0,0,0.5)";
-            ctx.fillRect(0, 0, width, height);
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 20px Inter";
-            ctx.textAlign = "center";
-            ctx.fillText("⚡ НАЖМИ СТАРТ", width/2, height/2);
-        }
-    }
-    
-    // Игровой цикл
-    function gameLoop(now) {
-        if (!gameRunning) return;
-        updateGameLogic(now);
-        draw();
-        animationId = requestAnimationFrame(gameLoop);
-    }
-    
-    function startGame() {
-        if (gameRunning) return;
-        resetGameState();
-        gameRunning = true;
-        lastSpeedIncreaseTime = performance.now();
-        lastScoreUpdateTime = performance.now();
-        if (animationId) cancelAnimationFrame(animationId);
-        animationId = requestAnimationFrame(gameLoop);
-    }
-    
-    function stopGame() {
-        if (animationId) {
-            cancelAnimationFrame(animationId);
-            animationId = null;
-        }
-        gameRunning = false;
-        draw(); // показать экран "СТАРТ"
-    }
-    
-    function gameOver() {
-        if (!gameRunning) return;
-        stopGame();
-        // Мгновенная перерисовка с сообщением
-        if (ctx) {
-            const colors = getThemeColors();
-            ctx.fillStyle = "rgba(0,0,0,0.7)";
-            ctx.fillRect(0, 0, width, height);
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 20px Inter";
-            ctx.textAlign = "center";
-            ctx.fillText("GAME OVER", width/2, height/2 - 20);
-            ctx.font = "14px Inter";
-            ctx.fillText("Нажми Старт", width/2, height/2 + 20);
-        }
-        // Вибрация, если доступна
-        if (navigator.vibrate) navigator.vibrate(200);
-    }
-    
-    function restartGame() {
-        stopGame();
-        resetGameState();
-        startGame();
-    }
-    
-    // Управление мышью / тачем
-    function handleMove(clientX) {
-        if (!gameRunning) return;
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        let canvasX = (clientX - rect.left) * scaleX;
-        canvasX = Math.min(Math.max(canvasX, player.radius), width - player.radius);
-        player.x = canvasX;
-    }
-    
-    function onMouseMove(e) {
-        if (!controlActive && gameRunning) {
-            controlActive = true;
-        }
-        handleMove(e.clientX);
-    }
-    
-    function onTouchMove(e) {
-        e.preventDefault();
-        if (!controlActive && gameRunning) controlActive = true;
-        const touch = e.touches[0];
-        handleMove(touch.clientX);
-    }
-    
-    function onStartControl() {
-        controlActive = true;
-    }
-    
-    function onEndControl() {
-        controlActive = false;
-    }
-    
-    // Привязка событий
-    canvas.addEventListener('mousemove', onMouseMove);
-    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
-    canvas.addEventListener('mousedown', onStartControl);
-    canvas.addEventListener('mouseup', onEndControl);
-    canvas.addEventListener('touchstart', onStartControl);
-    canvas.addEventListener('touchend', onEndControl);
-    
-    startBtn.addEventListener('click', () => {
-        if (navigator.vibrate) navigator.vibrate(50);
-        startGame();
-    });
-    restartBtn.addEventListener('click', () => {
-        if (navigator.vibrate) navigator.vibrate(50);
-        restartGame();
-    });
-    
-    // Останавливаем игру при уходе с вкладки Профиль
-    const originalNavSetup = setupNavigation;
-    window.setupNavigation = function() {
-        if (originalNavSetup) originalNavSetup();
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const target = this.getAttribute('data-section');
-                if (target !== 'profile-section') {
-                    if (gameRunning) stopGame();
+    render() {
+        this.boardElement.innerHTML = '';
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                const value = this.grid[i][j];
+                const tile = document.createElement('div');
+                tile.className = 'tile-cell';
+                if (value !== 0) {
+                    let tileClass = `tile-${value}`;
+                    if (value > 2048) tileClass = 'tile-super';
+                    tile.classList.add(tileClass);
+                    tile.textContent = value;
+                    if (this.lastAddedTile && this.lastAddedTile.x === i && this.lastAddedTile.y === j) {
+                        tile.classList.add('tile-new');
+                        setTimeout(() => tile.classList.remove('tile-new'), 200);
+                    }
+                } else {
+                    tile.textContent = '';
                 }
-            });
+                this.boardElement.appendChild(tile);
+            }
+        }
+        this.lastAddedTile = null;
+    }
+
+    updateScoreUI() {
+        this.scoreElement.textContent = this.score;
+        if (this.score > this.bestScore) {
+            this.bestScore = this.score;
+            localStorage.setItem('bestScore2048', this.bestScore);
+            this.updateBestScoreUI();
+        }
+    }
+
+    updateBestScoreUI() {
+        this.bestScoreElement.textContent = this.bestScore;
+    }
+
+    slide(row) {
+        let arr = row.filter(v => v !== 0);
+        let newRow = [];
+        let scoreGain = 0;
+        for (let i = 0; i < arr.length; i++) {
+            if (i + 1 < arr.length && arr[i] === arr[i + 1]) {
+                let merged = arr[i] * 2;
+                newRow.push(merged);
+                scoreGain += merged;
+                i++;
+            } else {
+                newRow.push(arr[i]);
+            }
+        }
+        while (newRow.length < this.size) newRow.push(0);
+        return {newRow, scoreGain};
+    }
+
+    move(direction) {
+        let oldGrid = JSON.parse(JSON.stringify(this.grid));
+        let totalScoreGain = 0;
+
+        if (direction === 'left') {
+            for (let i = 0; i < this.size; i++) {
+                let {newRow, scoreGain} = this.slide(this.grid[i]);
+                this.grid[i] = newRow;
+                totalScoreGain += scoreGain;
+            }
+        } else if (direction === 'right') {
+            for (let i = 0; i < this.size; i++) {
+                let reversed = [...this.grid[i]].reverse();
+                let {newRow, scoreGain} = this.slide(reversed);
+                totalScoreGain += scoreGain;
+                this.grid[i] = newRow.reverse();
+            }
+        } else if (direction === 'up') {
+            for (let j = 0; j < this.size; j++) {
+                let column = [];
+                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
+                let {newRow, scoreGain} = this.slide(column);
+                totalScoreGain += scoreGain;
+                for (let i = 0; i < this.size; i++) this.grid[i][j] = newRow[i];
+            }
+        } else if (direction === 'down') {
+            for (let j = 0; j < this.size; j++) {
+                let column = [];
+                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
+                let reversed = column.reverse();
+                let {newRow, scoreGain} = this.slide(reversed);
+                totalScoreGain += scoreGain;
+                let final = newRow.reverse();
+                for (let i = 0; i < this.size; i++) this.grid[i][j] = final[i];
+            }
+        }
+
+        if (totalScoreGain > 0) {
+            this.score += totalScoreGain;
+            this.updateScoreUI();
+        }
+
+        // Проверяем, изменилось ли поле
+        let changed = false;
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (oldGrid[i][j] !== this.grid[i][j]) changed = true;
+            }
+        }
+
+        if (changed) {
+            let added = this.addRandomTile();
+            this.render();
+            // Проверка на победу/поражение
+            if (this.checkWin()) {
+                this.statusElement.textContent = getTranslation('gameWin');
+            } else if (this.checkLose()) {
+                this.statusElement.textContent = getTranslation('gameLose');
+            }
+        }
+    }
+
+    checkWin() {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.grid[i][j] === 2048) return true;
+            }
+        }
+        return false;
+    }
+
+    checkLose() {
+        // Есть ли пустые клетки
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.grid[i][j] === 0) return false;
+            }
+        }
+        // Можно ли объединить соседей
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                let val = this.grid[i][j];
+                if (j < this.size-1 && val === this.grid[i][j+1]) return false;
+                if (i < this.size-1 && val === this.grid[i+1][j]) return false;
+            }
+        }
+        return true;
+    }
+
+    setupSwipeEvents() {
+        let touchStartX = 0, touchStartY = 0;
+        this.boardElement.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            e.preventDefault();
         });
-    };
-    if (typeof setupNavigation === 'function') setupNavigation();
-    
-    // Начальная отрисовка без игры
-    draw();
-    
-    // Обновление цветов при смене темы (перерисовка)
-    const observer = new MutationObserver(() => draw());
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-})();
+        this.boardElement.addEventListener('touchend', (e) => {
+            if (touchStartX === 0 && touchStartY === 0) return;
+            let deltaX = e.changedTouches[0].clientX - touchStartX;
+            let deltaY = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(deltaX) < 20 && Math.abs(deltaY) < 20) return;
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0) this.move('right');
+                else this.move('left');
+            } else {
+                if (deltaY > 0) this.move('down');
+                else this.move('up');
+            }
+            touchStartX = 0; touchStartY = 0;
+            vibrate();
+        });
+    }
+
+    setupKeyboardEvents() {
+        window.addEventListener('keydown', (e) => {
+            if (document.querySelector('#profile-section.active')) {
+                const key = e.key;
+                if (key === 'ArrowLeft') { this.move('left'); e.preventDefault(); vibrate(); }
+                else if (key === 'ArrowRight') { this.move('right'); e.preventDefault(); vibrate(); }
+                else if (key === 'ArrowUp') { this.move('up'); e.preventDefault(); vibrate(); }
+                else if (key === 'ArrowDown') { this.move('down'); e.preventDefault(); vibrate(); }
+            }
+        });
+    }
+
+    resetGame() {
+        this.init();
+        this.render();
+    }
+}
+
+// Инициализация игры после загрузки DOM и данных профиля
+let game2048 = null;
+function initGame2048() {
+    const board = document.getElementById('game-board-2048');
+    const scoreEl = document.getElementById('game-score');
+    const bestEl = document.getElementById('best-score');
+    const statusEl = document.getElementById('game-status');
+    if (board && scoreEl && bestEl && statusEl && !game2048) {
+        game2048 = new Game2048(board, scoreEl, bestEl, statusEl);
+        const newGameBtn = document.getElementById('new-game-btn');
+        if (newGameBtn) {
+            newGameBtn.addEventListener('click', () => {
+                vibrate();
+                game2048.resetGame();
+            });
+        }
+    }
+}
+
+// Переопределяем функцию setLanguage, чтобы обновлять текст статуса игры при смене языка
+const originalSetLanguage = setLanguage;
+setLanguage = function(lang) {
+    originalSetLanguage(lang);
+    if (game2048 && game2048.statusElement) {
+        const currentText = game2048.statusElement.textContent;
+        if (currentText.includes('Победили') || currentText.includes('Win') || currentText.includes('Окончена') || currentText.includes('Lose')) {
+            if (game2048.checkWin()) game2048.statusElement.textContent = getTranslation('gameWin');
+            else if (game2048.checkLose()) game2048.statusElement.textContent = getTranslation('gameLose');
+        }
+    }
+};
+
+// Запускаем инициализацию игры после того, как основные функции отработали
+document.addEventListener('DOMContentLoaded', function() {
+    // Ждём, пока отрисуется профиль и добавится игра
+    setTimeout(() => {
+        initGame2048();
+    }, 300);
+});

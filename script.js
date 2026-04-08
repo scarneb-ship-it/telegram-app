@@ -1,14 +1,9 @@
 // ==================== КОНФИГУРАЦИЯ ====================
-// Легко меняйте игры и биржи здесь!
-// Для игр: можно указать bot (будет открыто t.me/bot?start=app) 
-// или fullLink (прямая ссылка, например реферальная)
-// Для бирж: используется url
-
-// Имя бота для реферальной ссылки (без @)
 const BOT_USERNAME = 'khadron_bot';
-
-// Глобальная переменная для хранения ID текущего пользователя
 let currentUserId = null;
+
+// Адрес вашего Cloudflare Worker (замените на свой, если отличается)
+const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/';
 
 const GAMES_DATA = [
     {
@@ -100,7 +95,6 @@ const EXCHANGES_DATA = [
 ];
 
 // ==================== ПЕРЕВОДЫ ====================
-
 const translations = {
     ru: {
         appTitle: "Games Verse",
@@ -161,15 +155,12 @@ const translations = {
 };
 
 // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
-
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
 
 function vibrate() {
-    if (navigator.vibrate) {
-        navigator.vibrate(50);
-    }
+    if (navigator.vibrate) navigator.vibrate(50);
 }
 
 function initializeApp() {
@@ -180,11 +171,9 @@ function initializeApp() {
     setupSettingsPanel();
     loadThemePreference();
     loadLanguagePreference();
-    loadUserData(); // Загружает данные пользователя и устанавливает currentUserId
-    setupShareButton(); // Теперь использует currentUserId
-    setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 100);
+    loadUserData();
+    setupShareButton();
+    setTimeout(() => document.body.style.opacity = '1', 100);
 }
 
 function initializeTelegramWebApp() {
@@ -276,10 +265,11 @@ function loadUserData() {
         const user = window.Telegram.WebApp.initDataUnsafe?.user;
         if (user) {
             updateProfileDisplay(user);
-            // Сохраняем ID текущего пользователя для реферальной ссылки
             currentUserId = user.id;
             console.log('🔍 Telegram User Data:', user);
             console.log('✅ Реферальный ID установлен:', currentUserId);
+            // ОТПРАВКА СТАТИСТИКИ
+            sendUserStat(user);
         } else {
             showFallbackProfile();
             currentUserId = null;
@@ -339,6 +329,46 @@ function showFallbackProfile() {
     if (avatarFallback) { avatarFallback.textContent = 'T'; avatarFallback.style.display = 'flex'; }
 }
 
+// ==================== СТАТИСТИКА ЧЕРЕЗ WORKER ====================
+async function sendUserStat(user) {
+    if (!user || !user.id) return;
+    const date = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+    const message = `🆕 *Новый пользователь в Games Verse*\n\n` +
+                    `👤 *Имя:* ${user.first_name || ''} ${user.last_name || ''}\n` +
+                    `🆔 *ID:* ${user.id}\n` +
+                    `🧑‍💻 *Username:* ${user.username ? '@' + user.username : 'нет'}\n` +
+                    `⭐ *Premium:* ${user.is_premium ? 'Да' : 'Нет'}\n` +
+                    `📅 *Дата/время:* ${date}`;
+    try {
+        await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                message: message,
+                chatId: '6823288584'   // ваш Telegram ID
+            })
+        });
+        console.log('✅ Статистика отправлена');
+    } catch (err) {
+        console.error('❌ Ошибка отправки статистики:', err);
+    }
+}
+
+// ==================== НАВИГАЦИЯ С СКРЫТИЕМ HEADER ====================
+const headerElement = document.querySelector('.header');
+const mainContent = document.querySelector('.main-content');
+
+function toggleHeaderForSection(sectionId) {
+    if (!headerElement) return;
+    if (sectionId === 'profile-section') {
+        headerElement.style.display = 'none';
+        if (mainContent) mainContent.style.paddingTop = '8px';
+    } else {
+        headerElement.style.display = 'block';
+        if (mainContent) mainContent.style.paddingTop = '';
+    }
+}
+
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
     const sections = document.querySelectorAll('.content-section');
@@ -352,8 +382,11 @@ function setupNavigation() {
                 section.classList.remove('active');
                 if (section.id === targetSection) section.classList.add('active');
             });
+            toggleHeaderForSection(targetSection);
         });
     });
+    const activeSection = document.querySelector('.content-section.active');
+    if (activeSection) toggleHeaderForSection(activeSection.id);
 }
 
 function setupGameButtons() {
@@ -463,35 +496,24 @@ function updateSettingsLanguageOptions(lang) {
     });
 }
 
-// ==================== ШАРИНГ С РЕФЕРАЛЬНОЙ ССЫЛКОЙ ====================
-
+// ==================== ШАРИНГ ====================
 function setupShareButton() {
     const shareButton = document.getElementById('share-friends-button');
     if (shareButton) {
         shareButton.addEventListener('click', function() {
             vibrate();
-            
-            // Формируем реферальную ссылку на бота
             let botUrl;
             if (currentUserId) {
-                // Уникальная ссылка с ID пользователя
                 botUrl = `https://t.me/${BOT_USERNAME}?start=ref_${currentUserId}`;
-                console.log(`🔗 Создана реферальная ссылка для пользователя ${currentUserId}: ${botUrl}`);
             } else {
-                // Fallback: просто ссылка на бота без реферального параметра
                 botUrl = `https://t.me/${BOT_USERNAME}`;
-                console.log(`⚠️ ID пользователя не найден, используется обычная ссылка: ${botUrl}`);
             }
-            
             const shareText = 'Играй в лучшие мини-игры Telegram вместе с HADRON! 🎮';
-            
             if (window.Telegram && window.Telegram.WebApp) {
                 const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`;
                 try {
                     window.Telegram.WebApp.openTelegramLink(shareUrl);
-                    console.log('✅ Открыто окно шаринга Telegram');
                 } catch (error) {
-                    console.error('Ошибка при открытии шаринга:', error);
                     fallbackCopyToClipboard(botUrl);
                 }
             } else {
@@ -538,7 +560,7 @@ function showNotification(customMessage) {
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
 
-// ==================== 2048 GAME IMPLEMENTATION ====================
+// ==================== 2048 GAME ====================
 class Game2048 {
     constructor(boardElement, scoreElement, bestScoreElement, statusElement) {
         this.boardElement = boardElement;
@@ -679,7 +701,6 @@ class Game2048 {
             this.updateScoreUI();
         }
 
-        // Проверяем, изменилось ли поле
         let changed = false;
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
@@ -688,9 +709,8 @@ class Game2048 {
         }
 
         if (changed) {
-            let added = this.addRandomTile();
+            this.addRandomTile();
             this.render();
-            // Проверка на победу/поражение
             if (this.checkWin()) {
                 this.statusElement.textContent = getTranslation('gameWin');
             } else if (this.checkLose()) {
@@ -709,13 +729,11 @@ class Game2048 {
     }
 
     checkLose() {
-        // Есть ли пустые клетки
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
                 if (this.grid[i][j] === 0) return false;
             }
         }
-        // Можно ли объединить соседей
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
                 let val = this.grid[i][j];
@@ -768,7 +786,6 @@ class Game2048 {
     }
 }
 
-// Инициализация игры после загрузки DOM и данных профиля
 let game2048 = null;
 function initGame2048() {
     const board = document.getElementById('game-board-2048');
@@ -787,7 +804,7 @@ function initGame2048() {
     }
 }
 
-// Переопределяем функцию setLanguage, чтобы обновлять текст статуса игры при смене языка
+// Обновление перевода для статуса игры
 const originalSetLanguage = setLanguage;
 setLanguage = function(lang) {
     originalSetLanguage(lang);
@@ -800,67 +817,6 @@ setLanguage = function(lang) {
     }
 };
 
-// Запускаем инициализацию игры после того, как основные функции отработали
-document.addEventListener('DOMContentLoaded', function() {
-    // Ждём, пока отрисуется профиль и добавится игра
-    setTimeout(() => {
-        initGame2048();
-    }, 300);
-});
-
-// ==================== СКРЫТИЕ HEADER НА СТРАНИЦЕ ПРОФИЛЯ ====================
-const headerElement = document.querySelector('.header');
-const mainContent = document.querySelector('.main-content');
-
-function toggleHeaderForSection(sectionId) {
-    if (!headerElement) return;
-    if (sectionId === 'profile-section') {
-        headerElement.style.display = 'none';
-        // Добавляем класс для компактного отступа, если нужно
-        mainContent.style.paddingTop = '8px';
-    } else {
-        headerElement.style.display = 'block';
-        mainContent.style.paddingTop = '';
-    }
-}
-
-// Перехватываем навигацию
-const originalSetupNavigation = setupNavigation;
-setupNavigation = function() {
-    const navItems = document.querySelectorAll('.nav-item');
-    const sections = document.querySelectorAll('.content-section');
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-            vibrate();
-            const targetSection = this.getAttribute('data-section');
-            navItems.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-            sections.forEach(section => {
-                section.classList.remove('active');
-                if (section.id === targetSection) section.classList.add('active');
-            });
-            // Скрываем/показываем header
-            toggleHeaderForSection(targetSection);
-        });
-    });
-    // При загрузке проверяем активную секцию
-    const activeSection = document.querySelector('.content-section.active');
-    if (activeSection) toggleHeaderForSection(activeSection.id);
-};
-
-// Вызываем новую навигацию после инициализации
-// Переопределяем initializeApp, чтобы не сломать порядок
-const originalInitializeApp = initializeApp;
-initializeApp = function() {
-    originalInitializeApp();
-    // После стандартной инициализации навешиваем навигацию снова (поверх старой)
-    setupNavigation();
-    // Дополнительно: скрыть header, если профиль активен
-    const activeSection = document.querySelector('.content-section.active');
-    if (activeSection && activeSection.id === 'profile-section') {
-        toggleHeaderForSection('profile-section');
-    }
-};
-
-// Вызываем заново (переинициализируем)
-initializeApp();
+setTimeout(() => {
+    initGame2048();
+}, 300);

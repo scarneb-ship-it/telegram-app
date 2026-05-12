@@ -306,6 +306,7 @@ body.dark-theme {
   background: linear-gradient(135deg, rgba(0, 176, 155, 0.1), rgba(150, 201, 61, 0.1));
   border: 1px solid rgba(0, 176, 155, 0.5);
   box-shadow: 0 0 0 2px rgba(0, 176, 155, 0.2), var(--shadow-light);
+  position: relative;
 }
 
 .dark-theme .game-card.highlight {
@@ -324,6 +325,7 @@ body.dark-theme {
   background: var(--highlight-gradient);
 }
 
+/* Заголовок игры с бейджем */
 .game-header {
   display: flex;
   align-items: center;
@@ -663,7 +665,7 @@ body.dark-theme {
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
   padding: 18px;
   background: var(--card-light);
   border-radius: 18px;
@@ -1085,253 +1087,354 @@ button:focus-visible {
   outline-color: var(--primary-dark);
 }
 
-/* ==================== AI POWER TAP STYLES ==================== */
-.ai-power-tap-container {
+/* ==================== 2048 GAME STYLES (улучшенные) ==================== */
+.game-2048-container {
     margin-top: 20px;
     background: var(--card-light);
     border-radius: 20px;
     padding: 16px;
     border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
     width: 100%;
     box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
 }
 
-.dark-theme .ai-power-tap-container {
+/* Красивый фоновый узор для доски */
+.game-2048-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.2) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.dark-theme .game-2048-container {
     background: var(--card-dark);
     border-color: var(--border-dark);
 }
 
-.power-header {
+.dark-theme .game-2048-container::before {
+    background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 50%);
+}
+
+.game-header-2048 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
 }
 
-.power-title {
-    font-size: 22px;
+.game-title-2048 {
+    font-size: 28px;
     font-weight: 800;
-    background: linear-gradient(135deg, #6b46c1, #b83280);
+    background: linear-gradient(135deg, #e67e22, #f39c12);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     margin: 0;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 10px rgba(230, 126, 34, 0.2);
 }
 
-.power-score-box {
-    background: linear-gradient(135deg, #6b46c1, #b83280);
+.dark-theme .game-title-2048 {
+    background: linear-gradient(135deg, #f39c12, #f1c40f);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.game-scores {
+    display: flex;
+    gap: 10px;
+}
+
+.score-box {
+    background: var(--primary-gradient);
     border-radius: 14px;
     padding: 6px 16px;
     text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    min-width: 70px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s;
 }
 
-.power-label {
-    display: block;
-    font-size: 10px;
+.score-box:active {
+    transform: scale(0.95);
+}
+
+.score-label {
+    font-size: 11px;
     font-weight: 600;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
-.power-value {
+.score-value {
     font-size: 22px;
     font-weight: 800;
     color: white;
     line-height: 1.2;
+    transition: transform 0.15s ease;
 }
 
-/* Главный тап-круг */
-.tap-circle-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 20px 0;
+/* Анимация счёта при обновлении */
+.score-value.flash {
+    animation: scoreFlash 0.3s ease;
 }
 
-.tap-circle {
-    width: 110px;
-    height: 110px;
-    background: radial-gradient(circle, #9f7aea, #6b46c1);
-    border-radius: 50%;
+@keyframes scoreFlash {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); color: #ffd700; }
+    100% { transform: scale(1); }
+}
+
+/* Игровое поле */
+.game-board-2048 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    background: #bbada0;
+    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 18px;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 1;
+}
+
+.dark-theme .game-board-2048 {
+    background: #8f7a66;
+}
+
+.tile-cell {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background-color: rgba(238, 228, 218, 0.5);
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    font-weight: 800;
+    font-size: clamp(20px, 6vw, 32px);
+    transition: all 0.1s ease;
+    box-sizing: border-box;
+    word-break: break-word;
+    text-align: center;
+    padding: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     position: relative;
-    box-shadow: 0 0 30px rgba(107, 70, 193, 0.6);
-    transition: transform 0.1s ease, box-shadow 0.1s;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
+    z-index: 1;
 }
 
-.tap-circle:active {
-    transform: scale(0.95);
-    box-shadow: 0 0 45px rgba(107, 70, 193, 0.9);
+/* Плитки с более яркими градиентами */
+.tile-2 { background: linear-gradient(145deg, #eee4da, #e0d4c3); color: #776e65; }
+.tile-4 { background: linear-gradient(145deg, #ede0c8, #d8c9a3); color: #776e65; }
+.tile-8 { background: linear-gradient(145deg, #f2b179, #e59a5c); color: #f9f6f2; }
+.tile-16 { background: linear-gradient(145deg, #f59563, #e07a4b); color: #f9f6f2; }
+.tile-32 { background: linear-gradient(145deg, #f67c5f, #e0664d); color: #f9f6f2; }
+.tile-64 { background: linear-gradient(145deg, #f65e3b, #e0482b); color: #f9f6f2; }
+.tile-128 { background: linear-gradient(145deg, #edcf72, #d4b35c); color: #f9f6f2; font-size: clamp(18px, 5vw, 26px); box-shadow: 0 0 15px rgba(243, 209, 114, 0.4); }
+.tile-256 { background: linear-gradient(145deg, #edcc61, #d4b04b); color: #f9f6f2; font-size: clamp(18px, 5vw, 26px); box-shadow: 0 0 15px rgba(237, 204, 97, 0.5); }
+.tile-512 { background: linear-gradient(145deg, #edc850, #d4a840); color: #f9f6f2; font-size: clamp(18px, 5vw, 26px); box-shadow: 0 0 20px rgba(237, 200, 80, 0.6); }
+.tile-1024 { background: linear-gradient(145deg, #edc53f, #d4a92f); color: #f9f6f2; font-size: clamp(15px, 4.5vw, 22px); box-shadow: 0 0 25px rgba(237, 197, 63, 0.7); }
+.tile-2048 { background: linear-gradient(145deg, #edc22e, #d4a61e); color: #f9f6f2; font-size: clamp(15px, 4.5vw, 22px); box-shadow: 0 0 30px #f9d423; animation: pulse 2s infinite; }
+.tile-super { background: linear-gradient(145deg, #3c3a32, #1e1d19); color: #f9f6f2; font-size: clamp(13px, 4vw, 20px); box-shadow: 0 0 35px #b8860b; }
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 20px #f9d423; }
+    50% { box-shadow: 0 0 35px #f9d423, 0 0 10px #ffd700; }
+    100% { box-shadow: 0 0 20px #f9d423; }
 }
 
-.tap-glow {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.2s;
+/* Анимации плиток */
+.tile-new {
+    animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
 }
 
-.tap-circle:active .tap-glow {
-    opacity: 1;
-}
-
-.tap-icon {
-    font-size: 45px;
+.tile-merge {
+    animation: mergePop 0.25s ease-in-out;
     z-index: 2;
-    user-select: none;
-    pointer-events: none;
+}
+@keyframes mergePop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.25); background: #f5d76e; box-shadow: 0 0 20px #f1c40f; }
+    100% { transform: scale(1); }
 }
 
-.tap-particles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.tap-cps {
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-secondary-light);
-    background: rgba(0,0,0,0.05);
-    padding: 4px 12px;
-    border-radius: 20px;
-}
-
-.dark-theme .tap-cps {
-    color: var(--text-secondary-dark);
-    background: rgba(255,255,255,0.1);
-}
-
-/* Панель улучшений */
-.upgrades-panel {
-    margin-top: 20px;
-}
-
-.upgrades-title {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 12px;
-}
-
-.upgrades-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.upgrade-item {
-    background: var(--surface-light);
-    border: 1px solid var(--border-light);
-    border-radius: 12px;
-    padding: 12px;
+.game-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.2s;
+    gap: 12px;
+    margin-top: 6px;
+    position: relative;
+    z-index: 1;
 }
 
-.dark-theme .upgrade-item {
-    background: #2d3748;
-    border-color: var(--border-dark);
-}
-
-.upgrade-info {
-    flex: 1;
-}
-
-.upgrade-name {
-    font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 2px;
-}
-
-.upgrade-effect {
-    font-size: 12px;
-    color: var(--text-secondary-light);
-}
-
-.dark-theme .upgrade-effect {
-    color: var(--text-secondary-dark);
-}
-
-.upgrade-buy {
-    background: linear-gradient(135deg, #6b46c1, #b83280);
-    border: none;
-    color: white;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    margin-left: 10px;
-}
-
-.upgrade-buy:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    filter: grayscale(0.6);
-}
-
-.upgrade-buy:not(:disabled):hover {
-    transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(107, 70, 193, 0.4);
-}
-
-/* Престиж кнопка */
-.tap-footer {
-    margin-top: 16px;
-    text-align: center;
-}
-
-.prestige-button {
-    background: linear-gradient(135deg, #e53e3e, #dd6b20);
-    color: white;
+.new-game-btn {
+    background: linear-gradient(135deg, #8f7a66, #776e65);
     border: none;
     padding: 10px 20px;
-    border-radius: 25px;
+    border-radius: 40px;
+    color: white;
     font-weight: 700;
     font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(229, 62, 62, 0.4);
     transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    letter-spacing: 0.5px;
+}
+.new-game-btn:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-.prestige-button:disabled {
-    opacity: 0.5;
-    filter: grayscale(0.7);
-    cursor: not-allowed;
+.game-status {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 6px 18px;
+    border-radius: 40px;
+    background: rgba(0,0,0,0.05);
+    color: var(--text-primary-light);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.dark-theme .game-status {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-primary-dark);
 }
 
-.prestige-button:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(229, 62, 62, 0.6);
+/* Победа/поражение выделение */
+.game-status.win {
+    background: #ffd700;
+    color: #1a1a1a;
+}
+.game-status.lose {
+    background: #e74c3c;
+    color: white;
 }
 
-/* Частицы при тапе */
-@keyframes particleFade {
-    0% { transform: translateY(0) scale(1); opacity: 1; }
-    100% { transform: translateY(-40px) scale(0); opacity: 0; }
+.swipe-hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-secondary-light);
+    margin-top: 12px;
+    opacity: 0.7;
+    position: relative;
+    z-index: 1;
 }
-.particle {
-    position: absolute;
+.dark-theme .swipe-hint {
+    color: var(--text-secondary-dark);
+}
+
+/* Дополнительная адаптация для узких экранов */
+@media (max-width: 400px) {
+    .game-board-2048 {
+        gap: 6px;
+        padding: 6px;
+    }
+    .tile-cell {
+        border-radius: 12px;
+        font-size: clamp(16px, 5vw, 24px);
+    }
+    .game-header-2048 {
+        margin-bottom: 12px;
+    }
+    .score-box {
+        min-width: 60px;
+        padding: 4px 10px;
+    }
+    .score-value {
+        font-size: 18px;
+    }
+    .game-title-2048 {
+        font-size: 22px;
+    }
+    .new-game-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+}
+
+/* Убираем горизонтальный скролл */
+.app-container {
+    overflow-x: hidden;
+}
+body {
+    overflow-x: hidden;
+}
+.main-content {
+    overflow-x: hidden;
+}
+
+/* Компактный режим для страницы профиля без хедера */
+.header {
+    transition: display 0.2s;
+}
+.profile-section .main-content {
+    padding-top: 8px;
+}
+
+/* Уменьшаем отступы в профиле для экономии места */
+.profile-header {
+    margin-bottom: 16px;
+    padding: 12px;
+}
+.profile-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+}
+.profile-info h2 {
+    font-size: 16px;
+}
+.share-friends-button {
+    padding: 12px 18px;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+.game-2048-container {
+    margin-top: 12px;
+    padding: 12px;
+}
+.game-board-2048 {
+    gap: 7px;
+    padding: 7px;
+}
+.tile-cell {
+    border-radius: 12px;
+}
+.game-header-2048 {
+    margin-bottom: 10px;
+}
+.game-title-2048 {
     font-size: 22px;
-    pointer-events: none;
-    animation: particleFade 0.6s ease-out forwards;
-    color: #fbd38d;
+}
+.score-box {
+    padding: 4px 12px;
+    min-width: 55px;
+}
+.score-value {
+    font-size: 18px;
+}
+.game-controls {
+    margin-top: 4px;
 }

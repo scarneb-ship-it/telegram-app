@@ -154,6 +154,85 @@ const translations = {
     }
 };
 
+// ==================== ЗВУКОВОЙ ДВИЖОК (Web Audio) ====================
+class SoundManager {
+    constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        // Создаём контекст при первом взаимодействии
+        document.addEventListener('touchstart', () => this.initAudio(), { once: true });
+        document.addEventListener('click', () => this.initAudio(), { once: true });
+    }
+    initAudio() {
+        if (this.ctx) return;
+        try {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.warn('Web Audio не поддерживается');
+            this.enabled = false;
+        }
+    }
+    playTone(freq, duration, type = 'sine', ramp = true) {
+        if (!this.enabled || !this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.value = 0.15;
+        if (ramp) {
+            gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+        }
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+    }
+    playMove() {
+        this.playTone(300, 0.08, 'sine', true);
+    }
+    playMerge() {
+        if (!this.enabled || !this.ctx) return;
+        // Два тона одновременно
+        [600, 800].forEach(freq => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.2);
+        });
+    }
+    playWin() {
+        if (!this.enabled || !this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.5]; // C E G C
+        notes.forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            const start = this.ctx.currentTime + i * 0.12;
+            gain.gain.setValueAtTime(0.2, start);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.4);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.4);
+        });
+    }
+    playLose() {
+        if (!this.enabled || !this.ctx) return;
+        [400, 300, 200].forEach((freq, i) => {
+            setTimeout(() => this.playTone(freq, 0.3, 'sawtooth', true), i * 150);
+        });
+    }
+}
+const sound = new SoundManager();
+
 // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
@@ -173,7 +252,6 @@ function initializeApp() {
     loadLanguagePreference();
     loadUserData();
     setupShareButton();
-    initAIPowerTapGame();
     setTimeout(() => document.body.style.opacity = '1', 100);
 }
 
@@ -461,6 +539,14 @@ function setLanguage(lang) {
         const key = element.getAttribute('data-i18n');
         if (translations[lang] && translations[lang][key]) element.textContent = translations[lang][key];
     });
+    // Обновим статус игры при смене языка
+    if (game2048 && game2048.statusElement) {
+        const currentText = game2048.statusElement.textContent;
+        if (currentText.includes('Победили') || currentText.includes('Win') || currentText.includes('Окончена') || currentText.includes('Lose')) {
+            if (game2048.checkWin()) game2048.statusElement.textContent = getTranslation('gameWin');
+            else if (game2048.checkLose()) game2048.statusElement.textContent = getTranslation('gameLose');
+        }
+    }
 }
 
 function getTranslation(key) {
@@ -560,222 +646,282 @@ function showNotification(customMessage) {
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
 
-// ==================== AI POWER TAP GAME ====================
-class AIPowerTapGame {
-    constructor() {
-        this.power = 0;
-        this.powerPerClick = 1;
-        this.powerPerSecond = 0;
-        this.prestigeMultiplier = 1;
-        this.upgrades = [
-            {
-                id: 'cpu',
-                name: '💻 Процессор',
-                baseCost: 15,
-                cost: 15,
-                level: 0,
-                effect: () => { this.powerPerClick += 1; },
-                description: 'Увеличивает силу тапа на 1'
-            },
-            {
-                id: 'gpu',
-                name: '🎮 Видеокарта',
-                baseCost: 100,
-                cost: 100,
-                level: 0,
-                effect: () => { this.powerPerSecond += 1; },
-                description: 'Авто-генерация +1 AI/сек'
-            },
-            {
-                id: 'neural',
-                name: '🧠 Нейросеть',
-                baseCost: 500,
-                cost: 500,
-                level: 0,
-                effect: () => { this.powerPerSecond += 5; },
-                description: 'Авто-генерация +5 AI/сек'
-            },
-            {
-                id: 'quantum',
-                name: '⚛️ Квантовый чип',
-                baseCost: 2000,
-                cost: 2000,
-                level: 0,
-                effect: () => { this.powerPerClick += 3; this.powerPerSecond += 2; },
-                description: 'Сила тапа +3, авто +2/сек'
-            }
-        ];
-        this.loadGame();
+// ==================== 2048 GAME (улучшенная) ====================
+class Game2048 {
+    constructor(boardElement, scoreElement, bestScoreElement, statusElement) {
+        this.boardElement = boardElement;
+        this.scoreElement = scoreElement;
+        this.bestScoreElement = bestScoreElement;
+        this.statusElement = statusElement;
+        this.size = 4;
+        this.grid = [];
+        this.score = 0;
+        this.bestScore = parseInt(localStorage.getItem('bestScore2048')) || 0;
+        this.mergedCells = []; // для анимаций слияния
+        this.updateBestScoreUI();
+        this.init();
+        this.setupSwipeEvents();
+        this.setupKeyboardEvents();
+    }
+
+    init() {
+        this.grid = Array(this.size).fill().map(() => Array(this.size).fill(0));
+        this.score = 0;
+        this.updateScoreUI();
+        this.statusElement.textContent = '';
+        this.statusElement.className = 'game-status';
+        this.addRandomTile();
+        this.addRandomTile();
         this.render();
-        this.startAutoGenerate();
     }
 
-    loadGame() {
-        const saved = localStorage.getItem('ai_power_tap_save');
-        if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                this.power = data.power || 0;
-                this.powerPerClick = data.powerPerClick || 1;
-                this.powerPerSecond = data.powerPerSecond || 0;
-                this.prestigeMultiplier = data.prestigeMultiplier || 1;
-                if (data.upgrades) {
-                    this.upgrades.forEach((u, i) => {
-                        if (data.upgrades[i]) {
-                            u.level = data.upgrades[i].level || 0;
-                            u.cost = data.upgrades[i].cost || u.baseCost;
-                        }
-                    });
-                }
-            } catch (e) {
-                console.error('Ошибка загрузки сохранения AI Power Tap');
+    addRandomTile() {
+        const emptyCells = [];
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.grid[i][j] === 0) emptyCells.push({x: i, y: j});
             }
         }
-    }
-
-    saveGame() {
-        const data = {
-            power: this.power,
-            powerPerClick: this.powerPerClick,
-            powerPerSecond: this.powerPerSecond,
-            prestigeMultiplier: this.prestigeMultiplier,
-            upgrades: this.upgrades.map(u => ({ level: u.level, cost: u.cost }))
-        };
-        localStorage.setItem('ai_power_tap_save', JSON.stringify(data));
-    }
-
-    addPower(amount) {
-        this.power += amount;
-        this.updateUI();
-        this.saveGame();
-    }
-
-    buyUpgrade(upgrade) {
-        if (this.power >= upgrade.cost) {
-            this.power -= upgrade.cost;
-            upgrade.level++;
-            upgrade.effect();
-            upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.5, upgrade.level));
-            this.updateUI();
-            this.saveGame();
-            this.spawnParticles('✨');
+        if (emptyCells.length > 0) {
+            const {x, y} = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            this.grid[x][y] = Math.random() < 0.9 ? 2 : 4;
+            this.lastAddedTile = {x, y};
+            return true;
         }
-    }
-
-    canPrestige() {
-        return this.power >= 10000;
-    }
-
-    prestige() {
-        if (this.canPrestige()) {
-            this.prestigeMultiplier *= 2;
-            this.power = 0;
-            this.powerPerClick = this.prestigeMultiplier;
-            this.powerPerSecond = 0;
-            this.upgrades.forEach(u => {
-                u.level = 0;
-                u.cost = u.baseCost;
-            });
-            this.updateUI();
-            this.saveGame();
-            alert('Престиж! Ваш множитель теперь x' + this.prestigeMultiplier);
-        }
-    }
-
-    startAutoGenerate() {
-        setInterval(() => {
-            if (this.powerPerSecond > 0) {
-                this.addPower(this.powerPerSecond);
-            }
-        }, 1000);
-    }
-
-    handleTap() {
-        this.addPower(this.powerPerClick);
-        this.spawnParticles('⚡');
-        vibrate();
-    }
-
-    spawnParticles(emoji) {
-        const container = document.getElementById('tap-particles');
-        if (!container) return;
-        for (let i = 0; i < 4; i++) {
-            const particle = document.createElement('span');
-            particle.className = 'particle';
-            particle.textContent = emoji;
-            particle.style.left = Math.random() * 80 + 10 + '%';
-            particle.style.top = Math.random() * 60 + 20 + '%';
-            particle.style.animationDelay = Math.random() * 0.2 + 's';
-            container.appendChild(particle);
-            setTimeout(() => particle.remove(), 600);
-        }
-    }
-
-    updateUI() {
-        // Обновление счётчика
-        const powerDisplay = document.getElementById('power-display');
-        if (powerDisplay) {
-            powerDisplay.textContent = Math.floor(this.power).toLocaleString();
-        }
-        // Обновление CPS
-        const cpsDisplay = document.getElementById('cps-display');
-        if (cpsDisplay) {
-            cpsDisplay.textContent = this.powerPerSecond + ' AI/сек';
-        }
-        // Обновление кнопок улучшений
-        this.renderUpgrades();
-        // Кнопка престижа
-        const prestigeBtn = document.getElementById('prestige-button');
-        if (prestigeBtn) {
-            prestigeBtn.disabled = !this.canPrestige();
-        }
+        return false;
     }
 
     render() {
-        this.updateUI();
-        this.renderUpgrades();
-        // Обработчик тапа
-        const tapCircle = document.getElementById('tap-circle');
-        if (tapCircle) {
-            tapCircle.addEventListener('click', () => this.handleTap());
+        this.boardElement.innerHTML = '';
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                const value = this.grid[i][j];
+                const tile = document.createElement('div');
+                tile.className = 'tile-cell';
+                if (value !== 0) {
+                    let tileClass = `tile-${value}`;
+                    if (value > 2048) tileClass = 'tile-super';
+                    tile.classList.add(tileClass);
+                    tile.textContent = value;
+                    // Анимация появления
+                    if (this.lastAddedTile && this.lastAddedTile.x === i && this.lastAddedTile.y === j) {
+                        tile.classList.add('tile-new');
+                    }
+                    // Анимация слияния
+                    if (this.mergedCells.some(cell => cell.x === i && cell.y === j)) {
+                        tile.classList.add('tile-merge');
+                    }
+                } else {
+                    tile.textContent = '';
+                }
+                this.boardElement.appendChild(tile);
+            }
         }
-        // Кнопка престижа
-        const prestigeBtn = document.getElementById('prestige-button');
-        if (prestigeBtn) {
-            prestigeBtn.addEventListener('click', () => this.prestige());
+        this.lastAddedTile = null;
+        this.mergedCells = [];
+    }
+
+    updateScoreUI() {
+        this.scoreElement.textContent = this.score;
+        if (this.score > this.bestScore) {
+            this.bestScore = this.score;
+            localStorage.setItem('bestScore2048', this.bestScore);
+            this.updateBestScoreUI();
+            // Эффект на рекорд
+            this.bestScoreElement.classList.add('flash');
+            setTimeout(() => this.bestScoreElement.classList.remove('flash'), 300);
+        }
+        this.scoreElement.classList.add('flash');
+        setTimeout(() => this.scoreElement.classList.remove('flash'), 300);
+    }
+
+    updateBestScoreUI() {
+        this.bestScoreElement.textContent = this.bestScore;
+    }
+
+    slide(row) {
+        let arr = row.filter(v => v !== 0);
+        let newRow = [];
+        let scoreGain = 0;
+        for (let i = 0; i < arr.length; i++) {
+            if (i + 1 < arr.length && arr[i] === arr[i + 1]) {
+                let merged = arr[i] * 2;
+                newRow.push(merged);
+                scoreGain += merged;
+                i++;
+            } else {
+                newRow.push(arr[i]);
+            }
+        }
+        while (newRow.length < this.size) newRow.push(0);
+        return {newRow, scoreGain};
+    }
+
+    move(direction) {
+        let oldGrid = JSON.parse(JSON.stringify(this.grid));
+        let totalScoreGain = 0;
+        this.mergedCells = [];
+
+        const processLine = (line, i, jStart, isRow, reverse) => {
+            let original = [...line];
+            if (reverse) original.reverse();
+            let {newRow, scoreGain} = this.slide(original);
+            totalScoreGain += scoreGain;
+            if (reverse) newRow.reverse();
+            // Определяем, какие позиции слились
+            for (let k = 0; k < line.length; k++) {
+                if (newRow[k] !== line[k] && newRow[k] !== 0) {
+                    // Возможное слияние: проверим, было ли здесь слияние
+                    if (line[k] !== 0 && newRow[k] === line[k]*2) {
+                        // Слияние
+                        if (isRow) this.mergedCells.push({x: i, y: jStart + k});
+                        else this.mergedCells.push({x: jStart + k, y: i});
+                    }
+                }
+            }
+            return newRow;
+        };
+
+        if (direction === 'left') {
+            for (let i = 0; i < this.size; i++) {
+                this.grid[i] = processLine(this.grid[i], i, 0, true, false);
+            }
+        } else if (direction === 'right') {
+            for (let i = 0; i < this.size; i++) {
+                this.grid[i] = processLine([...this.grid[i]], i, 0, true, true);
+            }
+        } else if (direction === 'up') {
+            for (let j = 0; j < this.size; j++) {
+                let column = [];
+                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
+                let newCol = processLine(column, j, 0, false, false);
+                for (let i = 0; i < this.size; i++) this.grid[i][j] = newCol[i];
+            }
+        } else if (direction === 'down') {
+            for (let j = 0; j < this.size; j++) {
+                let column = [];
+                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
+                let newCol = processLine(column, j, 0, false, true);
+                for (let i = 0; i < this.size; i++) this.grid[i][j] = newCol[i];
+            }
+        }
+
+        if (totalScoreGain > 0) {
+            this.score += totalScoreGain;
+            this.updateScoreUI();
+            sound.playMerge();
+        } else {
+            sound.playMove();
+        }
+
+        let changed = false;
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (oldGrid[i][j] !== this.grid[i][j]) changed = true;
+            }
+        }
+
+        if (changed) {
+            this.addRandomTile();
+            this.render();
+            if (this.checkWin()) {
+                this.statusElement.textContent = getTranslation('gameWin');
+                this.statusElement.className = 'game-status win';
+                sound.playWin();
+            } else if (this.checkLose()) {
+                this.statusElement.textContent = getTranslation('gameLose');
+                this.statusElement.className = 'game-status lose';
+                sound.playLose();
+            }
         }
     }
 
-    renderUpgrades() {
-        const list = document.getElementById('upgrades-list');
-        if (!list) return;
-        list.innerHTML = this.upgrades.map(upgrade => `
-            <div class="upgrade-item">
-                <div class="upgrade-info">
-                    <div class="upgrade-name">${upgrade.name} (ур. ${upgrade.level})</div>
-                    <div class="upgrade-effect">${upgrade.description}</div>
-                </div>
-                <button class="upgrade-buy" data-upgrade-id="${upgrade.id}" ${this.power < upgrade.cost ? 'disabled' : ''}>
-                    ${upgrade.cost.toLocaleString()} AI
-                </button>
-            </div>
-        `).join('');
-        // Навешиваем обработчики
-        list.querySelectorAll('.upgrade-buy').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = btn.getAttribute('data-upgrade-id');
-                const upgrade = this.upgrades.find(u => u.id === id);
-                if (upgrade) this.buyUpgrade(upgrade);
-            });
+    checkWin() {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.grid[i][j] === 2048) return true;
+            }
+        }
+        return false;
+    }
+
+    checkLose() {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.grid[i][j] === 0) return false;
+            }
+        }
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                let val = this.grid[i][j];
+                if (j < this.size-1 && val === this.grid[i][j+1]) return false;
+                if (i < this.size-1 && val === this.grid[i+1][j]) return false;
+            }
+        }
+        return true;
+    }
+
+    setupSwipeEvents() {
+        let touchStartX = 0, touchStartY = 0;
+        this.boardElement.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            e.preventDefault();
+        });
+        this.boardElement.addEventListener('touchend', (e) => {
+            if (touchStartX === 0 && touchStartY === 0) return;
+            let deltaX = e.changedTouches[0].clientX - touchStartX;
+            let deltaY = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(deltaX) < 20 && Math.abs(deltaY) < 20) return;
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0) this.move('right');
+                else this.move('left');
+            } else {
+                if (deltaY > 0) this.move('down');
+                else this.move('up');
+            }
+            touchStartX = 0; touchStartY = 0;
+            vibrate();
         });
     }
-}
 
-let aiPowerTapGame = null;
-function initAIPowerTapGame() {
-    if (!aiPowerTapGame) {
-        aiPowerTapGame = new AIPowerTapGame();
+    setupKeyboardEvents() {
+        window.addEventListener('keydown', (e) => {
+            if (document.querySelector('#profile-section.active')) {
+                const key = e.key;
+                if (key === 'ArrowLeft') { this.move('left'); e.preventDefault(); vibrate(); }
+                else if (key === 'ArrowRight') { this.move('right'); e.preventDefault(); vibrate(); }
+                else if (key === 'ArrowUp') { this.move('up'); e.preventDefault(); vibrate(); }
+                else if (key === 'ArrowDown') { this.move('down'); e.preventDefault(); vibrate(); }
+            }
+        });
+    }
+
+    resetGame() {
+        sound.playMove();
+        this.init();
+        this.render();
     }
 }
 
-// Старая игра 2048 удалена полностью
+let game2048 = null;
+function initGame2048() {
+    const board = document.getElementById('game-board-2048');
+    const scoreEl = document.getElementById('game-score');
+    const bestEl = document.getElementById('best-score');
+    const statusEl = document.getElementById('game-status');
+    if (board && scoreEl && bestEl && statusEl && !game2048) {
+        game2048 = new Game2048(board, scoreEl, bestEl, statusEl);
+        const newGameBtn = document.getElementById('new-game-btn');
+        if (newGameBtn) {
+            newGameBtn.addEventListener('click', () => {
+                vibrate();
+                game2048.resetGame();
+            });
+        }
+    }
+}
+
+setTimeout(() => {
+    initGame2048();
+}, 300);

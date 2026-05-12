@@ -116,11 +116,11 @@ const translations = {
         profile: "Профиль",
         linkCopied: "Ссылка скопирована в буфер обмена!",
         go: "Перейти",
-        tetris: "Тетрис",
+        blockBlast: "Block Blast",
         score: "Счёт",
-        level: "Уровень",
+        best: "Лучший",
         newGame: "Новая игра",
-        gameLose: "Игра окончена! 😔"
+        blockHint: "👆 Выберите блок и нажмите на сетку"
     },
     en: {
         appTitle: "Games Verse",
@@ -142,11 +142,11 @@ const translations = {
         profile: "Profile",
         linkCopied: "Link copied to clipboard!",
         go: "Go",
-        tetris: "Tetris",
+        blockBlast: "Block Blast",
         score: "Score",
-        level: "Level",
+        best: "Best",
         newGame: "New Game",
-        gameLose: "Game over! 😔"
+        blockHint: "👆 Select a block and tap the grid"
     }
 };
 
@@ -556,261 +556,260 @@ function showNotification(customMessage) {
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
 
-// ==================== TETRIS GAME ====================
-class TetrisGame {
-    constructor(canvasId, scoreId, levelId, statusId) {
-        this.canvas = document.getElementById(canvasId);
-        this.ctx = this.canvas.getContext('2d');
-        this.scoreEl = document.getElementById(scoreId);
-        this.levelEl = document.getElementById(levelId);
-        this.statusEl = document.getElementById(statusId);
-
-        this.cellSize = this.canvas.width / 10;   // 10 колонок
-        this.rows = 20;
-        this.cols = 10;
-        this.board = [];
-        this.currentPiece = null;
+// ==================== BLOCK BLAST GAME ====================
+class BlockBlast {
+    constructor(boardElement, blocksElement, scoreElement, bestScoreElement) {
+        this.boardElement = boardElement;
+        this.blocksElement = blocksElement;
+        this.scoreElement = scoreElement;
+        this.bestScoreElement = bestScoreElement;
+        this.gridSize = 8;
+        this.grid = [];
         this.score = 0;
-        this.level = 1;
-        this.linesCleared = 0;
-        this.gameOver = false;
-        this.dropInterval = 500; // ms
-        this.lastDrop = 0;
-        this.animationId = null;
-
-        this.pieces = [
-            [[1,1,1,1]],                         // I
-            [[1,1],[1,1]],                       // O
-            [[0,1,0],[1,1,1]],                   // T
-            [[1,0,0],[1,1,1]],                   // L
-            [[0,0,1],[1,1,1]],                   // J
-            [[0,1,1],[1,1,0]],                   // S
-            [[1,1,0],[0,1,1]]                    // Z
-        ];
-        this.colors = ['#0ff','#ff0','#a0f','#f80','#00f','#0f0','#f00'];
-
-        this.initBoard();
-        this.spawnPiece();
-        this.setupControls();
-        this.gameLoop(0);
+        this.bestScore = localStorage.getItem('bestScoreBlockBlast') ? parseInt(localStorage.getItem('bestScoreBlockBlast')) : 0;
+        this.blocks = [];
+        this.selectedBlockIndex = null;
+        this.updateBestScoreUI();
+        this.init();
     }
 
-    initBoard() {
-        this.board = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
+    // Все возможные фигуры (полимино)
+    shapes = [
+        [[0,0],[0,1],[0,2]],
+        [[0,0],[1,0],[2,0],[2,1]],
+        [[0,0],[0,1],[1,0],[1,1]],
+        [[0,0],[0,1],[0,2],[1,1]],
+        [[0,0],[0,1],[1,1],[1,2]],
+        [[0,1],[0,2],[1,0],[1,1]],
+        [[0,0],[0,1],[0,2],[0,3]],
+        [[0,0],[1,0],[2,0],[2,1]],
+        [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]],
+        [[0,0],[0,1],[0,2],[0,3],[0,4]]
+    ];
+
+    init() {
+        this.grid = Array(this.gridSize).fill().map(() => Array(this.gridSize).fill(0));
+        this.score = 0;
+        this.updateScoreUI();
+        this.blocks = this.generateThreeBlocks();
+        this.selectedBlockIndex = null;
+        this.render();
     }
 
-    randomPiece() {
-        const type = Math.floor(Math.random() * this.pieces.length);
-        return {
-            shape: this.pieces[type],
-            color: this.colors[type],
-            x: Math.floor((this.cols - this.pieces[type][0].length) / 2),
-            y: 0
-        };
+    generateThreeBlocks() {
+        const blocks = [];
+        for (let i = 0; i < 3; i++) {
+            const shape = this.shapes[Math.floor(Math.random() * this.shapes.length)];
+            blocks.push({ shape: shape.map(cell => [...cell]), color: '#f2b179' });
+        }
+        return blocks;
     }
 
-    spawnPiece() {
-        this.currentPiece = this.randomPiece();
-        if (this.collision()) {
-            this.gameOver = true;
-            this.statusEl.textContent = getTranslation('gameLose');
+    render() {
+        this.renderBoard();
+        this.renderBlocks();
+    }
+
+    renderBoard() {
+        this.boardElement.innerHTML = '';
+        for (let row = 0; row < this.gridSize; row++) {
+            for (let col = 0; col < this.gridSize; col++) {
+                const cell = document.createElement('div');
+                cell.className = 'board-cell';
+                if (this.grid[row][col] === 1) {
+                    cell.classList.add('filled');
+                }
+                cell.dataset.row = row;
+                cell.dataset.col = col;
+                cell.addEventListener('click', (e) => this.onBoardClick(row, col));
+                this.boardElement.appendChild(cell);
+            }
         }
     }
 
-    collision(piece = this.currentPiece) {
-        for (let r = 0; r < piece.shape.length; r++) {
-            for (let c = 0; c < piece.shape[0].length; c++) {
-                if (piece.shape[r][c]) {
-                    const boardX = piece.x + c;
-                    const boardY = piece.y + r;
-                    if (boardX < 0 || boardX >= this.cols || boardY >= this.rows) return true;
-                    if (boardY >= 0 && this.board[boardY][boardX]) return true;
+    renderBlocks() {
+        this.blocksElement.innerHTML = '';
+        this.blocks.forEach((block, index) => {
+            const shape = block.shape;
+            let minRow = Infinity, maxRow = -Infinity, minCol = Infinity, maxCol = -Infinity;
+            shape.forEach(cell => {
+                if (cell[0] < minRow) minRow = cell[0];
+                if (cell[0] > maxRow) maxRow = cell[0];
+                if (cell[1] < minCol) minCol = cell[1];
+                if (cell[1] > maxCol) maxCol = cell[1];
+            });
+            const rows = maxRow - minRow + 1;
+            const cols = maxCol - minCol + 1;
+
+            const blockDiv = document.createElement('div');
+            blockDiv.className = 'block-option';
+            if (this.selectedBlockIndex === index) blockDiv.classList.add('selected');
+            blockDiv.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            blockDiv.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.className = 'block-preview-cell';
+                    const isFilled = shape.some(cell => cell[0] === minRow + r && cell[1] === minCol + c);
+                    if (isFilled) cellDiv.classList.add('filled');
+                    blockDiv.appendChild(cellDiv);
                 }
             }
-        }
-        return false;
+
+            blockDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.selectBlock(index);
+            });
+            this.blocksElement.appendChild(blockDiv);
+        });
     }
 
-    mergePiece() {
-        const { shape, color, x, y } = this.currentPiece;
-        for (let r = 0; r < shape.length; r++) {
-            for (let c = 0; c < shape[0].length; c++) {
-                if (shape[r][c]) {
-                    this.board[y + r][x + c] = color;
-                }
+    selectBlock(index) {
+        if (this.selectedBlockIndex === index) {
+            this.selectedBlockIndex = null;
+        } else {
+            this.selectedBlockIndex = index;
+        }
+        this.renderBlocks();
+    }
+
+    onBoardClick(row, col) {
+        if (this.selectedBlockIndex === null) return;
+        const block = this.blocks[this.selectedBlockIndex];
+        if (!block) return;
+        const shape = block.shape;
+        let minR = shape[0][0], minC = shape[0][1];
+        shape.forEach(cell => {
+            if (cell[0] < minR) minR = cell[0];
+            if (cell[1] < minC) minC = cell[1];
+        });
+
+        const offsetR = row - minR;
+        const offsetC = col - minC;
+
+        if (this.canPlaceBlock(shape, offsetR, offsetC)) {
+            this.placeBlock(shape, offsetR, offsetC);
+            this.blocks.splice(this.selectedBlockIndex, 1);
+            this.selectedBlockIndex = null;
+            if (this.blocks.length < 3) {
+                const newShape = this.shapes[Math.floor(Math.random() * this.shapes.length)];
+                this.blocks.push({ shape: newShape.map(cell => [...cell]), color: '#f2b179' });
+            }
+            this.render();
+            if (this.checkGameOver()) {
+                setTimeout(() => alert('Игра окончена! Больше нет доступных ходов.'), 100);
             }
         }
     }
 
-    clearLines() {
-        let lines = 0;
-        for (let r = this.rows - 1; r >= 0; r--) {
-            if (this.board[r].every(cell => cell !== 0)) {
-                this.board.splice(r, 1);
-                this.board.unshift(new Array(this.cols).fill(0));
-                lines++;
-                r++; // проверить ту же строку снова
-            }
-        }
-        if (lines > 0) {
-            const points = [0, 40, 100, 300, 1200];
-            this.score += points[lines] * this.level;
-            this.linesCleared += lines;
-            this.level = Math.floor(this.linesCleared / 10) + 1;
-            this.dropInterval = Math.max(100, 500 - (this.level - 1) * 40);
-            this.updateUI();
-        }
-    }
-
-    movePiece(dx, dy) {
-        this.currentPiece.x += dx;
-        this.currentPiece.y += dy;
-        if (this.collision()) {
-            this.currentPiece.x -= dx;
-            this.currentPiece.y -= dy;
-            return false;
+    canPlaceBlock(shape, offsetR, offsetC) {
+        for (let [r, c] of shape) {
+            const newR = r + offsetR;
+            const newC = c + offsetC;
+            if (newR < 0 || newR >= this.gridSize || newC < 0 || newC >= this.gridSize) return false;
+            if (this.grid[newR][newC] === 1) return false;
         }
         return true;
     }
 
-    rotatePiece() {
-        const shape = this.currentPiece.shape;
-        // транспонировать и отразить по горизонтали
-        const rotated = shape[0].map((_, idx) => shape.map(row => row[idx]).reverse());
-        const prevShape = this.currentPiece.shape;
-        this.currentPiece.shape = rotated;
-        if (this.collision()) {
-            this.currentPiece.shape = prevShape;
-        }
-    }
-
-    dropPiece() {
-        if (!this.movePiece(0, 1)) {
-            this.mergePiece();
-            this.clearLines();
-            this.spawnPiece();
-        }
-    }
-
-    hardDrop() {
-        while (this.movePiece(0, 1)) {}
-        this.mergePiece();
+    placeBlock(shape, offsetR, offsetC) {
+        shape.forEach(([r, c]) => {
+            this.grid[r + offsetR][c + offsetC] = 1;
+        });
         this.clearLines();
-        this.spawnPiece();
     }
 
-    updateUI() {
-        this.scoreEl.textContent = this.score;
-        this.levelEl.textContent = this.level;
-    }
-
-    draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // доска
-        for (let r = 0; r < this.rows; r++) {
-            for (let c = 0; c < this.cols; c++) {
-                if (this.board[r][c]) {
-                    this.ctx.fillStyle = this.board[r][c];
-                    this.ctx.fillRect(c * this.cellSize, r * this.cellSize, this.cellSize - 1, this.cellSize - 1);
-                } else {
-                    this.ctx.fillStyle = '#222';
-                    this.ctx.fillRect(c * this.cellSize, r * this.cellSize, this.cellSize - 1, this.cellSize - 1);
+    clearLines() {
+        let linesCleared = 0;
+        for (let row = 0; row < this.gridSize; row++) {
+            if (this.grid[row].every(cell => cell === 1)) {
+                for (let col = 0; col < this.gridSize; col++) {
+                    this.grid[row][col] = 0;
                 }
+                linesCleared++;
             }
         }
+        for (let col = 0; col < this.gridSize; col++) {
+            let full = true;
+            for (let row = 0; row < this.gridSize; row++) {
+                if (this.grid[row][col] !== 1) {
+                    full = false;
+                    break;
+                }
+            }
+            if (full) {
+                for (let row = 0; row < this.gridSize; row++) {
+                    this.grid[row][col] = 0;
+                }
+                linesCleared++;
+            }
+        }
+        if (linesCleared > 0) {
+            this.score += linesCleared * 10;
+            this.updateScoreUI();
+        }
+    }
 
-        // текущая фигура
-        if (this.currentPiece && !this.gameOver) {
-            const { shape, color, x, y } = this.currentPiece;
-            this.ctx.fillStyle = color;
-            for (let r = 0; r < shape.length; r++) {
-                for (let c = 0; c < shape[0].length; c++) {
-                    if (shape[r][c]) {
-                        this.ctx.fillRect((x + c) * this.cellSize, (y + r) * this.cellSize, this.cellSize - 1, this.cellSize - 1);
+    checkGameOver() {
+        for (let block of this.blocks) {
+            const shape = block.shape;
+            let minR = shape[0][0], minC = shape[0][1];
+            shape.forEach(cell => {
+                if (cell[0] < minR) minR = cell[0];
+                if (cell[1] < minC) minC = cell[1];
+            });
+            for (let row = 0; row < this.gridSize; row++) {
+                for (let col = 0; col < this.gridSize; col++) {
+                    const offsetR = row - minR;
+                    const offsetC = col - minC;
+                    if (this.canPlaceBlock(shape, offsetR, offsetC)) {
+                        return false;
                     }
                 }
             }
         }
+        return true;
     }
 
-    gameLoop(timestamp) {
-        if (this.gameOver) {
-            this.statusEl.textContent = getTranslation('gameLose');
-            cancelAnimationFrame(this.animationId);
-            return;
+    updateScoreUI() {
+        this.scoreElement.textContent = this.score;
+        if (this.score > this.bestScore) {
+            this.bestScore = this.score;
+            localStorage.setItem('bestScoreBlockBlast', this.bestScore);
+            this.updateBestScoreUI();
         }
-        if (!this.lastDrop) this.lastDrop = timestamp;
-        const delta = timestamp - this.lastDrop;
-        if (delta > this.dropInterval) {
-            this.dropPiece();
-            this.lastDrop = timestamp;
-        }
-        this.draw();
-        this.animationId = requestAnimationFrame((t) => this.gameLoop(t));
     }
 
-    setupControls() {
-        // Кнопки
-        document.getElementById('tetris-left').addEventListener('click', () => this.movePiece(-1, 0));
-        document.getElementById('tetris-right').addEventListener('click', () => this.movePiece(1, 0));
-        document.getElementById('tetris-rotate').addEventListener('click', () => this.rotatePiece());
-        document.getElementById('tetris-down').addEventListener('click', () => this.hardDrop());
-        document.getElementById('tetris-newgame').addEventListener('click', () => this.restart());
-
-        // Клавиатура
-        window.addEventListener('keydown', (e) => {
-            if (!document.querySelector('#profile-section.active')) return;
-            if (e.key === 'ArrowLeft') { this.movePiece(-1, 0); e.preventDefault(); }
-            else if (e.key === 'ArrowRight') { this.movePiece(1, 0); e.preventDefault(); }
-            else if (e.key === 'ArrowUp') { this.rotatePiece(); e.preventDefault(); }
-            else if (e.key === 'ArrowDown') { this.hardDrop(); e.preventDefault(); }
-        });
-
-        // Свайпы (только на canvas)
-        let touchStartX = 0, touchStartY = 0;
-        this.canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
-        });
-        this.canvas.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            if (!touchStartX || !touchStartY) return;
-            const touch = e.changedTouches[0];
-            const dx = touch.clientX - touchStartX;
-            const dy = touch.clientY - touchStartY;
-            if (Math.abs(dx) < 20 && Math.abs(dy) < 20) return;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                if (dx > 0) this.movePiece(1, 0);
-                else this.movePiece(-1, 0);
-            } else {
-                if (dy > 0) this.hardDrop();
-                else this.rotatePiece();
-            }
-            touchStartX = 0; touchStartY = 0;
-        });
+    updateBestScoreUI() {
+        this.bestScoreElement.textContent = this.bestScore;
     }
 
-    restart() {
-        cancelAnimationFrame(this.animationId);
-        this.initBoard();
-        this.score = 0;
-        this.level = 1;
-        this.linesCleared = 0;
-        this.dropInterval = 500;
-        this.gameOver = false;
-        this.updateUI();
-        this.statusEl.textContent = '';
-        this.spawnPiece();
-        this.lastDrop = 0;
-        this.gameLoop(0);
+    resetGame() {
+        this.init();
     }
 }
 
-// Инициализируем Tetris при загрузке
-let tetrisGame = null;
+// Инициализация Block Blast после загрузки DOM
+let blockBlast = null;
+function initBlockBlast() {
+    const board = document.getElementById('block-blast-board');
+    const blocks = document.getElementById('block-blast-blocks');
+    const scoreEl = document.getElementById('block-score');
+    const bestEl = document.getElementById('block-best-score');
+    if (board && blocks && scoreEl && bestEl && !blockBlast) {
+        blockBlast = new BlockBlast(board, blocks, scoreEl, bestEl);
+        const newGameBtn = document.getElementById('new-game-btn');
+        if (newGameBtn) {
+            newGameBtn.addEventListener('click', () => {
+                vibrate();
+                blockBlast.resetGame();
+            });
+        }
+    }
+}
+
+// Запуск после небольшой задержки, чтобы DOM обновился
 setTimeout(() => {
-    tetrisGame = new TetrisGame('tetris-canvas', 'tetris-score', 'tetris-level', 'tetris-status');
+    initBlockBlast();
 }, 300);

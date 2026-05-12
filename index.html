@@ -23,6 +23,7 @@
         <div class="settings-panel" id="settings-panel">
             <div class="settings-content">
                 <h3 class="settings-title" data-i18n="settings">Настройки</h3>
+                
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="theme">Тема</span>
                     <div class="theme-switcher">
@@ -30,6 +31,7 @@
                         <button class="theme-option" data-theme="dark" data-i18n="darkTheme">Темная</button>
                     </div>
                 </div>
+                
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="language">Язык</span>
                     <div class="language-switcher">
@@ -37,6 +39,7 @@
                         <button class="language-option" data-lang="en" data-i18n="english">English</button>
                     </div>
                 </div>
+                
                 <button class="close-settings" id="close-settings" data-i18n="done">Готово</button>
             </div>
         </div>
@@ -49,7 +52,10 @@
                     <h2 data-i18n="games">Игры</h2>
                     <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
                 </div>
-                <div class="games-grid" id="games-grid"></div>
+                
+                <div class="games-grid" id="games-grid">
+                    <!-- Games will be loaded dynamically -->
+                </div>
             </section>
 
             <!-- Exchanges Section -->
@@ -58,6 +64,8 @@
                     <h2 data-i18n="exchanges">Крипто-биржи</h2>
                     <span class="section-subtitle" data-i18n="exchangesDesc">Торгуйте криптовалютами безопасно</span>
                 </div>
+
+                <!-- GameFi Banner Card -->
                 <div class="gamefi-banner">
                     <img src="images/gamefi.jpg" alt="GameFi Trading" class="gamefi-image">
                     <div class="gamefi-overlay">
@@ -77,7 +85,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="exchanges-list" id="exchanges-list"></div>
+                
+                <div class="exchanges-list" id="exchanges-list">
+                    <!-- Exchanges will be loaded dynamically -->
+                </div>
             </section>
 
             <!-- Profile Section -->
@@ -92,6 +103,7 @@
                         <p id="user-username">Открой в Telegram</p>
                     </div>
                 </div>
+
                 <div class="profile-actions">
                     <button class="share-friends-button" id="share-friends-button">
                         <div class="share-icon">
@@ -107,27 +119,39 @@
                     </button>
                 </div>
 
-                <!-- Block Blast Game -->
-                <div class="game-block-blast-container">
-                    <div class="game-header-2048">
-                        <h3 class="game-title-2048" data-i18n="blockBlast">Block Blast</h3>
-                        <div class="game-scores">
-                            <div class="score-box">
-                                <div class="score-label" data-i18n="score">Счёт</div>
-                                <div class="score-value" id="block-score">0</div>
-                            </div>
-                            <div class="score-box">
-                                <div class="score-label" data-i18n="best">Лучший</div>
-                                <div class="score-value" id="block-best-score">0</div>
-                            </div>
+                <!-- AI POWER TAP GAME -->
+                <div class="ai-power-tap-container">
+                    <div class="power-header">
+                        <h3 class="power-title">⚡ AI POWER TAP</h3>
+                        <div class="power-score-box">
+                            <span class="power-label">Мощность ИИ</span>
+                            <span class="power-value" id="power-display">0</span>
                         </div>
                     </div>
-                    <div class="block-blast-board" id="block-blast-board"></div>
-                    <div class="block-blast-blocks" id="block-blast-blocks"></div>
-                    <div class="game-controls">
-                        <button class="new-game-btn" id="new-game-btn" data-i18n="newGame">Новая игра</button>
+
+                    <!-- Главный тап-круг -->
+                    <div class="tap-circle-wrapper">
+                        <div class="tap-circle" id="tap-circle">
+                            <div class="tap-icon">🧠</div>
+                            <div class="tap-glow"></div>
+                            <div class="tap-particles" id="tap-particles"></div>
+                        </div>
+                        <div class="tap-cps" id="cps-display">0 AI/сек</div>
                     </div>
-                    <div class="swipe-hint" data-i18n="blockHint">👆 Перетащите блок на сетку</div>
+
+                    <!-- Панель улучшений -->
+                    <div class="upgrades-panel" id="upgrades-panel">
+                        <h4 class="upgrades-title">🚀 Улучшения</h4>
+                        <div class="upgrades-list" id="upgrades-list">
+                            <!-- Улучшения генерируются JS -->
+                        </div>
+                    </div>
+
+                    <div class="tap-footer">
+                        <button class="prestige-button" id="prestige-button" disabled>
+                            🔄 Сбросить и усилить (x2)
+                        </button>
+                    </div>
                 </div>
             </section>
         </main>
@@ -151,6 +175,7 @@
         <!-- Notification -->
         <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

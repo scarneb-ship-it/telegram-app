@@ -23,7 +23,6 @@
         <div class="settings-panel" id="settings-panel">
             <div class="settings-content">
                 <h3 class="settings-title" data-i18n="settings">Настройки</h3>
-                
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="theme">Тема</span>
                     <div class="theme-switcher">
@@ -31,7 +30,6 @@
                         <button class="theme-option" data-theme="dark" data-i18n="darkTheme">Темная</button>
                     </div>
                 </div>
-                
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="language">Язык</span>
                     <div class="language-switcher">
@@ -39,7 +37,6 @@
                         <button class="language-option" data-lang="en" data-i18n="english">English</button>
                     </div>
                 </div>
-                
                 <button class="close-settings" id="close-settings" data-i18n="done">Готово</button>
             </div>
         </div>
@@ -52,10 +49,7 @@
                     <h2 data-i18n="games">Игры</h2>
                     <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
                 </div>
-                
-                <div class="games-grid" id="games-grid">
-                    <!-- Games will be loaded dynamically -->
-                </div>
+                <div class="games-grid" id="games-grid"></div>
             </section>
 
             <!-- Exchanges Section -->
@@ -64,8 +58,6 @@
                     <h2 data-i18n="exchanges">Крипто-биржи</h2>
                     <span class="section-subtitle" data-i18n="exchangesDesc">Торгуйте криптовалютами безопасно</span>
                 </div>
-
-                <!-- GameFi Banner Card -->
                 <div class="gamefi-banner">
                     <img src="images/gamefi.jpg" alt="GameFi Trading" class="gamefi-image">
                     <div class="gamefi-overlay">
@@ -85,10 +77,7 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="exchanges-list" id="exchanges-list">
-                    <!-- Exchanges will be loaded dynamically -->
-                </div>
+                <div class="exchanges-list" id="exchanges-list"></div>
             </section>
 
             <!-- Profile Section -->
@@ -103,7 +92,6 @@
                         <p id="user-username">Открой в Telegram</p>
                     </div>
                 </div>
-
                 <div class="profile-actions">
                     <button class="share-friends-button" id="share-friends-button">
                         <div class="share-icon">
@@ -119,7 +107,7 @@
                     </button>
                 </div>
 
-                <!-- Block Blast Ultra -->
+                <!-- Block Blast Game -->
                 <div class="game-block-blast-container">
                     <div class="game-header-2048">
                         <h3 class="game-title-2048" data-i18n="blockBlast">Block Blast</h3>
@@ -139,7 +127,7 @@
                     <div class="game-controls">
                         <button class="new-game-btn" id="new-game-btn" data-i18n="newGame">Новая игра</button>
                     </div>
-                    <div class="swipe-hint" data-i18n="blockHint">👆 Выберите блок и переместите на сетку</div>
+                    <div class="swipe-hint" data-i18n="blockHint">👆 Перетащите блок на сетку</div>
                 </div>
             </section>
         </main>
@@ -163,7 +151,6 @@
         <!-- Notification -->
         <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>

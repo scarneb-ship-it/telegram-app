@@ -119,32 +119,27 @@
                     </button>
                 </div>
 
-                <!-- Tetris Game -->
-                <div class="tetris-container">
-                    <div class="tetris-header">
-                        <h3 class="tetris-title" data-i18n="tetris">Тетрис</h3>
-                        <div class="tetris-scores">
+                <!-- Block Blast Game (замена 2048) -->
+                <div class="game-block-blast-container">
+                    <div class="game-header-2048">
+                        <h3 class="game-title-2048" data-i18n="blockBlast">Block Blast</h3>
+                        <div class="game-scores">
                             <div class="score-box">
                                 <div class="score-label" data-i18n="score">Счёт</div>
-                                <div class="score-value" id="tetris-score">0</div>
+                                <div class="score-value" id="block-score">0</div>
                             </div>
                             <div class="score-box">
-                                <div class="score-label" data-i18n="level">Уровень</div>
-                                <div class="score-value" id="tetris-level">1</div>
+                                <div class="score-label" data-i18n="best">Лучший</div>
+                                <div class="score-value" id="block-best-score">0</div>
                             </div>
                         </div>
                     </div>
-                    <canvas id="tetris-canvas" width="300" height="600"></canvas>
-                    <div class="tetris-controls">
-                        <div class="tetris-btn-row">
-                            <button id="tetris-left" class="tetris-btn">◀</button>
-                            <button id="tetris-right" class="tetris-btn">▶</button>
-                            <button id="tetris-rotate" class="tetris-btn">↻</button>
-                        </div>
-                        <button id="tetris-down" class="tetris-btn tetris-btn-down">▼ Уронить</button>
-                        <button id="tetris-newgame" class="new-game-btn" data-i18n="newGame">Новая игра</button>
+                    <div class="block-blast-board" id="block-blast-board"></div>
+                    <div class="block-blast-blocks" id="block-blast-blocks"></div>
+                    <div class="game-controls">
+                        <button class="new-game-btn" id="new-game-btn" data-i18n="newGame">Новая игра</button>
                     </div>
-                    <div class="game-status" id="tetris-status"></div>
+                    <div class="swipe-hint" data-i18n="blockHint">👆 Выберите блок и нажмите на сетку</div>
                 </div>
             </section>
         </main>

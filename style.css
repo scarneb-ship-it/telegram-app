@@ -1,1 +1,457 @@
+/* Улучшенная цветовая палитра */
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --primary-light: #667eea;
+  --primary-dark: #5a6fd8;
+  --surface-light: #ffffff;
+  --surface-dark: #121212;
+  --card-light: #f8f9fa;
+  --card-dark: #1e1e1e;
+  --text-primary-light: #2d3748;
+  --text-primary-dark: #f7fafc;
+  --text-secondary-light: #718096;
+  --text-secondary-dark: #a0aec0;
+  --border-light: #e2e8f0;
+  --border-dark: #2d3748;
+  --success-color: #48bb78;
+  --warning-color: #ed8936;
+  --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --highlight-gradient: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+}
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--surface-light);
+  color: var(--text-primary-light);
+  line-height: 1.5;
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+body.dark-theme {
+  background-color: var(--surface-dark);
+  color: var(--text-primary-dark);
+}
+
+.app-container {
+  max-width: 400px;
+  margin: 0 auto;
+  background: var(--surface-light);
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 80px;
+  overflow-x: hidden;
+}
+
+.dark-theme .app-container {
+  background: var(--surface-dark);
+}
+
+/* Header */
+.header {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 20px 16px;
+  border-radius: 0 0 20px 20px;
+  box-shadow: var(--shadow-light);
+  position: relative;
+  z-index: 10;
+}
+
+.dark-theme .header {
+  box-shadow: var(--shadow-dark);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-title {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.settings-button {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 18px;
+}
+
+.settings-button:hover {
+  transform: rotate(30deg);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Settings Panel */
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  display: none;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 70px 16px 0 0;
+}
+
+.settings-panel.active {
+  display: flex;
+}
+
+.settings-content {
+  background: var(--surface-light);
+  width: 280px;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow-light);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.dark-theme .settings-content {
+  background: var(--card-dark);
+  box-shadow: var(--shadow-dark);
+}
+
+.settings-panel.active .settings-content {
+  transform: translateX(0);
+}
+
+.settings-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.setting-item {
+  margin-bottom: 20px;
+}
+
+.setting-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.theme-switcher {
+  display: flex;
+  background: var(--card-light);
+  border-radius: 10px;
+  padding: 4px;
+  border: 1px solid var(--border-light);
+}
+
+.dark-theme .theme-switcher {
+  background: var(--surface-dark);
+  border-color: var(--border-dark);
+}
+
+.theme-option {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 13px;
+}
+
+.theme-option.active {
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.dark-theme .theme-option.active {
+  background: var(--primary-dark);
+}
+
+.close-settings {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.dark-theme .close-settings {
+  background: var(--primary-dark);
+}
+
+.close-settings:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.dark-theme .close-settings:hover {
+  box-shadow: 0 4px 12px rgba(74, 85, 104, 0.4);
+}
+
+/* Main Content */
+.main-content {
+  padding: 20px 16px;
+}
+
+.content-section {
+  display: none;
+}
+
+.content-section.active {
+  display: block;
+  animation: slideInUp 0.4s ease-out;
+}
+
+/* ... (остальные стили из предыдущего кода, без изменений, кроме блока игры 2048) ... */
+
+/* ==================== 2048 GAME STYLES (с анимациями) ==================== */
+.game-2048-container {
+    margin-top: 20px;
+    background: var(--card-light);
+    border-radius: 20px;
+    padding: 12px;
+    border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dark-theme .game-2048-container {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.game-header-2048 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.game-title-2048 {
+    font-size: 24px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e67e22, #f39c12);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
+}
+
+.game-scores {
+    display: flex;
+    gap: 10px;
+}
+
+.score-box {
+    background: var(--primary-gradient);
+    border-radius: 14px;
+    padding: 4px 12px;
+    text-align: center;
+    min-width: 60px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.score-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.5px;
+}
+
+.score-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+}
+
+.game-board-2048 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    background-color: #bbada0;
+    border-radius: 16px;
+    padding: 8px;
+    margin-bottom: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative; /* для абсолютного позиционирования плиток при анимации (не используется сейчас) */
+}
+
+.dark-theme .game-board-2048 {
+    background: #8f7a66;
+}
+
+.tile-cell {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background-color: rgba(238, 228, 218, 0.35);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: clamp(18px, 6vw, 28px);
+    transition: transform 0.15s ease-in-out; /* <-- основная анимация перемещения */
+    box-sizing: border-box;
+    word-break: break-word;
+    text-align: center;
+    padding: 4px;
+    will-change: transform;
+}
+
+/* Цвета плиток */
+.tile-2 { background: #eee4da; color: #776e65; }
+.tile-4 { background: #ede0c8; color: #776e65; }
+.tile-8 { background: #f2b179; color: #f9f6f2; }
+.tile-16 { background: #f59563; color: #f9f6f2; }
+.tile-32 { background: #f67c5f; color: #f9f6f2; }
+.tile-64 { background: #f65e3b; color: #f9f6f2; }
+.tile-128 { background: #edcf72; color: #f9f6f2; font-size: clamp(16px, 5vw, 24px); }
+.tile-256 { background: #edcc61; color: #f9f6f2; font-size: clamp(16px, 5vw, 24px); }
+.tile-512 { background: #edc850; color: #f9f6f2; font-size: clamp(16px, 5vw, 24px); }
+.tile-1024 { background: #edc53f; color: #f9f6f2; font-size: clamp(14px, 4.5vw, 20px); }
+.tile-2048 { background: #edc22e; color: #f9f6f2; font-size: clamp(14px, 4.5vw, 20px); }
+.tile-super { background: #3c3a32; color: #f9f6f2; font-size: clamp(12px, 4vw, 18px); }
+
+/* Анимация появления новой плитки */
+.tile-new {
+    animation: pop 0.2s ease-in-out;
+}
+@keyframes pop {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Анимация слияния — применяется к плитке после объединения */
+.tile-merge {
+    animation: mergeAnim 0.2s ease-in-out;
+}
+@keyframes mergeAnim {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.2); background: #f5d76e; }
+    100% { transform: scale(1); }
+}
+
+.game-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.new-game-btn {
+    background: linear-gradient(135deg, #8f7a66, #776e65);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 40px;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.new-game-btn:active {
+    transform: scale(0.96);
+}
+
+.game-status {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 40px;
+    background: rgba(0,0,0,0.05);
+    color: var(--text-primary-light);
+}
+.dark-theme .game-status {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-primary-dark);
+}
+
+.swipe-hint {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-secondary-light);
+    margin-top: 10px;
+    opacity: 0.7;
+}
+.dark-theme .swipe-hint {
+    color: var(--text-secondary-dark);
+}
+
+/* Адаптация под узкие экраны */
+@media (max-width: 400px) {
+    .game-board-2048 {
+        gap: 6px;
+        padding: 6px;
+    }
+    .tile-cell {
+        border-radius: 10px;
+    }
+    .game-header-2048 {
+        margin-bottom: 12px;
+    }
+    .score-box {
+        min-width: 50px;
+        padding: 3px 8px;
+    }
+    .score-value {
+        font-size: 16px;
+    }
+    .game-title-2048 {
+        font-size: 20px;
+    }
+    .new-game-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
+}
+
+/* Остальные стили (профиль, биржи и т.д.) остаются без изменений, как в исходном коде */

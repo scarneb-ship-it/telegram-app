@@ -4,17 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#667eea">
-    <title>Games Verse</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/images/oblochka.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <title>Games Verse</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
+        <!-- Splash -->
+        <div class="splash-screen" id="splash-screen">
+            <div class="splash-logo">🎮</div>
+            <div class="splash-title">Games Verse</div>
+            <div class="splash-subtitle">Загрузка...</div>
+        </div>
+
         <!-- Header -->
         <header class="header">
             <div class="header-content">
@@ -25,17 +32,16 @@
 
         <!-- Settings Panel -->
         <div class="settings-panel" id="settings-panel">
+            <div class="settings-backdrop"></div>
             <div class="settings-content">
                 <h3 class="settings-title" data-i18n="settings">Настройки</h3>
-                
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="theme">Тема</span>
                     <div class="theme-switcher">
                         <button class="theme-option active" data-theme="light" data-i18n="lightTheme">Светлая</button>
-                        <button class="theme-option" data-theme="dark" data-i18n="darkTheme">Темная</button>
+                        <button class="theme-option" data-theme="dark" data-i18n="darkTheme">Тёмная</button>
                     </div>
                 </div>
-                
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="language">Язык</span>
                     <div class="language-switcher">
@@ -43,7 +49,6 @@
                         <button class="language-option" data-lang="en" data-i18n="english">English</button>
                     </div>
                 </div>
-                
                 <button class="close-settings" id="close-settings" data-i18n="done">Готово</button>
             </div>
         </div>
@@ -52,23 +57,11 @@
         <main class="main-content">
             <!-- Games Section -->
             <section id="games-section" class="content-section active">
-                <!-- ОБЛОЖКА-БАННЕР -->
-                <div class="oblochka-banner">
-                    <img src="images/oblochka.jpg" alt="Games Verse" class="oblochka-img">
-                    <div class="oblochka-overlay">
-                        <h2 class="oblochka-title" data-i18n="appTitle">Games Verse</h2>
-                        <p class="oblochka-subtitle" data-i18n="bestGames">Лучшие игры Telegram</p>
-                    </div>
-                </div>
-
                 <div class="section-header">
                     <h2 data-i18n="games">Игры</h2>
                     <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
                 </div>
-                
-                <div class="games-grid" id="games-grid">
-                    <!-- Игры загружаются динамически -->
-                </div>
+                <div class="games-grid" id="games-grid"></div>
             </section>
 
             <!-- Exchanges Section -->
@@ -77,10 +70,7 @@
                     <h2 data-i18n="exchanges">Крипто-биржи</h2>
                     <span class="section-subtitle" data-i18n="exchangesDesc">Торгуйте криптовалютами безопасно</span>
                 </div>
-
-                <!-- GameFi Banner Card -->
                 <div class="gamefi-banner">
-                    <img src="images/gamefi.jpg" alt="GameFi Trading" class="gamefi-image">
                     <div class="gamefi-overlay">
                         <div class="gamefi-content">
                             <h3 class="gamefi-title">Торгуйте монетами GameFi</h3>
@@ -98,10 +88,7 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="exchanges-list" id="exchanges-list">
-                    <!-- Биржи загружаются динамически -->
-                </div>
+                <div class="exchanges-list" id="exchanges-list"></div>
             </section>
 
             <!-- Profile Section -->
@@ -109,14 +96,13 @@
                 <div class="profile-header">
                     <div class="profile-avatar" id="user-avatar">
                         <img src="" alt="User Avatar" id="avatar-img" style="display: none;">
-                        <span id="avatar-fallback">T</span>
+                        <span id="avatar-fallback">G</span>
                     </div>
                     <div class="profile-info">
                         <h2 id="user-name" data-i18n="user">Пользователь</h2>
                         <p id="user-username">Открой в Telegram</p>
                     </div>
                 </div>
-
                 <div class="profile-actions">
                     <button class="share-friends-button" id="share-friends-button">
                         <div class="share-icon">
@@ -131,8 +117,6 @@
                         <span data-i18n="shareWithFriends">Поделиться с друзьями</span>
                     </button>
                 </div>
-
-                <!-- 2048 Game -->
                 <div class="game-2048-container">
                     <div class="game-header-2048">
                         <h3 class="game-title-2048" data-i18n="game2048">2048</h3>
@@ -147,35 +131,21 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Ежедневное задание -->
-                    <div class="daily-task" id="daily-task-box">
-                        <span class="task-icon">🎯</span>
-                        <span class="task-text" id="daily-task-text">Сегодня: набрать 512 очков</span>
-                        <div class="task-progress" id="task-progress-bar">
-                            <div class="task-progress-fill" id="task-progress-fill"></div>
-                        </div>
-                        <span class="task-reward" id="task-reward"></span>
-                    </div>
-
-                    <div class="game-board-2048" id="game-board-2048">
-                        <!-- 4x4 grid generated by JS -->
-                    </div>
+                    <div class="game-board-2048" id="game-board-2048"></div>
                     <div class="game-controls">
                         <button class="new-game-btn" id="new-game-btn" data-i18n="newGame">Новая игра</button>
                         <div class="game-status" id="game-status"></div>
                     </div>
                     <div class="swipe-hint" data-i18n="swipeHint">👆 Свайпайте пальцем или используйте стрелки</div>
-
-                    <!-- Invite Modal (для отмены хода) -->
-                    <div class="invite-modal-overlay" id="invite-modal">
-                        <div class="invite-modal">
-                            <h3 class="invite-title" id="invite-title">Вы проиграли! 🥺</h3>
-                            <p class="invite-text" id="invite-text">Пригласите друга в Telegram, чтобы отменить последний ход и продолжить игру.</p>
-                            <div class="invite-buttons">
-                                <button class="invite-btn primary" id="invite-yes">Пригласить друга</button>
-                                <button class="invite-btn secondary" id="invite-no">Новая игра</button>
-                            </div>
+                </div>
+                <!-- Invite Modal -->
+                <div class="invite-modal-overlay" id="invite-modal">
+                    <div class="invite-modal">
+                        <h3 class="invite-title" id="invite-title" data-i18n="inviteTitle">Вы проиграли! 🥺</h3>
+                        <p class="invite-text" id="invite-text" data-i18n="inviteText">Пригласите друга в Telegram, чтобы отменить последний ход и продолжить игру.</p>
+                        <div class="invite-buttons">
+                            <button class="invite-btn primary" id="invite-yes" data-i18n="inviteYes">Пригласить друга</button>
+                            <button class="invite-btn secondary" id="invite-no" data-i18n="inviteNo">Новая игра</button>
                         </div>
                     </div>
                 </div>
@@ -199,19 +169,10 @@
         </nav>
 
         <!-- Notification -->
-        <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
+        <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована!</div>
     </div>
 
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="script.js"></script>
-    <script>
-        // Регистрация Service Worker для PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(() => {
-                    console.log('✅ Service Worker зарегистрирован');
-                }).catch(e => console.log('⚠️ SW не поддерживается', e));
-            });
-        }
-    </script>
 </body>
 </html>

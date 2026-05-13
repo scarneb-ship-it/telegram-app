@@ -812,3 +812,45 @@ function initGame2048() {
 setTimeout(() => {
     initGame2048();
 }, 300);
+// ... (весь предыдущий код остаётся, включая Game2048, setupShareButton, и т.д.) ...
+
+// ==================== НОВЫЕ КНОПКИ: КУПИТЬ STARS И ЧАТ ====================
+function setupBuyStarsButton() {
+    const btn = document.getElementById('buy-stars-button');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            vibrate();
+            const starsUrl = 'https://t.me/StarsShipBot?start=r6823288584';
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.openTelegramLink(starsUrl);
+            } else {
+                window.open(starsUrl, '_blank');
+            }
+        });
+    }
+}
+
+function setupChatButton() {
+    const btn = document.getElementById('chat-button');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            vibrate();
+            const chatUrl = 'https://t.me/hadron_chat';
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.openTelegramLink(chatUrl);
+            } else {
+                window.open(chatUrl, '_blank');
+            }
+        });
+    }
+}
+
+// Вызываем инициализацию кнопок при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    // ... (все старые вызовы initializeApp() и прочее уже есть) ...
+    // Добавляем вызовы новых функций в конец существующего DOMContentLoaded
+    // Или можно вставить их в initializeApp().
+    // Для простоты добавим в DOMContentLoaded, после вызова initializeApp():
+    setupBuyStarsButton();
+    setupChatButton();
+});

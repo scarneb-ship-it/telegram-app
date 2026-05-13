@@ -1185,7 +1185,7 @@ button:focus-visible {
     will-change: transform;
 }
 
-/* Яркие цвета плиток (адаптивный шрифт) */
+/* Яркие цвета плиток */
 .tile-2 { background: #eee4da; color: #776e65; }
 .tile-4 { background: #ede0c8; color: #776e65; }
 .tile-8 { background: #f2b179; color: #f9f6f2; }
@@ -1266,7 +1266,7 @@ button:focus-visible {
     color: var(--text-secondary-dark);
 }
 
-/* Дополнительная адаптация для очень узких экранов (меньше 360px) */
+/* Адаптация для очень узких экранов */
 @media (max-width: 400px) {
     .game-board-2048 {
         gap: 6px;
@@ -1294,26 +1294,18 @@ button:focus-visible {
     }
 }
 
-/* Убираем горизонтальный скролл у всего приложения */
-.app-container {
-    overflow-x: hidden;
-}
-body {
-    overflow-x: hidden;
-}
-.main-content {
+/* Убираем горизонтальный скролл */
+.app-container, body, .main-content {
     overflow-x: hidden;
 }
 
-/* Компактный режим для страницы профиля без хедера */
+/* Компактный профиль */
 .header {
     transition: display 0.2s;
 }
 .profile-section .main-content {
     padding-top: 8px;
 }
-
-/* Уменьшаем отступы в профиле для экономии места */
 .profile-header {
     margin-bottom: 16px;
     padding: 12px;

@@ -963,40 +963,112 @@ body.dark-theme {
 
 /* Responsive */
 @media (max-width: 480px) {
-  .app-container { padding-bottom: 70px; }
-  .header { padding: 16px 12px; }
-  .main-content { padding: 16px 12px; }
-  .games-grid, .exchanges-list { gap: 9px; }
-  .game-card, .exchange-card { padding: 12px; }
-  .gamefi-banner { height: 135px; margin-bottom: 15px; }
-  .gamefi-overlay { padding: 15px; }
-  .gamefi-title { font-size: 17px; }
-  .gamefi-description { font-size: 12px; }
-  .gamefi-stats { gap: 15px; }
-  .stat-number { font-size: 15px; }
-  .stat-label { font-size: 9px; }
-  .profile-avatar { width: 55px; height: 55px; font-size: 22px; }
-  .profile-info h2 { font-size: 17px; }
-  .share-friends-button { padding: 14px 18px; font-size: 14px; }
-  .settings-content { width: 260px; padding: 16px; }
-  .settings-panel { padding: 60px 12px 0 0; }
+  .app-container {
+    padding-bottom: 70px;
+  }
+  
+  .header {
+    padding: 16px 12px;
+  }
+  
+  .main-content {
+    padding: 16px 12px;
+  }
+  
+  .games-grid, .exchanges-list {
+    gap: 9px;
+  }
+  
+  .game-card, .exchange-card {
+    padding: 12px;
+  }
+  
+  .gamefi-banner {
+    height: 135px;
+    margin-bottom: 15px;
+  }
+  
+  .gamefi-overlay {
+    padding: 15px;
+  }
+  
+  .gamefi-title {
+    font-size: 17px;
+  }
+  
+  .gamefi-description {
+    font-size: 12px;
+  }
+  
+  .gamefi-stats {
+    gap: 15px;
+  }
+  
+  .stat-number {
+    font-size: 15px;
+  }
+  
+  .stat-label {
+    font-size: 9px;
+  }
+  
+  .profile-avatar {
+    width: 55px;
+    height: 55px;
+    font-size: 22px;
+  }
+  
+  .profile-info h2 {
+    font-size: 17px;
+  }
+  
+  .share-friends-button {
+    padding: 14px 18px;
+    font-size: 14px;
+  }
+  
+  .settings-content {
+    width: 260px;
+    padding: 16px;
+  }
+  
+  .settings-panel {
+    padding: 60px 12px 0 0;
+  }
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Selection */
-::selection { background: var(--primary-light); color: white; }
-.dark-theme ::selection { background: var(--primary-dark); }
+/* Improved selection */
+::selection {
+  background: var(--primary-light);
+  color: white;
+}
 
+.dark-theme ::selection {
+  background: var(--primary-dark);
+}
+
+/* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -1005,6 +1077,7 @@ body.dark-theme {
   }
 }
 
+/* Focus styles for accessibility */
 button:focus-visible {
   outline: 2px solid var(--primary-light);
   outline-offset: 2px;
@@ -1014,100 +1087,102 @@ button:focus-visible {
   outline-color: var(--primary-dark);
 }
 
-/* ==================== 2048 GAME STYLES ==================== */
+/* ==================== 2048 GAME STYLES (улучшенные анимации) ==================== */
 .game-2048-container {
-  margin-top: 0;
-  background: var(--card-light);
-  border-radius: 20px;
-  padding: 16px;
-  border: 1px solid var(--border-light);
-  transition: all 0.3s ease;
-  width: 100%;
-  box-sizing: border-box;
+    margin-top: 20px;
+    background: var(--card-light);
+    border-radius: 20px;
+    padding: 12px;
+    border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .dark-theme .game-2048-container {
-  background: var(--card-dark);
-  border-color: var(--border-dark);
+    background: var(--card-dark);
+    border-color: var(--border-dark);
 }
 
 .game-header-2048 {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  gap: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .game-title-2048 {
-  font-size: 28px;
-  font-weight: 800;
-  background: linear-gradient(135deg, #e67e22, #f39c12);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e67e22, #f39c12);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
 }
 
 .game-scores {
-  display: flex;
-  gap: 10px;
+    display: flex;
+    gap: 10px;
 }
 
 .score-box {
-  background: var(--primary-gradient);
-  border-radius: 14px;
-  padding: 4px 12px;
-  text-align: center;
-  min-width: 60px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    background: var(--primary-gradient);
+    border-radius: 14px;
+    padding: 4px 12px;
+    text-align: center;
+    min-width: 60px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .score-label {
-  font-size: 10px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.8);
-  letter-spacing: 0.5px;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.5px;
 }
 
 .score-value {
-  font-size: 18px;
-  font-weight: 800;
-  color: white;
-  line-height: 1.2;
+    font-size: 18px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
 }
 
 .game-board-2048 {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background-color: #bbada0;
-  border-radius: 16px;
-  margin-bottom: 16px;
-  overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    background-color: #bbada0;
+    border-radius: 16px;
+    padding: 8px;
+    margin-bottom: 16px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .dark-theme .game-board-2048 {
-  background: #8f7a66;
+    background: #8f7a66;
 }
 
 .tile-cell {
-  position: absolute;
-  width: calc(25% - 8px);
-  height: calc(25% - 8px);
-  background-color: rgba(238, 228, 218, 0.35);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: clamp(18px, 6vw, 28px);
-  transition: top 0.12s ease-in-out, left 0.12s ease-in-out;
-  box-sizing: border-box;
-  text-align: center;
-  line-height: 1;
-  will-change: top, left;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background-color: rgba(238, 228, 218, 0.35);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: clamp(18px, 6vw, 28px);
+    transition: transform 0.15s ease-in-out;  /* плавное перемещение */
+    box-sizing: border-box;
+    word-break: break-word;
+    text-align: center;
+    padding: 4px;
+    will-change: transform;
 }
 
 /* Яркие цвета плиток */
@@ -1126,77 +1201,152 @@ button:focus-visible {
 
 /* Анимации */
 .tile-new {
-  animation: pop 0.2s ease-in-out;
+    animation: pop 0.2s ease-in-out;
 }
 @keyframes pop {
-  0% { transform: scale(0); opacity: 0; }
-  80% { transform: scale(1.05); }
-  100% { transform: scale(1); opacity: 1; }
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
 }
+
 .tile-merge {
-  animation: merge 0.2s ease-in-out;
-  z-index: 2;
+    animation: mergeAnim 0.2s ease-in-out;
 }
-@keyframes merge {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); background: #f5d76e; }
-  100% { transform: scale(1); }
+@keyframes mergeAnim {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.2); background: #f5d76e; }
+    100% { transform: scale(1); }
 }
 
 .game-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-top: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
 }
 
 .new-game-btn {
-  background: linear-gradient(135deg, #8f7a66, #776e65);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 40px;
-  color: white;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #8f7a66, #776e65);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 40px;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 .new-game-btn:active {
-  transform: scale(0.96);
+    transform: scale(0.96);
 }
 
 .game-status {
-  font-size: 13px;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 40px;
-  background: rgba(0,0,0,0.05);
-  color: var(--text-primary-light);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 40px;
+    background: rgba(0,0,0,0.05);
+    color: var(--text-primary-light);
 }
 .dark-theme .game-status {
-  background: rgba(255,255,255,0.1);
-  color: var(--text-primary-dark);
+    background: rgba(255,255,255,0.1);
+    color: var(--text-primary-dark);
 }
 
 .swipe-hint {
-  text-align: center;
-  font-size: 10px;
-  color: var(--text-secondary-light);
-  margin-top: 10px;
-  opacity: 0.7;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-secondary-light);
+    margin-top: 10px;
+    opacity: 0.7;
 }
 .dark-theme .swipe-hint {
-  color: var(--text-secondary-dark);
+    color: var(--text-secondary-dark);
+}
+
+/* Адаптация для очень узких экранов */
+@media (max-width: 400px) {
+    .game-board-2048 {
+        gap: 6px;
+        padding: 6px;
+    }
+    .tile-cell {
+        border-radius: 10px;
+    }
+    .game-header-2048 {
+        margin-bottom: 12px;
+    }
+    .score-box {
+        min-width: 50px;
+        padding: 3px 8px;
+    }
+    .score-value {
+        font-size: 16px;
+    }
+    .game-title-2048 {
+        font-size: 20px;
+    }
+    .new-game-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
 }
 
 /* Убираем горизонтальный скролл */
 .app-container, body, .main-content {
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 
-/* Компактный режим для страницы профиля без хедера */
+/* Компактный профиль */
 .header {
-  transition: display 0.2s;
+    transition: display 0.2s;
+}
+.profile-section .main-content {
+    padding-top: 8px;
+}
+.profile-header {
+    margin-bottom: 16px;
+    padding: 12px;
+}
+.profile-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+}
+.profile-info h2 {
+    font-size: 16px;
+}
+.share-friends-button {
+    padding: 12px 18px;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+.game-2048-container {
+    margin-top: 12px;
+    padding: 10px;
+}
+.game-board-2048 {
+    gap: 6px;
+    padding: 6px;
+}
+.tile-cell {
+    border-radius: 10px;
+}
+.game-header-2048 {
+    margin-bottom: 10px;
+}
+.game-title-2048 {
+    font-size: 20px;
+}
+.score-box {
+    padding: 3px 10px;
+    min-width: 50px;
+}
+.score-value {
+    font-size: 16px;
+}
+.game-controls {
+    margin-top: 0;
 }

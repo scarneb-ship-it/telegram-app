@@ -1,8 +1,14 @@
+/* ============================================================
+   Games Verse — script.js (улучшенная версия)
+   ============================================================ */
+
+'use strict';
+
 // ==================== КОНФИГУРАЦИЯ ====================
 const BOT_USERNAME = 'khadron_bot';
-let currentUserId = null;
-
 const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/';
+
+let currentUserId = null;
 
 const GAMES_DATA = [
     {
@@ -31,7 +37,7 @@ const GAMES_DATA = [
         id: 2,
         name: "Hamster King",
         fullLink: "https://t.me/hamsterking_game_bot?startapp=6823288584",
-        description: "Стань королем хомяков",
+        description: "Стань королём хомяков",
         rating: 4.2,
         players: "188K",
         image: "images/hamster-king.jpg",
@@ -58,6 +64,7 @@ const GAMES_DATA = [
         fallback: "💰"
     }
 ];
+
 const EXCHANGES_DATA = [
     {
         id: 1,
@@ -93,85 +100,157 @@ const EXCHANGES_DATA = [
     }
 ];
 
-// ==================== ПЕРЕВОДЫ (только русский) ====================
-const translations = {
-    appTitle: "Games Verse",
-    settings: "Настройки",
-    theme: "Тема",
-    lightTheme: "Светлая",
-    darkTheme: "Темная",
-    done: "Готово",
-    games: "Игры",
-    bestGames: "Лучшие игры Telegram",
-    play: "Играть",
-    exchanges: "Биржи",
-    exchangesDesc: "Торгуйте криптовалютами безопасно",
-    user: "Пользователь",
-    shareWithFriends: "Поделиться с друзьями",
-    profile: "Профиль",
-    linkCopied: "Ссылка скопирована в буфер обмена!",
-    go: "Перейти",
-    game2048: "2048",
-    score: "Счёт",
-    best: "Лучший",
-    newGame: "Новая игра",
-    swipeHint: "👆 Свайпайте пальцем или используйте стрелки",
-    gameWin: "Вы победили! 🎉",
-    gameLose: "Игра окончена! 😔"
-};
+// ==================== УТИЛИТЫ ====================
 
-// ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-});
-
-function vibrate() {
-    if (navigator.vibrate) navigator.vibrate(50);
-}
-
-function initializeApp() {
-    initializeTelegramWebApp();
-    setupNavigation();
-    initializeGames();
-    initializeExchanges();
-    setupSettingsPanel();
-    loadThemePreference();
-    setLanguage(); // Применяем русский текст ко всем элементам data-i18n
-    loadUserData();
-    setupShareButton();
-    setTimeout(() => document.body.style.opacity = '1', 100);
-}
-
-function initializeTelegramWebApp() {
-    if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        const themeParams = tg.themeParams;
-        if (themeParams) {
-            if (themeParams.bg_color) document.documentElement.style.setProperty('--tg-theme-bg-color', themeParams.bg_color);
-            if (themeParams.text_color) document.documentElement.style.setProperty('--tg-theme-text-color', themeParams.text_color);
-            if (themeParams.button_color) document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color);
-            if (themeParams.button_text_color) document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color);
-        }
+function vibrate(duration = 30) {
+    if (navigator.vibrate) {
+        try { navigator.vibrate(duration); } catch (_) {}
     }
 }
 
-function initializeGames() {
-    const gamesGrid = document.getElementById('games-grid');
-    if (!gamesGrid) return;
-    gamesGrid.innerHTML = GAMES_DATA.map(game => `
-        <div class="game-card ${game.highlight ? 'highlight' : ''}" data-game-id="${game.id}">
+function openLink(url) {
+    if (!url) return;
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+        if (url.startsWith('https://t.me/')) {
+            tg.openTelegramLink(url);
+        } else {
+            tg.openLink(url);
+        }
+    } else {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    }
+}
+
+function generateStars(rating) {
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.5;
+    const empty = 5 - full - (half ? 1 : 0);
+    return (
+        '<span class="star filled">★</span>'.repeat(full) +
+        (half ? '<span class="star half">★</span>' : '') +
+        '<span class="star">★</span>'.repeat(empty)
+    );
+}
+
+let notifTimeout = null;
+function showNotification(msg = 'Ссылка скопирована!') {
+    const el = document.getElementById('notification');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    if (notifTimeout) clearTimeout(notifTimeout);
+    notifTimeout = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ==================== ИНИЦИАЛИЗАЦИЯ ====================
+
+document.addEventListener('DOMContentLoaded', () => {
+    initTelegramWebApp();
+    loadThemePreference();
+    setupNavigation();
+    renderGames();
+    renderExchanges();
+    setupSettingsPanel();
+    loadUserData();
+    setupShareButton();
+    setupBuyStarsButton();
+    setupChatButton();
+    initGame2048();
+    // Небольшая задержка чтобы пропустить flash of unstyled
+    setTimeout(() => document.body.style.opacity = '1', 50);
+});
+
+function initTelegramWebApp() {
+    const tg = window.Telegram?.WebApp;
+    if (!tg) return;
+    tg.ready();
+    tg.expand();
+    // Применяем цвета Telegram если есть
+    const { themeParams } = tg;
+    if (themeParams) {
+        const map = {
+            '--tg-theme-bg-color': themeParams.bg_color,
+            '--tg-theme-text-color': themeParams.text_color,
+            '--tg-theme-button-color': themeParams.button_color,
+            '--tg-theme-button-text-color': themeParams.button_text_color,
+        };
+        Object.entries(map).forEach(([k, v]) => {
+            if (v) document.documentElement.style.setProperty(k, v);
+        });
+    }
+}
+
+// ==================== ТЕМА ====================
+
+function loadThemePreference() {
+    const saved = localStorage.getItem('gv_theme') || 'light';
+    applyTheme(saved);
+}
+
+function applyTheme(theme) {
+    document.body.classList.toggle('dark-theme', theme === 'dark');
+    document.querySelectorAll('.theme-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.theme === theme);
+    });
+    localStorage.setItem('gv_theme', theme);
+}
+
+// ==================== НАВИГАЦИЯ ====================
+
+function setupNavigation() {
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.content-section');
+    const header = document.getElementById('main-header');
+
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            vibrate();
+            const target = item.dataset.section;
+
+            navItems.forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+
+            sections.forEach(s => {
+                s.classList.remove('active');
+                if (s.id === target) s.classList.add('active');
+            });
+
+            // Скрываем шапку на профиле (для большего пространства)
+            if (header) {
+                header.style.display = target === 'profile-section' ? 'none' : '';
+            }
+
+            // Сбрасываем скролл вверх при переключении секции
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+}
+
+// ==================== РЕНДЕР ИГР ====================
+
+function renderGames() {
+    const grid = document.getElementById('games-grid');
+    if (!grid) return;
+
+    grid.innerHTML = GAMES_DATA.map(game => `
+        <div class="game-card ${game.highlight ? 'highlight' : ''}">
             <div class="game-image">
-                <img src="${game.image}" alt="${game.name}" class="game-img" onerror="this.style.display='none'">
+                <img
+                    src="${escapeAttr(game.image)}"
+                    alt="${escapeAttr(game.name)}"
+                    class="game-img"
+                    loading="lazy"
+                    onerror="this.style.display='none'"
+                >
                 <div class="image-fallback">${game.fallback}</div>
             </div>
             <div class="game-info">
                 <div class="game-header">
-                    <h3>${game.name}</h3>
-                    ${game.badge ? `<span class="game-badge">${game.badge}</span>` : ''}
+                    <h3>${escapeHtml(game.name)}</h3>
+                    ${game.badge ? `<span class="game-badge">${escapeHtml(game.badge)}</span>` : ''}
                 </div>
-                <p class="game-description">${game.description}</p>
+                <p class="game-description">${escapeHtml(game.description)}</p>
                 <div class="game-stats">
                     <div class="rating">
                         <div class="stars">${generateStars(game.rating)}</div>
@@ -179,678 +258,451 @@ function initializeGames() {
                     </div>
                     <div class="players">
                         <span class="players-icon">👥</span>
-                        <span class="players-count">${game.players}</span>
+                        <span class="players-count">${escapeHtml(game.players)}</span>
                     </div>
                 </div>
             </div>
-            <button class="play-button" data-link="${game.fullLink || ''}">
+            <button class="play-button" data-link="${escapeAttr(game.fullLink || '')}">
                 Играть
             </button>
         </div>
     `).join('');
-    setupGameButtons();
+
+    grid.querySelectorAll('.play-button').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            vibrate();
+            openLink(btn.dataset.link);
+        });
+    });
 }
 
-function generateStars(rating) {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    let stars = '';
-    for (let i = 0; i < fullStars; i++) stars += '<span class="star filled">★</span>';
-    if (hasHalfStar) stars += '<span class="star half">★</span>';
-    for (let i = 0; i < emptyStars; i++) stars += '<span class="star">★</span>';
-    return stars;
-}
+// ==================== РЕНДЕР БИРЖ ====================
 
-function initializeExchanges() {
-    const exchangesList = document.getElementById('exchanges-list');
-    if (!exchangesList) return;
-    exchangesList.innerHTML = EXCHANGES_DATA.map(exchange => `
-        <div class="exchange-card" data-exchange-id="${exchange.id}">
+function renderExchanges() {
+    const list = document.getElementById('exchanges-list');
+    if (!list) return;
+
+    list.innerHTML = EXCHANGES_DATA.map(ex => `
+        <div class="exchange-card">
             <div class="exchange-logo">
-                <img src="${exchange.image}" alt="${exchange.name}" class="exchange-img" onerror="this.style.display='none'">
-                <div class="image-fallback">${exchange.fallback}</div>
+                <img
+                    src="${escapeAttr(ex.image)}"
+                    alt="${escapeAttr(ex.name)}"
+                    class="exchange-img"
+                    loading="lazy"
+                    onerror="this.style.display='none'"
+                >
+                <div class="image-fallback">${ex.fallback}</div>
             </div>
             <div class="exchange-info">
-                <h3>${exchange.name}</h3>
-                <p>${exchange.description}</p>
+                <h3>${escapeHtml(ex.name)}</h3>
+                <p>${escapeHtml(ex.description)}</p>
             </div>
-            <button class="exchange-button" data-url="${exchange.url}">
+            <button class="exchange-button" data-url="${escapeAttr(ex.url)}">
                 Перейти
             </button>
         </div>
     `).join('');
-    setupExchangeButtons();
+
+    list.querySelectorAll('.exchange-button').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            vibrate();
+            openLink(btn.dataset.url);
+        });
+    });
 }
+
+// ==================== ПОЛЬЗОВАТЕЛЬ ====================
 
 function loadUserData() {
-    if (window.Telegram && window.Telegram.WebApp) {
-        const user = window.Telegram.WebApp.initDataUnsafe?.user;
-        if (user) {
-            updateProfileDisplay(user);
-            currentUserId = user.id;
-            sendUserStat(user);
-        } else {
-            showFallbackProfile();
-            currentUserId = null;
-        }
+    const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+    if (user) {
+        renderProfile(user);
+        currentUserId = user.id;
+        sendUserStat(user);
     } else {
-        showFallbackProfile();
-        currentUserId = null;
+        renderFallbackProfile();
     }
 }
 
-function updateProfileDisplay(user) {
-    const userName = document.getElementById('user-name');
-    if (userName) userName.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-    const userUsername = document.getElementById('user-username');
-    if (userUsername) userUsername.textContent = user.username ? '@' + user.username : 'Telegram User';
-    updateUserAvatar(user);
-    if (user.is_premium) showPremiumBadge();
-}
+function renderProfile(user) {
+    setEl('user-name', `${user.first_name || ''}${user.last_name ? ' ' + user.last_name : ''}`);
+    setEl('user-username', user.username ? `@${user.username}` : 'Telegram User');
 
-function updateUserAvatar(user) {
     const avatarImg = document.getElementById('avatar-img');
     const avatarFallback = document.getElementById('avatar-fallback');
-    if (!avatarImg) return;
-    if (user.photo_url) {
+
+    if (avatarImg && user.photo_url) {
         avatarImg.src = user.photo_url;
         avatarImg.style.display = 'block';
-        avatarImg.onerror = () => { avatarImg.style.display = 'none'; showAvatarFallback(user, avatarFallback); };
-        avatarFallback.style.display = 'none';
+        avatarImg.onerror = () => {
+            avatarImg.style.display = 'none';
+            if (avatarFallback) {
+                avatarFallback.textContent = (user.first_name || 'T').charAt(0).toUpperCase();
+            }
+        };
+        if (avatarFallback) avatarFallback.style.display = 'none';
     } else {
-        avatarImg.style.display = 'none';
-        showAvatarFallback(user, avatarFallback);
+        if (avatarFallback) {
+            avatarFallback.textContent = (user.first_name || 'T').charAt(0).toUpperCase();
+        }
+    }
+
+    if (user.is_premium) {
+        const info = document.querySelector('.profile-info');
+        if (info && !info.querySelector('.premium-badge')) {
+            const badge = document.createElement('div');
+            badge.className = 'premium-badge';
+            badge.innerHTML = '⭐ Premium';
+            info.appendChild(badge);
+        }
     }
 }
 
-function showAvatarFallback(user, avatarFallback) {
-    if (user.first_name) avatarFallback.textContent = user.first_name.charAt(0).toUpperCase();
-    else avatarFallback.textContent = 'T';
-    avatarFallback.style.display = 'flex';
-}
-
-function showPremiumBadge() {
-    const profileInfo = document.querySelector('.profile-info');
-    if (profileInfo && !document.querySelector('.premium-badge')) {
-        const premiumBadge = document.createElement('div');
-        premiumBadge.className = 'premium-badge';
-        premiumBadge.innerHTML = '⭐ Premium';
-        profileInfo.appendChild(premiumBadge);
-    }
-}
-
-function showFallbackProfile() {
-    const userName = document.getElementById('user-name');
-    const userUsername = document.getElementById('user-username');
-    const avatarFallback = document.getElementById('avatar-fallback');
-    if (userName) userName.textContent = 'Telegram User';
-    if (userUsername) userUsername.textContent = 'Открой в Telegram';
-    if (avatarFallback) { avatarFallback.textContent = 'T'; avatarFallback.style.display = 'flex'; }
+function renderFallbackProfile() {
+    setEl('user-name', 'Telegram User');
+    setEl('user-username', 'Открой в Telegram');
+    const f = document.getElementById('avatar-fallback');
+    if (f) f.textContent = 'T';
 }
 
 async function sendUserStat(user) {
-    if (!user || !user.id) return;
+    if (!user?.id) return;
     const date = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
-    const message = `🆕 *Новый пользователь в Games Verse*\n\n` +
-                    `👤 *Имя:* ${user.first_name || ''} ${user.last_name || ''}\n` +
-                    `🆔 *ID:* ${user.id}\n` +
-                    `🧑‍💻 *Username:* ${user.username ? '@' + user.username : 'нет'}\n` +
-                    `⭐ *Premium:* ${user.is_premium ? 'Да' : 'Нет'}\n` +
-                    `📅 *Дата/время:* ${date}`;
+    const message =
+        `🆕 *Новый пользователь в Games Verse*\n\n` +
+        `👤 *Имя:* ${user.first_name || ''} ${user.last_name || ''}\n` +
+        `🆔 *ID:* ${user.id}\n` +
+        `🧑‍💻 *Username:* ${user.username ? '@' + user.username : 'нет'}\n` +
+        `⭐ *Premium:* ${user.is_premium ? 'Да' : 'Нет'}\n` +
+        `📅 *Дата:* ${date}`;
     try {
         await fetch(WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                message: message,
-                chatId: '6823288584'
-            })
+            body: JSON.stringify({ message, chatId: '6823288584' }),
         });
-    } catch (err) {
-        console.error('Ошибка отправки статистики:', err);
-    }
+    } catch (_) {}
 }
 
-// ==================== НАВИГАЦИЯ ====================
-const headerElement = document.querySelector('.header');
-const mainContent = document.querySelector('.main-content');
-
-function toggleHeaderForSection(sectionId) {
-    if (!headerElement) return;
-    if (sectionId === 'profile-section') {
-        headerElement.style.display = 'none';
-        if (mainContent) mainContent.style.paddingTop = '8px';
-    } else {
-        headerElement.style.display = 'block';
-        if (mainContent) mainContent.style.paddingTop = '';
-    }
-}
-
-function setupNavigation() {
-    const navItems = document.querySelectorAll('.nav-item');
-    const sections = document.querySelectorAll('.content-section');
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-            vibrate();
-            const targetSection = this.getAttribute('data-section');
-            navItems.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-            sections.forEach(section => {
-                section.classList.remove('active');
-                if (section.id === targetSection) section.classList.add('active');
-            });
-            toggleHeaderForSection(targetSection);
-        });
-    });
-    const activeSection = document.querySelector('.content-section.active');
-    if (activeSection) toggleHeaderForSection(activeSection.id);
-}
-
-function setupGameButtons() {
-    document.querySelectorAll('.play-button').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.stopPropagation();
-            vibrate();
-            const link = this.getAttribute('data-link');
-            if (link) {
-                if (window.Telegram && window.Telegram.WebApp) {
-                    if (link.startsWith('https://t.me/')) window.Telegram.WebApp.openTelegramLink(link);
-                    else window.Telegram.WebApp.openLink(link);
-                } else {
-                    window.open(link, '_blank');
-                }
-            }
-        });
-    });
-}
-
-function setupExchangeButtons() {
-    document.querySelectorAll('.exchange-button').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.stopPropagation();
-            vibrate();
-            const exchangeUrl = this.getAttribute('data-url');
-            if (exchangeUrl) {
-                if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.openLink(exchangeUrl);
-                else window.open(exchangeUrl, '_blank');
-            }
-        });
-    });
-}
+// ==================== НАСТРОЙКИ ====================
 
 function setupSettingsPanel() {
-    const settingsButton = document.getElementById('settings-button');
-    const settingsPanel = document.getElementById('settings-panel');
-    const closeSettings = document.getElementById('close-settings');
-    if (settingsButton) settingsButton.addEventListener('click', () => { vibrate(); settingsPanel.classList.add('active'); });
-    if (closeSettings) closeSettings.addEventListener('click', () => { vibrate(); settingsPanel.classList.remove('active'); });
-    if (settingsPanel) settingsPanel.addEventListener('click', (e) => { if (e.target === settingsPanel) settingsPanel.classList.remove('active'); });
+    const panel = document.getElementById('settings-panel');
+    const backdrop = document.getElementById('settings-backdrop');
+    const openBtn = document.getElementById('settings-button');
+    const closeBtn = document.getElementById('close-settings');
+    const closeIcon = document.getElementById('close-settings-icon');
 
-    document.querySelectorAll('.theme-option').forEach(option => {
-        option.addEventListener('click', function() {
-            vibrate();
-            const theme = this.getAttribute('data-theme');
-            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            if (theme === 'dark') document.body.classList.add('dark-theme');
-            else document.body.classList.remove('dark-theme');
-            localStorage.setItem('theme', theme);
-        });
-    });
-}
+    const open = () => { vibrate(); panel?.classList.add('active'); };
+    const close = () => { vibrate(); panel?.classList.remove('active'); };
 
-function setLanguage() {
-    document.querySelectorAll('[data-i18n]').forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        if (translations[key]) element.textContent = translations[key];
-    });
-}
+    openBtn?.addEventListener('click', open);
+    closeBtn?.addEventListener('click', close);
+    closeIcon?.addEventListener('click', close);
+    backdrop?.addEventListener('click', close);
 
-function loadThemePreference() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    if (savedTheme === 'dark') document.body.classList.add('dark-theme');
     document.querySelectorAll('.theme-option').forEach(opt => {
-        opt.classList.remove('active');
-        if (opt.getAttribute('data-theme') === savedTheme) opt.classList.add('active');
+        opt.addEventListener('click', () => {
+            vibrate();
+            applyTheme(opt.dataset.theme);
+        });
     });
 }
 
 // ==================== ШАРИНГ ====================
+
 function setupShareButton() {
-    const shareButton = document.getElementById('share-friends-button');
-    if (shareButton) {
-        shareButton.addEventListener('click', function() {
-            vibrate();
-            let botUrl;
-            if (currentUserId) {
-                botUrl = `https://t.me/${BOT_USERNAME}?start=ref_${currentUserId}`;
-            } else {
-                botUrl = `https://t.me/${BOT_USERNAME}`;
+    document.getElementById('share-friends-button')?.addEventListener('click', () => {
+        vibrate();
+        const botUrl = currentUserId
+            ? `https://t.me/${BOT_USERNAME}?start=ref_${currentUserId}`
+            : `https://t.me/${BOT_USERNAME}`;
+        const shareText = 'Играй в лучшие мини-игры Telegram! 🎮';
+        const tg = window.Telegram?.WebApp;
+
+        if (tg) {
+            const url = `https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`;
+            try {
+                tg.openTelegramLink(url);
+            } catch (_) {
+                copyToClipboard(botUrl);
             }
-            const shareText = 'Играй в лучшие мини-игры Telegram вместе с HADRON! 🎮';
-            if (window.Telegram && window.Telegram.WebApp) {
-                const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(botUrl)}&text=${encodeURIComponent(shareText)}`;
-                try {
-                    window.Telegram.WebApp.openTelegramLink(shareUrl);
-                } catch (error) {
-                    fallbackCopyToClipboard(botUrl);
-                }
-            } else {
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Games Verse',
-                        text: shareText,
-                        url: botUrl,
-                    }).catch(() => fallbackCopyToClipboard(botUrl));
-                } else {
-                    fallbackCopyToClipboard(botUrl);
-                }
-            }
-        });
+        } else if (navigator.share) {
+            navigator.share({ title: 'Games Verse', text: shareText, url: botUrl })
+                .catch(() => copyToClipboard(botUrl));
+        } else {
+            copyToClipboard(botUrl);
+        }
+    });
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text)
+            .then(() => showNotification('Ссылка скопирована!'))
+            .catch(() => legacyCopy(text));
+    } else {
+        legacyCopy(text);
     }
 }
 
-function fallbackCopyToClipboard(text) {
+function legacyCopy(text) {
+    const el = Object.assign(document.createElement('textarea'), {
+        value: text,
+        style: { position: 'fixed', opacity: '0', left: '-9999px' }
+    });
+    document.body.appendChild(el);
+    el.select();
     try {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.opacity = '0';
-        document.body.appendChild(textArea);
-        textArea.select();
         document.execCommand('copy');
-        document.body.removeChild(textArea);
-        showNotification();
-    } catch (err) {
-        showNotification('Не удалось скопировать ссылку');
+        showNotification('Ссылка скопирована!');
+    } catch (_) {
+        showNotification('Не удалось скопировать');
     }
+    document.body.removeChild(el);
 }
 
-function showNotification(customMessage) {
-    const notification = document.getElementById('notification');
-    if (!notification) return;
-    notification.textContent = customMessage || translations.linkCopied;
-    notification.classList.add('show');
-    setTimeout(() => notification.classList.remove('show'), 2000);
+function setupBuyStarsButton() {
+    document.getElementById('buy-stars-button')?.addEventListener('click', () => {
+        vibrate();
+        openLink('https://t.me/StarsShipBot?start=r6823288584');
+    });
 }
 
-// ==================== 2048 GAME (улучшенная анимация) ====================
+function setupChatButton() {
+    document.getElementById('chat-button')?.addEventListener('click', () => {
+        vibrate();
+        openLink('https://t.me/hadron_chat');
+    });
+}
+
+// ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+
+function setEl(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+}
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function escapeAttr(str) {
+    return String(str).replace(/"/g, '&quot;');
+}
+
+// ==================== 2048 GAME ====================
+
 class Game2048 {
-    constructor(boardElement, scoreElement, bestScoreElement, statusElement) {
-        this.boardElement = boardElement;
-        this.scoreElement = scoreElement;
-        this.bestScoreElement = bestScoreElement;
-        this.statusElement = statusElement;
-        this.size = 4;
+    constructor(boardEl, scoreEl, bestEl, statusEl) {
+        this.boardEl = boardEl;
+        this.scoreEl = scoreEl;
+        this.bestEl = bestEl;
+        this.statusEl = statusEl;
+        this.SIZE = 4;
         this.grid = [];
         this.score = 0;
-        this.bestScore = localStorage.getItem('bestScore2048') ? parseInt(localStorage.getItem('bestScore2048')) : 0;
-        this.lastAddedTile = null;
-        this.mergedPositions = new Set();
-        this.moveMap = null;
+        this.bestScore = parseInt(localStorage.getItem('gv_bestScore2048') || '0', 10);
+        this.lastAdded = null;
+        this.mergedKeys = new Set();
+        this.gameOver = false;
+        this.won = false;
 
-        this.updateBestScoreUI();
-        this.init();
-        this.setupSwipeEvents();
-        this.setupKeyboardEvents();
+        this.updateBestUI();
+        this.newGame();
+        this.bindSwipe();
+        this.bindKeyboard();
     }
 
-    init() {
-        this.grid = Array(this.size).fill().map(() => Array(this.size).fill(0));
+    newGame() {
+        this.grid = Array.from({ length: this.SIZE }, () => Array(this.SIZE).fill(0));
         this.score = 0;
+        this.gameOver = false;
+        this.won = false;
+        this.lastAdded = null;
+        this.mergedKeys.clear();
         this.updateScoreUI();
-        this.statusElement.textContent = '';
-        this.lastAddedTile = null;
-        this.mergedPositions.clear();
-        this.moveMap = null;
-        this.addRandomTile();
-        this.addRandomTile();
+        if (this.statusEl) this.statusEl.textContent = '';
+        this.spawnTile();
+        this.spawnTile();
         this.render();
     }
 
-    addRandomTile() {
-        const emptyCells = [];
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
-                if (this.grid[i][j] === 0) emptyCells.push({x: i, y: j});
-            }
-        }
-        if (emptyCells.length > 0) {
-            const {x, y} = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-            this.grid[x][y] = Math.random() < 0.9 ? 2 : 4;
-            this.lastAddedTile = {x, y};
-            return true;
-        }
-        return false;
+    spawnTile() {
+        const empty = [];
+        for (let r = 0; r < this.SIZE; r++)
+            for (let c = 0; c < this.SIZE; c++)
+                if (this.grid[r][c] === 0) empty.push([r, c]);
+        if (!empty.length) return false;
+        const [r, c] = empty[Math.floor(Math.random() * empty.length)];
+        this.grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+        this.lastAdded = `${r},${c}`;
+        return true;
     }
 
-    move(direction) {
-        const oldGrid = JSON.parse(JSON.stringify(this.grid));
-        let totalScoreGain = 0;
-        this.mergedPositions.clear();
-        this.moveMap = {};
-
-        const slideWithTracking = (row, isColumn, index, reverse) => {
-            let arr = row.filter(v => v !== 0);
-            let newRow = [];
-            let scoreGain = 0;
-            let merged = new Array(arr.length).fill(false);
-
-            for (let i = 0; i < arr.length; i++) {
-                if (i + 1 < arr.length && arr[i] === arr[i + 1] && !merged[i] && !merged[i+1]) {
-                    let mergedVal = arr[i] * 2;
-                    newRow.push(mergedVal);
-                    scoreGain += mergedVal;
-                    merged[i] = merged[i+1] = true;
-                    i++;
-                } else {
-                    newRow.push(arr[i]);
-                }
-            }
-            while (newRow.length < this.size) newRow.push(0);
-
-            let oldVals = arr;
-            let oldPtr = 0;
-            for (let newPos = 0; newPos < this.size; newPos++) {
-                if (newRow[newPos] === 0) continue;
-                if (oldPtr < oldVals.length && oldVals[oldPtr] * 2 === newRow[newPos] &&
-                    oldPtr + 1 < oldVals.length && oldVals[oldPtr] === oldVals[oldPtr + 1]) {
-                    this.recordMove(oldPtr, oldVals, newPos, isColumn, index, reverse, true, false);
-                    this.recordMove(oldPtr + 1, oldVals, newPos, isColumn, index, reverse, true, true);
-                    oldPtr += 2;
-                } else if (oldPtr < oldVals.length && oldVals[oldPtr] === newRow[newPos]) {
-                    this.recordMove(oldPtr, oldVals, newPos, isColumn, index, reverse, false, false);
-                    oldPtr++;
-                }
-            }
-            return {newRow, scoreGain};
-        };
-
-        this.recordMove = (oldIdx, oldVals, newIdx, isColumn, lineIdx, reverse, merged, isSecond) => {
-            const originalLine = [];
-            if (!isColumn) {
-                originalLine.push(...this.grid[lineIdx]);
+    slide(line) {
+        // Removes zeros, merges equal adjacent, pads with zeros
+        const vals = line.filter(v => v);
+        const merged = [];
+        let gain = 0;
+        for (let i = 0; i < vals.length; i++) {
+            if (i + 1 < vals.length && vals[i] === vals[i + 1]) {
+                const m = vals[i] * 2;
+                merged.push(m);
+                gain += m;
+                i++;
             } else {
-                for (let r = 0; r < this.size; r++) originalLine.push(this.grid[r][lineIdx]);
-            }
-            if (reverse) originalLine.reverse();
-
-            let skip = 0;
-            let sourceIdx = -1;
-            for (let i = 0; i < originalLine.length; i++) {
-                if (originalLine[i] !== 0) {
-                    if (skip === oldIdx) { sourceIdx = i; break; }
-                    skip++;
-                }
-            }
-            if (sourceIdx === -1) return;
-
-            if (reverse) sourceIdx = this.size - 1 - sourceIdx;
-
-            let fromRow, fromCol;
-            if (!isColumn) {
-                fromRow = lineIdx;
-                fromCol = sourceIdx;
-            } else {
-                fromRow = sourceIdx;
-                fromCol = lineIdx;
-            }
-
-            let targetIdx = newIdx;
-            if (reverse) targetIdx = this.size - 1 - targetIdx;
-
-            let toRow, toCol;
-            if (!isColumn) {
-                toRow = lineIdx;
-                toCol = targetIdx;
-            } else {
-                toRow = targetIdx;
-                toCol = lineIdx;
-            }
-
-            const key = `${toRow},${toCol}`;
-            if (!this.moveMap[key]) {
-                this.moveMap[key] = { fromRow, fromCol, merged };
-            }
-            if (merged) this.mergedPositions.add(key);
-        };
-
-        if (direction === 'left') {
-            for (let i = 0; i < this.size; i++) {
-                const {newRow, scoreGain} = slideWithTracking(this.grid[i], false, i, false);
-                this.grid[i] = newRow;
-                totalScoreGain += scoreGain;
-            }
-        } else if (direction === 'right') {
-            for (let i = 0; i < this.size; i++) {
-                const reversed = [...this.grid[i]].reverse();
-                const {newRow, scoreGain} = slideWithTracking(reversed, false, i, true);
-                totalScoreGain += scoreGain;
-                this.grid[i] = newRow.reverse();
-            }
-        } else if (direction === 'up') {
-            for (let j = 0; j < this.size; j++) {
-                const column = [];
-                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
-                const {newRow, scoreGain} = slideWithTracking(column, true, j, false);
-                totalScoreGain += scoreGain;
-                for (let i = 0; i < this.size; i++) this.grid[i][j] = newRow[i];
-            }
-        } else if (direction === 'down') {
-            for (let j = 0; j < this.size; j++) {
-                const column = [];
-                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
-                const reversed = column.reverse();
-                const {newRow, scoreGain} = slideWithTracking(reversed, true, j, true);
-                totalScoreGain += scoreGain;
-                const finalArr = newRow.reverse();
-                for (let i = 0; i < this.size; i++) this.grid[i][j] = finalArr[i];
+                merged.push(vals[i]);
             }
         }
+        while (merged.length < this.SIZE) merged.push(0);
+        return { row: merged, gain };
+    }
 
-        if (totalScoreGain > 0) {
-            this.score += totalScoreGain;
-            this.updateScoreUI();
+    move(dir) {
+        if (this.gameOver) return;
+        const prev = this.grid.map(r => [...r]);
+        let totalGain = 0;
+        this.mergedKeys.clear();
+
+        for (let i = 0; i < this.SIZE; i++) {
+            let line;
+            if (dir === 'left')  line = this.grid[i];
+            if (dir === 'right') line = [...this.grid[i]].reverse();
+            if (dir === 'up')    line = this.grid.map(r => r[i]);
+            if (dir === 'down')  line = this.grid.map(r => r[i]).reverse();
+
+            const { row, gain } = this.slide(line);
+            totalGain += gain;
+
+            if (dir === 'left')  this.grid[i] = row;
+            if (dir === 'right') this.grid[i] = [...row].reverse();
+            if (dir === 'up')    row.forEach((v, r) => this.grid[r][i] = v);
+            if (dir === 'down')  [...row].reverse().forEach((v, r) => this.grid[r][i] = v);
         }
 
-        const changed = !this.gridsAreEqual(oldGrid, this.grid);
-        if (changed) {
-            this.addRandomTile();
-            this.render();
-            if (this.checkWin()) {
-                this.statusElement.textContent = translations.gameWin;
-            } else if (this.checkLose()) {
-                this.statusElement.textContent = translations.gameLose;
-            }
-        } else {
-            this.moveMap = null;
+        const changed = prev.some((r, ri) => r.some((v, ci) => v !== this.grid[ri][ci]));
+        if (!changed) return;
+
+        this.score += totalGain;
+        this.updateScoreUI();
+        this.spawnTile();
+        this.render();
+
+        if (!this.won && this.grid.some(r => r.includes(2048))) {
+            this.won = true;
+            if (this.statusEl) this.statusEl.textContent = '🎉 Победа!';
+        } else if (this.isGameOver()) {
+            this.gameOver = true;
+            if (this.statusEl) this.statusEl.textContent = '😔 Игра окончена';
         }
     }
 
-    gridsAreEqual(a, b) {
-        for (let i = 0; i < this.size; i++)
-            for (let j = 0; j < this.size; j++)
-                if (a[i][j] !== b[i][j]) return false;
+    isGameOver() {
+        for (let r = 0; r < this.SIZE; r++)
+            for (let c = 0; c < this.SIZE; c++) {
+                if (!this.grid[r][c]) return false;
+                if (c + 1 < this.SIZE && this.grid[r][c] === this.grid[r][c + 1]) return false;
+                if (r + 1 < this.SIZE && this.grid[r][c] === this.grid[r + 1][c]) return false;
+            }
         return true;
     }
 
     render() {
-        const board = this.boardElement;
+        const board = this.boardEl;
         board.innerHTML = '';
-        const tileSize = board.clientWidth / this.size;
-
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
-                const value = this.grid[i][j];
-                const tile = document.createElement('div');
-                tile.className = 'tile-cell';
-                if (value !== 0) {
-                    let tileClass = `tile-${value}`;
-                    if (value > 2048) tileClass = 'tile-super';
-                    tile.classList.add(tileClass);
-                    tile.textContent = value;
-
-                    const key = `${i},${j}`;
-                    if (this.moveMap && this.moveMap[key]) {
-                        const { fromRow, fromCol, merged } = this.moveMap[key];
-                        const deltaX = (fromCol - j) * tileSize;
-                        const deltaY = (fromRow - i) * tileSize;
-                        tile.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-                        tile.offsetHeight;
-                        tile.style.transform = '';
-                        if (merged) {
-                            tile.classList.add('tile-merge');
-                            tile.addEventListener('animationend', () => tile.classList.remove('tile-merge'), { once: true });
-                        }
+        for (let r = 0; r < this.SIZE; r++) {
+            for (let c = 0; c < this.SIZE; c++) {
+                const v = this.grid[r][c];
+                const cell = document.createElement('div');
+                cell.className = 'tile-cell';
+                if (v) {
+                    const cls = v > 2048 ? 'tile-super' : `tile-${v}`;
+                    cell.classList.add(cls);
+                    cell.textContent = v;
+                    const key = `${r},${c}`;
+                    if (key === this.lastAdded) {
+                        cell.classList.add('tile-new');
                     }
-
-                    if (this.lastAddedTile && this.lastAddedTile.x === i && this.lastAddedTile.y === j) {
-                        tile.classList.add('tile-new');
-                        tile.addEventListener('animationend', () => tile.classList.remove('tile-new'), { once: true });
-                    }
-                } else {
-                    tile.textContent = '';
                 }
-                board.appendChild(tile);
+                board.appendChild(cell);
             }
         }
-        this.lastAddedTile = null;
-        this.moveMap = null;
+        this.lastAdded = null;
     }
 
     updateScoreUI() {
-        this.scoreElement.textContent = this.score;
+        if (this.scoreEl) this.scoreEl.textContent = this.score;
         if (this.score > this.bestScore) {
             this.bestScore = this.score;
-            localStorage.setItem('bestScore2048', this.bestScore);
-            this.updateBestScoreUI();
+            localStorage.setItem('gv_bestScore2048', this.bestScore);
+            this.updateBestUI();
         }
     }
 
-    updateBestScoreUI() {
-        this.bestScoreElement.textContent = this.bestScore;
+    updateBestUI() {
+        if (this.bestEl) this.bestEl.textContent = this.bestScore;
     }
 
-    checkWin() {
-        return this.grid.some(row => row.includes(2048));
-    }
-
-    checkLose() {
-        for (let i = 0; i < this.size; i++)
-            for (let j = 0; j < this.size; j++)
-                if (this.grid[i][j] === 0) return false;
-        for (let i = 0; i < this.size; i++)
-            for (let j = 0; j < this.size; j++) {
-                const val = this.grid[i][j];
-                if (j < this.size-1 && val === this.grid[i][j+1]) return false;
-                if (i < this.size-1 && val === this.grid[i+1][j]) return false;
-            }
-        return true;
-    }
-
-    setupSwipeEvents() {
-        let touchStartX = 0, touchStartY = 0;
-        this.boardElement.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
+    bindSwipe() {
+        const el = this.boardEl;
+        let sx = 0, sy = 0;
+        el.addEventListener('touchstart', e => {
+            sx = e.touches[0].clientX;
+            sy = e.touches[0].clientY;
             e.preventDefault();
-        });
-        this.boardElement.addEventListener('touchend', (e) => {
-            if (touchStartX === 0 && touchStartY === 0) return;
-            let deltaX = e.changedTouches[0].clientX - touchStartX;
-            let deltaY = e.changedTouches[0].clientY - touchStartY;
-            if (Math.abs(deltaX) < 20 && Math.abs(deltaY) < 20) return;
-            if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                if (deltaX > 0) this.move('right');
-                else this.move('left');
+        }, { passive: false });
+        el.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - sx;
+            const dy = e.changedTouches[0].clientY - sy;
+            if (Math.abs(dx) < 15 && Math.abs(dy) < 15) return;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                this.move(dx > 0 ? 'right' : 'left');
             } else {
-                if (deltaY > 0) this.move('down');
-                else this.move('up');
+                this.move(dy > 0 ? 'down' : 'up');
             }
-            touchStartX = 0; touchStartY = 0;
-            vibrate();
-        });
+            vibrate(20);
+        }, { passive: true });
     }
 
-    setupKeyboardEvents() {
-        window.addEventListener('keydown', (e) => {
-            if (document.querySelector('#profile-section.active')) {
-                const key = e.key;
-                if (key === 'ArrowLeft') { this.move('left'); e.preventDefault(); vibrate(); }
-                else if (key === 'ArrowRight') { this.move('right'); e.preventDefault(); vibrate(); }
-                else if (key === 'ArrowUp') { this.move('up'); e.preventDefault(); vibrate(); }
-                else if (key === 'ArrowDown') { this.move('down'); e.preventDefault(); vibrate(); }
+    bindKeyboard() {
+        const map = {
+            ArrowLeft: 'left', ArrowRight: 'right',
+            ArrowUp: 'up', ArrowDown: 'down'
+        };
+        window.addEventListener('keydown', e => {
+            // Реагируем на стрелки только если секция 2048 активна
+            const section = document.getElementById('game2048-section');
+            if (!section?.classList.contains('active')) return;
+            if (map[e.key]) {
+                e.preventDefault();
+                this.move(map[e.key]);
+                vibrate(20);
             }
         });
-    }
-
-    resetGame() {
-        this.init();
-        this.render();
     }
 }
 
-let game2048 = null;
 function initGame2048() {
     const board = document.getElementById('game-board-2048');
     const scoreEl = document.getElementById('game-score');
     const bestEl = document.getElementById('best-score');
     const statusEl = document.getElementById('game-status');
-    if (board && scoreEl && bestEl && statusEl && !game2048) {
-        game2048 = new Game2048(board, scoreEl, bestEl, statusEl);
-        const newGameBtn = document.getElementById('new-game-btn');
-        if (newGameBtn) {
-            newGameBtn.addEventListener('click', () => {
-                vibrate();
-                game2048.resetGame();
-            });
-        }
-    }
+    const newBtn = document.getElementById('new-game-btn');
+
+    if (!board || !scoreEl || !bestEl || !statusEl) return;
+
+    const game = new Game2048(board, scoreEl, bestEl, statusEl);
+
+    newBtn?.addEventListener('click', () => {
+        vibrate(40);
+        game.newGame();
+    });
 }
-
-setTimeout(() => {
-    initGame2048();
-}, 300);
-// ... (весь предыдущий код остаётся, включая Game2048, setupShareButton, и т.д.) ...
-
-// ==================== НОВЫЕ КНОПКИ: КУПИТЬ STARS И ЧАТ ====================
-function setupBuyStarsButton() {
-    const btn = document.getElementById('buy-stars-button');
-    if (btn) {
-        btn.addEventListener('click', () => {
-            vibrate();
-            const starsUrl = 'https://t.me/StarsShipBot?start=r6823288584';
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.openTelegramLink(starsUrl);
-            } else {
-                window.open(starsUrl, '_blank');
-            }
-        });
-    }
-}
-
-function setupChatButton() {
-    const btn = document.getElementById('chat-button');
-    if (btn) {
-        btn.addEventListener('click', () => {
-            vibrate();
-            const chatUrl = 'https://t.me/hadron_chat';
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.openTelegramLink(chatUrl);
-            } else {
-                window.open(chatUrl, '_blank');
-            }
-        });
-    }
-}
-
-// Вызываем инициализацию кнопок при загрузке
-document.addEventListener('DOMContentLoaded', function() {
-    // ... (все старые вызовы initializeApp() и прочее уже есть) ...
-    // Добавляем вызовы новых функций в конец существующего DOMContentLoaded
-    // Или можно вставить их в initializeApp().
-    // Для простоты добавим в DOMContentLoaded, после вызова initializeApp():
-    setupBuyStarsButton();
-    setupChatButton();
-});

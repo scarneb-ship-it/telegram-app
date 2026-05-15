@@ -58,7 +58,6 @@ const GAMES_DATA = [
         fallback: "💰"
     }
 ];
-
 const EXCHANGES_DATA = [
     {
         id: 1,
@@ -94,6 +93,33 @@ const EXCHANGES_DATA = [
     }
 ];
 
+// ==================== ПЕРЕВОДЫ (только русский) ====================
+const translations = {
+    appTitle: "Games Verse",
+    settings: "Настройки",
+    theme: "Тема",
+    lightTheme: "Светлая",
+    darkTheme: "Темная",
+    done: "Готово",
+    games: "Игры",
+    bestGames: "Лучшие игры Telegram",
+    play: "Играть",
+    exchanges: "Биржи",
+    exchangesDesc: "Торгуйте криптовалютами безопасно",
+    user: "Пользователь",
+    shareWithFriends: "Поделиться с друзьями",
+    profile: "Профиль",
+    linkCopied: "Ссылка скопирована в буфер обмена!",
+    go: "Перейти",
+    game2048: "2048",
+    score: "Счёт",
+    best: "Лучший",
+    newGame: "Новая игра",
+    swipeHint: "👆 Свайпайте пальцем или используйте стрелки",
+    gameWin: "Вы победили! 🎉",
+    gameLose: "Игра окончена! 😔"
+};
+
 // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
@@ -110,9 +136,9 @@ function initializeApp() {
     initializeExchanges();
     setupSettingsPanel();
     loadThemePreference();
+    setLanguage(); // Применяем русский текст ко всем элементам data-i18n
     loadUserData();
     setupShareButton();
-    initGame2048();
     setTimeout(() => document.body.style.opacity = '1', 100);
 }
 
@@ -128,9 +154,6 @@ function initializeTelegramWebApp() {
             if (themeParams.button_color) document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color);
             if (themeParams.button_text_color) document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color);
         }
-        console.log('✅ Telegram WebApp инициализирован');
-    } else {
-        console.log('⚠️ Telegram WebApp недоступен');
     }
 }
 
@@ -160,7 +183,7 @@ function initializeGames() {
                     </div>
                 </div>
             </div>
-            <button class="play-button" data-link="${game.fullLink || (game.bot ? 'https://t.me/' + game.bot + '?start=app' : '')}">
+            <button class="play-button" data-link="${game.fullLink || ''}">
                 Играть
             </button>
         </div>
@@ -206,8 +229,6 @@ function loadUserData() {
         if (user) {
             updateProfileDisplay(user);
             currentUserId = user.id;
-            console.log('🔍 Telegram User Data:', user);
-            console.log('✅ Реферальный ID установлен:', currentUserId);
             sendUserStat(user);
         } else {
             showFallbackProfile();
@@ -268,7 +289,6 @@ function showFallbackProfile() {
     if (avatarFallback) { avatarFallback.textContent = 'T'; avatarFallback.style.display = 'flex'; }
 }
 
-// ==================== СТАТИСТИКА ЧЕРЕЗ WORKER ====================
 async function sendUserStat(user) {
     if (!user || !user.id) return;
     const date = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
@@ -287,9 +307,8 @@ async function sendUserStat(user) {
                 chatId: '6823288584'
             })
         });
-        console.log('✅ Статистика отправлена');
     } catch (err) {
-        console.error('❌ Ошибка отправки статистики:', err);
+        console.error('Ошибка отправки статистики:', err);
     }
 }
 
@@ -329,8 +348,7 @@ function setupNavigation() {
 }
 
 function setupGameButtons() {
-    const playButtons = document.querySelectorAll('.play-button');
-    playButtons.forEach(button => {
+    document.querySelectorAll('.play-button').forEach(button => {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             vibrate();
@@ -348,8 +366,7 @@ function setupGameButtons() {
 }
 
 function setupExchangeButtons() {
-    const exchangeButtons = document.querySelectorAll('.exchange-button');
-    exchangeButtons.forEach(button => {
+    document.querySelectorAll('.exchange-button').forEach(button => {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             vibrate();
@@ -369,12 +386,12 @@ function setupSettingsPanel() {
     if (settingsButton) settingsButton.addEventListener('click', () => { vibrate(); settingsPanel.classList.add('active'); });
     if (closeSettings) closeSettings.addEventListener('click', () => { vibrate(); settingsPanel.classList.remove('active'); });
     if (settingsPanel) settingsPanel.addEventListener('click', (e) => { if (e.target === settingsPanel) settingsPanel.classList.remove('active'); });
-    const themeOptions = document.querySelectorAll('.theme-option');
-    themeOptions.forEach(option => {
+
+    document.querySelectorAll('.theme-option').forEach(option => {
         option.addEventListener('click', function() {
             vibrate();
             const theme = this.getAttribute('data-theme');
-            themeOptions.forEach(opt => opt.classList.remove('active'));
+            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
             if (theme === 'dark') document.body.classList.add('dark-theme');
             else document.body.classList.remove('dark-theme');
@@ -383,17 +400,19 @@ function setupSettingsPanel() {
     });
 }
 
+function setLanguage() {
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[key]) element.textContent = translations[key];
+    });
+}
+
 function loadThemePreference() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     if (savedTheme === 'dark') document.body.classList.add('dark-theme');
-    updateSettingsThemeOptions(savedTheme);
-}
-
-function updateSettingsThemeOptions(theme) {
-    const themeOptions = document.querySelectorAll('.theme-option');
-    themeOptions.forEach(option => {
-        option.classList.remove('active');
-        if (option.getAttribute('data-theme') === theme) option.classList.add('active');
+    document.querySelectorAll('.theme-option').forEach(opt => {
+        opt.classList.remove('active');
+        if (opt.getAttribute('data-theme') === savedTheme) opt.classList.add('active');
     });
 }
 
@@ -444,7 +463,6 @@ function fallbackCopyToClipboard(text) {
         document.body.removeChild(textArea);
         showNotification();
     } catch (err) {
-        console.error('Copy failed:', err);
         showNotification('Не удалось скопировать ссылку');
     }
 }
@@ -452,8 +470,7 @@ function fallbackCopyToClipboard(text) {
 function showNotification(customMessage) {
     const notification = document.getElementById('notification');
     if (!notification) return;
-    if (customMessage) notification.textContent = customMessage;
-    else notification.textContent = 'Ссылка скопирована в буфер обмена!';
+    notification.textContent = customMessage || translations.linkCopied;
     notification.classList.add('show');
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
@@ -466,11 +483,13 @@ class Game2048 {
         this.bestScoreElement = bestScoreElement;
         this.statusElement = statusElement;
         this.size = 4;
+        this.grid = [];
         this.score = 0;
         this.bestScore = localStorage.getItem('bestScore2048') ? parseInt(localStorage.getItem('bestScore2048')) : 0;
-        this.tiles = [];          // {id, value, x, y}
-        this.nextId = 0;
-        this.isAnimating = false;
+        this.lastAddedTile = null;
+        this.mergedPositions = new Set();
+        this.moveMap = null;
+
         this.updateBestScoreUI();
         this.init();
         this.setupSwipeEvents();
@@ -478,86 +497,226 @@ class Game2048 {
     }
 
     init() {
-        this.tiles = [];
+        this.grid = Array(this.size).fill().map(() => Array(this.size).fill(0));
         this.score = 0;
         this.updateScoreUI();
         this.statusElement.textContent = '';
+        this.lastAddedTile = null;
+        this.mergedPositions.clear();
+        this.moveMap = null;
         this.addRandomTile();
         this.addRandomTile();
-        this.render(true);
-    }
-
-    getEmptyCells() {
-        const occupied = new Set(this.tiles.map(t => `${t.x},${t.y}`));
-        const empty = [];
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
-                if (!occupied.has(`${i},${j}`)) empty.push({x: i, y: j});
-            }
-        }
-        return empty;
+        this.render();
     }
 
     addRandomTile() {
-        const emptyCells = this.getEmptyCells();
+        const emptyCells = [];
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.grid[i][j] === 0) emptyCells.push({x: i, y: j});
+            }
+        }
         if (emptyCells.length > 0) {
             const {x, y} = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-            const value = Math.random() < 0.9 ? 2 : 4;
-            this.tiles.push({id: this.nextId++, value, x, y});
+            this.grid[x][y] = Math.random() < 0.9 ? 2 : 4;
+            this.lastAddedTile = {x, y};
+            return true;
+        }
+        return false;
+    }
+
+    move(direction) {
+        const oldGrid = JSON.parse(JSON.stringify(this.grid));
+        let totalScoreGain = 0;
+        this.mergedPositions.clear();
+        this.moveMap = {};
+
+        const slideWithTracking = (row, isColumn, index, reverse) => {
+            let arr = row.filter(v => v !== 0);
+            let newRow = [];
+            let scoreGain = 0;
+            let merged = new Array(arr.length).fill(false);
+
+            for (let i = 0; i < arr.length; i++) {
+                if (i + 1 < arr.length && arr[i] === arr[i + 1] && !merged[i] && !merged[i+1]) {
+                    let mergedVal = arr[i] * 2;
+                    newRow.push(mergedVal);
+                    scoreGain += mergedVal;
+                    merged[i] = merged[i+1] = true;
+                    i++;
+                } else {
+                    newRow.push(arr[i]);
+                }
+            }
+            while (newRow.length < this.size) newRow.push(0);
+
+            let oldVals = arr;
+            let oldPtr = 0;
+            for (let newPos = 0; newPos < this.size; newPos++) {
+                if (newRow[newPos] === 0) continue;
+                if (oldPtr < oldVals.length && oldVals[oldPtr] * 2 === newRow[newPos] &&
+                    oldPtr + 1 < oldVals.length && oldVals[oldPtr] === oldVals[oldPtr + 1]) {
+                    this.recordMove(oldPtr, oldVals, newPos, isColumn, index, reverse, true, false);
+                    this.recordMove(oldPtr + 1, oldVals, newPos, isColumn, index, reverse, true, true);
+                    oldPtr += 2;
+                } else if (oldPtr < oldVals.length && oldVals[oldPtr] === newRow[newPos]) {
+                    this.recordMove(oldPtr, oldVals, newPos, isColumn, index, reverse, false, false);
+                    oldPtr++;
+                }
+            }
+            return {newRow, scoreGain};
+        };
+
+        this.recordMove = (oldIdx, oldVals, newIdx, isColumn, lineIdx, reverse, merged, isSecond) => {
+            const originalLine = [];
+            if (!isColumn) {
+                originalLine.push(...this.grid[lineIdx]);
+            } else {
+                for (let r = 0; r < this.size; r++) originalLine.push(this.grid[r][lineIdx]);
+            }
+            if (reverse) originalLine.reverse();
+
+            let skip = 0;
+            let sourceIdx = -1;
+            for (let i = 0; i < originalLine.length; i++) {
+                if (originalLine[i] !== 0) {
+                    if (skip === oldIdx) { sourceIdx = i; break; }
+                    skip++;
+                }
+            }
+            if (sourceIdx === -1) return;
+
+            if (reverse) sourceIdx = this.size - 1 - sourceIdx;
+
+            let fromRow, fromCol;
+            if (!isColumn) {
+                fromRow = lineIdx;
+                fromCol = sourceIdx;
+            } else {
+                fromRow = sourceIdx;
+                fromCol = lineIdx;
+            }
+
+            let targetIdx = newIdx;
+            if (reverse) targetIdx = this.size - 1 - targetIdx;
+
+            let toRow, toCol;
+            if (!isColumn) {
+                toRow = lineIdx;
+                toCol = targetIdx;
+            } else {
+                toRow = targetIdx;
+                toCol = lineIdx;
+            }
+
+            const key = `${toRow},${toCol}`;
+            if (!this.moveMap[key]) {
+                this.moveMap[key] = { fromRow, fromCol, merged };
+            }
+            if (merged) this.mergedPositions.add(key);
+        };
+
+        if (direction === 'left') {
+            for (let i = 0; i < this.size; i++) {
+                const {newRow, scoreGain} = slideWithTracking(this.grid[i], false, i, false);
+                this.grid[i] = newRow;
+                totalScoreGain += scoreGain;
+            }
+        } else if (direction === 'right') {
+            for (let i = 0; i < this.size; i++) {
+                const reversed = [...this.grid[i]].reverse();
+                const {newRow, scoreGain} = slideWithTracking(reversed, false, i, true);
+                totalScoreGain += scoreGain;
+                this.grid[i] = newRow.reverse();
+            }
+        } else if (direction === 'up') {
+            for (let j = 0; j < this.size; j++) {
+                const column = [];
+                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
+                const {newRow, scoreGain} = slideWithTracking(column, true, j, false);
+                totalScoreGain += scoreGain;
+                for (let i = 0; i < this.size; i++) this.grid[i][j] = newRow[i];
+            }
+        } else if (direction === 'down') {
+            for (let j = 0; j < this.size; j++) {
+                const column = [];
+                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
+                const reversed = column.reverse();
+                const {newRow, scoreGain} = slideWithTracking(reversed, true, j, true);
+                totalScoreGain += scoreGain;
+                const finalArr = newRow.reverse();
+                for (let i = 0; i < this.size; i++) this.grid[i][j] = finalArr[i];
+            }
+        }
+
+        if (totalScoreGain > 0) {
+            this.score += totalScoreGain;
+            this.updateScoreUI();
+        }
+
+        const changed = !this.gridsAreEqual(oldGrid, this.grid);
+        if (changed) {
+            this.addRandomTile();
+            this.render();
+            if (this.checkWin()) {
+                this.statusElement.textContent = translations.gameWin;
+            } else if (this.checkLose()) {
+                this.statusElement.textContent = translations.gameLose;
+            }
+        } else {
+            this.moveMap = null;
         }
     }
 
-    getTileAt(x, y) {
-        return this.tiles.find(t => t.x === x && t.y === y);
+    gridsAreEqual(a, b) {
+        for (let i = 0; i < this.size; i++)
+            for (let j = 0; j < this.size; j++)
+                if (a[i][j] !== b[i][j]) return false;
+        return true;
     }
 
-    render(initial = false) {
-        // Удаляем старые DOM элементы плиток, которых больше нет в this.tiles
-        const existingIds = new Set(this.tiles.map(t => t.id));
-        const children = [...this.boardElement.children];
-        children.forEach(child => {
-            const id = parseInt(child.dataset.id);
-            if (!existingIds.has(id)) {
-                child.remove();
+    render() {
+        const board = this.boardElement;
+        board.innerHTML = '';
+        const tileSize = board.clientWidth / this.size;
+
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                const value = this.grid[i][j];
+                const tile = document.createElement('div');
+                tile.className = 'tile-cell';
+                if (value !== 0) {
+                    let tileClass = `tile-${value}`;
+                    if (value > 2048) tileClass = 'tile-super';
+                    tile.classList.add(tileClass);
+                    tile.textContent = value;
+
+                    const key = `${i},${j}`;
+                    if (this.moveMap && this.moveMap[key]) {
+                        const { fromRow, fromCol, merged } = this.moveMap[key];
+                        const deltaX = (fromCol - j) * tileSize;
+                        const deltaY = (fromRow - i) * tileSize;
+                        tile.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                        tile.offsetHeight;
+                        tile.style.transform = '';
+                        if (merged) {
+                            tile.classList.add('tile-merge');
+                            tile.addEventListener('animationend', () => tile.classList.remove('tile-merge'), { once: true });
+                        }
+                    }
+
+                    if (this.lastAddedTile && this.lastAddedTile.x === i && this.lastAddedTile.y === j) {
+                        tile.classList.add('tile-new');
+                        tile.addEventListener('animationend', () => tile.classList.remove('tile-new'), { once: true });
+                    }
+                } else {
+                    tile.textContent = '';
+                }
+                board.appendChild(tile);
             }
-        });
-
-        // Обновляем или создаём элементы для каждой плитки
-        this.tiles.forEach(tile => {
-            let el = this.boardElement.querySelector(`[data-id="${tile.id}"]`);
-            if (!el) {
-                el = document.createElement('div');
-                el.className = 'tile-cell';
-                el.dataset.id = tile.id;
-                el.classList.add('tile-new');
-                this.boardElement.appendChild(el);
-                // Убираем класс анимации после завершения
-                setTimeout(() => el.classList.remove('tile-new'), 200);
-            }
-
-            // Позиция в процентах с учётом gap (gap ~8px, но используем проценты ширины)
-            const gapPercent = 2; // примерно 8px от 400px = 2%
-            const cellPercent = (100 - gapPercent * (this.size + 1)) / this.size;
-            const left = gapPercent + tile.y * (cellPercent + gapPercent);
-            const top = gapPercent + tile.x * (cellPercent + gapPercent);
-
-            el.style.left = left + '%';
-            el.style.top = top + '%';
-
-            // Обновляем класс значения
-            el.className = el.className.replace(/tile-\w+/g, '');
-            let tileClass = `tile-${tile.value}`;
-            if (tile.value > 2048) tileClass = 'tile-super';
-            el.classList.add('tile-cell', tileClass);
-            el.textContent = tile.value;
-
-            // Анимация слияния (если плитка только что обновилась)
-            if (el.dataset.prevValue && parseInt(el.dataset.prevValue) !== tile.value) {
-                el.classList.add('tile-merge');
-                setTimeout(() => el.classList.remove('tile-merge'), 200);
-            }
-            el.dataset.prevValue = tile.value;
-        });
+        }
+        this.lastAddedTile = null;
+        this.moveMap = null;
     }
 
     updateScoreUI() {
@@ -573,134 +732,20 @@ class Game2048 {
         this.bestScoreElement.textContent = this.bestScore;
     }
 
-    move(direction) {
-        if (this.isAnimating) return;
-        this.isAnimating = true;
-
-        let moved = false;
-        let scoreGain = 0;
-        const mergedIds = new Set();
-
-        // Обработка линий в зависимости от направления
-        const lines = this.getLines(direction);
-
-        lines.forEach(lineTiles => {
-            // Сортируем плитки в линии по направлению движения
-            const sorted = [...lineTiles].sort((a, b) => {
-                if (direction === 'right' || direction === 'down') {
-                    return (direction === 'right' ? b.y - a.y : b.x - a.x);
-                } else {
-                    return (direction === 'left' ? a.y - b.y : a.x - b.x);
-                }
-            });
-
-            const newLine = [];
-            let i = 0;
-            while (i < sorted.length) {
-                if (i + 1 < sorted.length && sorted[i].value === sorted[i + 1].value && !mergedIds.has(sorted[i].id) && !mergedIds.has(sorted[i+1].id)) {
-                    // Слияние
-                    const mergedValue = sorted[i].value * 2;
-                    sorted[i].value = mergedValue;
-                    mergedIds.add(sorted[i].id);
-                    mergedIds.add(sorted[i+1].id);
-                    scoreGain += mergedValue;
-                    newLine.push(sorted[i]);
-                    i += 2;
-                } else {
-                    newLine.push(sorted[i]);
-                    i++;
-                }
-            }
-
-            // Назначаем новые координаты плиткам в линии
-            newLine.forEach((tile, index) => {
-                let newX, newY;
-                if (direction === 'left') {
-                    newX = tile.x;
-                    newY = index;
-                } else if (direction === 'right') {
-                    newX = tile.x;
-                    newY = this.size - 1 - (newLine.length - 1 - index);
-                } else if (direction === 'up') {
-                    newX = index;
-                    newY = tile.y;
-                } else if (direction === 'down') {
-                    newX = this.size - 1 - (newLine.length - 1 - index);
-                    newY = tile.y;
-                }
-                if (tile.x !== newX || tile.y !== newY) {
-                    tile.x = newX;
-                    tile.y = newY;
-                    moved = true;
-                }
-            });
-        });
-
-        // Удаляем плитки, которые были поглощены (но оставляем ту, что осталась)
-        this.tiles = this.tiles.filter(t => !mergedIds.has(t.id) || mergedIds.has(t.id) && this.tiles.some(t2 => t2.id === t.id && t2.value !== 0));
-        // Убираем поглощённые плитки: оставляем только те, чей id не в mergedIds, или если id в mergedIds, то только если значение было обновлено (т.е. плитка-результат)
-        const idsToRemove = new Set();
-        mergedIds.forEach(id => {
-            const tile = this.tiles.find(t => t.id === id);
-            if (tile && tile.value % 2 === 0) {
-                // Это результат слияния, оставляем
-            } else {
-                idsToRemove.add(id);
-            }
-        });
-        this.tiles = this.tiles.filter(t => !idsToRemove.has(t.id));
-
-        if (scoreGain > 0) {
-            this.score += scoreGain;
-            this.updateScoreUI();
-        }
-
-        if (moved || scoreGain > 0) {
-            this.addRandomTile();
-        }
-
-        this.render();
-
-        if (this.checkWin()) {
-            this.statusElement.textContent = 'Вы победили! 🎉';
-        } else if (this.checkLose()) {
-            this.statusElement.textContent = 'Игра окончена! 😔';
-        }
-
-        setTimeout(() => { this.isAnimating = false; }, 150);
-    }
-
-    getLines(direction) {
-        const lines = [];
-        if (direction === 'left' || direction === 'right') {
-            for (let i = 0; i < this.size; i++) {
-                const rowTiles = this.tiles.filter(t => t.x === i);
-                if (rowTiles.length > 0) lines.push(rowTiles);
-            }
-        } else {
-            for (let j = 0; j < this.size; j++) {
-                const colTiles = this.tiles.filter(t => t.y === j);
-                if (colTiles.length > 0) lines.push(colTiles);
-            }
-        }
-        return lines;
-    }
-
     checkWin() {
-        return this.tiles.some(t => t.value >= 2048);
+        return this.grid.some(row => row.includes(2048));
     }
 
     checkLose() {
-        if (this.tiles.length < this.size * this.size) return false;
-        for (const tile of this.tiles) {
-            const neighbors = [
-                this.getTileAt(tile.x + 1, tile.y),
-                this.getTileAt(tile.x - 1, tile.y),
-                this.getTileAt(tile.x, tile.y + 1),
-                this.getTileAt(tile.x, tile.y - 1)
-            ];
-            if (neighbors.some(n => n && n.value === tile.value)) return false;
-        }
+        for (let i = 0; i < this.size; i++)
+            for (let j = 0; j < this.size; j++)
+                if (this.grid[i][j] === 0) return false;
+        for (let i = 0; i < this.size; i++)
+            for (let j = 0; j < this.size; j++) {
+                const val = this.grid[i][j];
+                if (j < this.size-1 && val === this.grid[i][j+1]) return false;
+                if (i < this.size-1 && val === this.grid[i+1][j]) return false;
+            }
         return true;
     }
 
@@ -710,7 +755,7 @@ class Game2048 {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
             e.preventDefault();
-        }, {passive: false});
+        });
         this.boardElement.addEventListener('touchend', (e) => {
             if (touchStartX === 0 && touchStartY === 0) return;
             let deltaX = e.changedTouches[0].clientX - touchStartX;
@@ -730,7 +775,7 @@ class Game2048 {
 
     setupKeyboardEvents() {
         window.addEventListener('keydown', (e) => {
-            if (document.getElementById('game-section').classList.contains('active')) {
+            if (document.querySelector('#profile-section.active')) {
                 const key = e.key;
                 if (key === 'ArrowLeft') { this.move('left'); e.preventDefault(); vibrate(); }
                 else if (key === 'ArrowRight') { this.move('right'); e.preventDefault(); vibrate(); }
@@ -742,6 +787,7 @@ class Game2048 {
 
     resetGame() {
         this.init();
+        this.render();
     }
 }
 
@@ -762,3 +808,7 @@ function initGame2048() {
         }
     }
 }
+
+setTimeout(() => {
+    initGame2048();
+}, 300);

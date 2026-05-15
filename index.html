@@ -2,52 +2,35 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#6c5ce7">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#667eea">
     <title>Games Verse</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="app-container">
-
         <!-- Header -->
         <header class="header" id="main-header">
             <div class="header-content">
-                <div class="header-left">
-                    <div class="header-logo">GV</div>
-                    <h1 class="app-title">Games Verse</h1>
-                </div>
-                <button class="settings-button" id="settings-button" aria-label="Настройки">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                    </svg>
-                </button>
+                <h1 class="app-title">Games Verse</h1>
+                <button class="settings-button" id="settings-button" aria-label="Настройки">⚙️</button>
             </div>
         </header>
 
         <!-- Settings Panel -->
         <div class="settings-panel" id="settings-panel">
-            <div class="settings-backdrop" id="settings-backdrop"></div>
             <div class="settings-content">
                 <div class="settings-header">
                     <h3 class="settings-title">Настройки</h3>
-                    <button class="settings-close-icon" id="close-settings-icon" aria-label="Закрыть">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
+                    <button class="settings-close-icon" id="close-settings-icon" aria-label="Закрыть">✕</button>
                 </div>
                 <div class="setting-item">
-                    <span class="setting-label">Оформление</span>
+                    <span class="setting-label">Тема</span>
                     <div class="theme-switcher">
-                        <button class="theme-option active" data-theme="light">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                            Светлая
-                        </button>
-                        <button class="theme-option" data-theme="dark">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                            Тёмная
-                        </button>
+                        <button class="theme-option active" data-theme="light">Светлая</button>
+                        <button class="theme-option" data-theme="dark">Темная</button>
                     </div>
                 </div>
                 <button class="close-settings" id="close-settings">Готово</button>
@@ -56,12 +39,11 @@
 
         <!-- Main Content -->
         <main class="main-content">
-
             <!-- Games Section -->
             <section id="games-section" class="content-section active">
                 <div class="section-header">
                     <h2>Игры</h2>
-                    <span class="section-subtitle">Лучшие мини-игры Telegram</span>
+                    <span class="section-subtitle">Лучшие игры Telegram</span>
                 </div>
                 <div class="games-grid" id="games-grid"></div>
             </section>
@@ -73,17 +55,16 @@
                     <span class="section-subtitle">Торгуйте криптовалютами безопасно</span>
                 </div>
                 <div class="gamefi-banner">
-                    <img src="images/gamefi.jpg" alt="GameFi" class="gamefi-image">
+                    <img src="images/gamefi.jpg" alt="GameFi Trading" class="gamefi-image" loading="lazy">
                     <div class="gamefi-overlay">
                         <div class="gamefi-content">
                             <h3 class="gamefi-title">Торгуйте монетами GameFi</h3>
-                            <p class="gamefi-description">На популярных биржах с лучшими условиями</p>
+                            <p class="gamefi-description">На популярных криптобиржах с лучшими условиями</p>
                             <div class="gamefi-stats">
                                 <div class="stat">
                                     <span class="stat-number">100+</span>
                                     <span class="stat-label">GameFi токенов</span>
                                 </div>
-                                <div class="stat-divider"></div>
                                 <div class="stat">
                                     <span class="stat-number">24/7</span>
                                     <span class="stat-label">Торговля</span>
@@ -93,6 +74,38 @@
                     </div>
                 </div>
                 <div class="exchanges-list" id="exchanges-list"></div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile-section" class="content-section">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="user-avatar">
+                        <img src="" alt="Avatar" id="avatar-img" style="display: none;">
+                        <span id="avatar-fallback">T</span>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="user-name">Пользователь</h2>
+                        <p id="user-username">Открой в Telegram</p>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="share-friends-button" id="share-friends-button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 6.65685 16.3431 8 18 8Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M6 15C7.65685 15 9 13.6569 9 12C9 10.3431 7.65685 9 6 9C4.34315 9 3 10.3431 3 12C3 13.6569 4.34315 15 6 15Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M18 22C19.6569 22 21 20.6569 21 19C21 17.3431 19.6569 16 18 16C16.3431 16 15 17.3431 15 19C15 20.6569 16.3431 22 18 22Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M8.59 13.51L15.42 17.49" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M15.41 6.51L8.59 10.49" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>Поделиться с друзьями</span>
+                    </button>
+                    <button class="buy-stars-button" id="buy-stars-button">
+                        ⭐ <span>Купить Stars</span>
+                    </button>
+                    <button class="chat-button" id="chat-button">
+                        💬 <span>Наш чат</span>
+                    </button>
+                </div>
             </section>
 
             <!-- 2048 Game Section -->
@@ -105,76 +118,48 @@
                                 <div class="score-label">Счёт</div>
                                 <div class="score-value" id="game-score">0</div>
                             </div>
-                            <div class="score-box best-box">
-                                <div class="score-label">Рекорд</div>
+                            <div class="score-box">
+                                <div class="score-label">Лучший</div>
                                 <div class="score-value" id="best-score">0</div>
                             </div>
                         </div>
                     </div>
-                    <div class="game-board-2048" id="game-board-2048"></div>
+                    <div class="game-board-wrapper">
+                        <div class="game-board-2048" id="game-board-2048"></div>
+                    </div>
                     <div class="game-controls">
                         <button class="new-game-btn" id="new-game-btn">Новая игра</button>
                         <div class="game-status" id="game-status"></div>
                     </div>
-                    <p class="swipe-hint">Свайп или стрелки клавиатуры</p>
+                    <div class="swipe-hint">👆 Свайпайте пальцем или используйте стрелки</div>
                 </div>
             </section>
-
-            <!-- Profile Section -->
-            <section id="profile-section" class="content-section">
-                <div class="profile-header">
-                    <div class="profile-avatar" id="user-avatar">
-                        <img src="" alt="Аватар" id="avatar-img" style="display:none;">
-                        <span id="avatar-fallback">T</span>
-                    </div>
-                    <div class="profile-info">
-                        <h2 id="user-name">Пользователь</h2>
-                        <p id="user-username">Открой в Telegram</p>
-                    </div>
-                </div>
-
-                <div class="profile-actions">
-                    <button class="action-button btn-share" id="share-friends-button">
-                        <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                        Поделиться с друзьями
-                    </button>
-                    <button class="action-button btn-stars" id="buy-stars-button">
-                        <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        Купить Stars
-                    </button>
-                    <button class="action-button btn-chat" id="chat-button">
-                        <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        Наш чат
-                    </button>
-                </div>
-            </section>
-
         </main>
 
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <button class="nav-item active" data-section="games-section">
-                <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 10v4"/><path d="M5 12h4"/></svg>
+                <span class="nav-icon">🎮</span>
                 <span class="nav-label">Игры</span>
             </button>
             <button class="nav-item" data-section="exchanges-section">
-                <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span class="nav-icon">📊</span>
                 <span class="nav-label">Биржи</span>
             </button>
             <button class="nav-item" data-section="game2048-section">
-                <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                <span class="nav-icon">🎲</span>
                 <span class="nav-label">2048</span>
             </button>
             <button class="nav-item" data-section="profile-section">
-                <svg class="nav-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="nav-icon">👤</span>
                 <span class="nav-label">Профиль</span>
             </button>
         </nav>
 
-        <!-- Notification Toast -->
-        <div id="notification" class="notification" role="alert" aria-live="polite"></div>
-
+        <!-- Notification -->
+        <div id="notification" class="notification">Ссылка скопирована в буфер обмена!</div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

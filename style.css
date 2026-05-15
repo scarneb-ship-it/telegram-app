@@ -1087,7 +1087,7 @@ button:focus-visible {
   outline-color: var(--primary-dark);
 }
 
-/* ==================== 2048 GAME STYLES (улучшенные анимации) ==================== */
+/* ==================== 2048 GAME STYLES ==================== */
 .game-2048-container {
     margin-top: 20px;
     background: var(--card-light);
@@ -1177,7 +1177,7 @@ button:focus-visible {
     justify-content: center;
     font-weight: 800;
     font-size: clamp(18px, 6vw, 28px);
-    transition: transform 0.15s ease-in-out;  /* плавное перемещение */
+    transition: transform 0.15s ease-in-out;
     box-sizing: border-box;
     word-break: break-word;
     text-align: center;
@@ -1185,7 +1185,6 @@ button:focus-visible {
     will-change: transform;
 }
 
-/* Яркие цвета плиток */
 .tile-2 { background: #eee4da; color: #776e65; }
 .tile-4 { background: #ede0c8; color: #776e65; }
 .tile-8 { background: #f2b179; color: #f9f6f2; }
@@ -1199,7 +1198,6 @@ button:focus-visible {
 .tile-2048 { background: #edc22e; color: #f9f6f2; font-size: clamp(14px, 4.5vw, 20px); }
 .tile-super { background: #3c3a32; color: #f9f6f2; font-size: clamp(12px, 4vw, 18px); }
 
-/* Анимации */
 .tile-new {
     animation: pop 0.2s ease-in-out;
 }
@@ -1266,7 +1264,6 @@ button:focus-visible {
     color: var(--text-secondary-dark);
 }
 
-/* Адаптация для очень узких экранов */
 @media (max-width: 400px) {
     .game-board-2048 {
         gap: 6px;
@@ -1294,7 +1291,6 @@ button:focus-visible {
     }
 }
 
-/* Убираем горизонтальный скролл */
 .app-container, body, .main-content {
     overflow-x: hidden;
 }
@@ -1382,7 +1378,6 @@ button:focus-visible {
     width: 100%;
 }
 
-/* Скрытие header для профиля и игры */
 .header {
     transition: display 0.2s;
 }

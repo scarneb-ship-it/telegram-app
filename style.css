@@ -5,7 +5,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: #ffffff; /* Белый фон, можно заменить на любой */
+    background: #ffffff; /* белый фон, можно изменить на любой */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -19,55 +19,6 @@
     object-fit: contain;
 }
 
-/* Основные стили (без изменений, начиная с :root) */
-:root {
-  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --primary-light: #667eea;
-  --primary-dark: #5a6fd8;
-  --surface-light: #ffffff;
-  --surface-dark: #121212;
-  --card-light: #f8f9fa;
-  --card-dark: #1e1e1e;
-  --text-primary-light: #2d3748;
-  --text-primary-dark: #f7fafc;
-  --text-secondary-light: #718096;
-  --text-secondary-dark: #a0aec0;
-  --border-light: #e2e8f0;
-  --border-dark: #2d3748;
-  --success-color: #48bb78;
-  --warning-color: #ed8936;
-  --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --highlight-gradient: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--surface-light);
-  color: var(--text-primary-light);
-  line-height: 1.5;
-  transition: all 0.3s ease;
-  opacity: 0;
-  animation: fadeIn 0.5s ease forwards;
-  -webkit-font-smoothing: antialiased;
-  -webkit-text-size-adjust: 100%;
-  touch-action: manipulation;
-}
-
-/* ... (остальной CSS без изменений, он слишком длинный, я не буду его повторять, 
-   так как вы сказали "все остальное без изменений". Просто добавьте блок #splash-screen в начало style.css) */
 /* Улучшенная цветовая палитра */
 :root {
   --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

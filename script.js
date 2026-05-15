@@ -2,6 +2,9 @@
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 
+// Минимальное время показа заставки (в миллисекундах)
+const MIN_SPLASH_TIME = 1500; // 1.5 секунды
+
 const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/';
 
 const GAMES_DATA = [
@@ -130,26 +133,37 @@ function vibrate() {
 }
 
 function initializeApp() {
+    // Запоминаем время старта, чтобы гарантировать минимальную длительность заставки
+    const splashStartTime = Date.now();
+
     initializeTelegramWebApp();
     setupNavigation();
     initializeGames();
     initializeExchanges();
     setupSettingsPanel();
     loadThemePreference();
-    setLanguage(); // Применяем русский текст ко всем элементам data-i18n
+    setLanguage();
     loadUserData();
     setupShareButton();
     setTimeout(() => document.body.style.opacity = '1', 100);
 
-    // 🔥 Скрываем splash screen после загрузки
-    const splash = document.getElementById('splash-screen');
-    if (splash) {
-        splash.style.opacity = '0';
-        setTimeout(() => {
-            if (splash) splash.style.display = 'none';
-        }, 500);
-    }
+    // 🔥 Скрываем splash screen с задержкой (минимум MIN_SPLASH_TIME мс)
+    const elapsed = Date.now() - splashStartTime;
+    const remainingDelay = Math.max(0, MIN_SPLASH_TIME - elapsed);
+
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                if (splash) splash.style.display = 'none';
+            }, 500); // ждём окончания анимации исчезновения
+        }
+    }, remainingDelay);
 }
+
+// ==================== ВСЕ ОСТАЛЬНЫЕ ФУНКЦИИ БЕЗ ИЗМЕНЕНИЙ ====================
+// ... (весь остальной код script.js остаётся абсолютно таким же, как в предыдущей версии)
 
 function initializeTelegramWebApp() {
     if (window.Telegram && window.Telegram.WebApp) {

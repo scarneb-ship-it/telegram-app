@@ -140,44 +140,6 @@ function initializeApp() {
     loadUserData();
     setupShareButton();
     setTimeout(() => document.body.style.opacity = '1', 100);
-    // ==================== КОНФИГУРАЦИЯ ====================
-const BOT_USERNAME = 'khadron_bot';
-let currentUserId = null;
-
-const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/';
-
-const GAMES_DATA = [
-    // ... (весь массив GAMES_DATA без изменений)
-];
-const EXCHANGES_DATA = [
-    // ... (весь массив EXCHANGES_DATA без изменений)
-];
-
-// ==================== ПЕРЕВОДЫ (только русский) ====================
-const translations = {
-    // ... (без изменений)
-};
-
-// ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-});
-
-function vibrate() {
-    if (navigator.vibrate) navigator.vibrate(50);
-}
-
-function initializeApp() {
-    initializeTelegramWebApp();
-    setupNavigation();
-    initializeGames();
-    initializeExchanges();
-    setupSettingsPanel();
-    loadThemePreference();
-    setLanguage();
-    loadUserData();
-    setupShareButton();
-    setTimeout(() => document.body.style.opacity = '1', 100);
 
     // 🔥 Скрываем splash screen после загрузки
     const splash = document.getElementById('splash-screen');
@@ -187,9 +149,6 @@ function initializeApp() {
             if (splash) splash.style.display = 'none';
         }, 500);
     }
-}
-
-// ... (весь остальной JavaScript без изменений, включая функции initializeTelegramWebApp, loadUserData и т.д.)
 }
 
 function initializeTelegramWebApp() {

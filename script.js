@@ -336,11 +336,15 @@ function setupNavigation() {
         item.addEventListener('click', function() {
             vibrate();
             const targetSection = this.getAttribute('data-section');
+            // Убираем класс active у всех nav
             navItems.forEach(nav => nav.classList.remove('active'));
             this.classList.add('active');
+            // Скрываем все секции, показываем нужную
             sections.forEach(section => {
                 section.classList.remove('active');
-                if (section.id === targetSection) section.classList.add('active');
+                if (section.id === targetSection) {
+                    section.classList.add('active');
+                }
             });
             toggleHeaderForSection(targetSection);
         });

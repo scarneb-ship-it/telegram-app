@@ -2,7 +2,8 @@
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 
-const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/';
+const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/'; // старый воркер для уведомлений (не трогаем)
+const TRACK_URL = 'https://gamesverse-bot.scarneb.workers.dev/track'; // новый воркер для статистики и рефералов
 
 const GAMES_DATA = [
     {
@@ -234,11 +235,15 @@ function initializeExchanges() {
 
 function loadUserData() {
     if (window.Telegram && window.Telegram.WebApp) {
-        const user = window.Telegram.WebApp.initDataUnsafe?.user;
+        const tg = window.Telegram.WebApp;
+        const user = tg.initDataUnsafe?.user;
         if (user) {
             updateProfileDisplay(user);
             currentUserId = user.id;
-            sendUserStat(user);
+            sendUserStat(user); // старая отправка уведомления
+
+            // 🔥 НОВОЕ: Отправляем статистику в новый воркер (рефералы, уникальные пользователи)
+            trackUser(user);
         } else {
             showFallbackProfile();
             currentUserId = null;
@@ -246,6 +251,29 @@ function loadUserData() {
     } else {
         showFallbackProfile();
         currentUserId = null;
+    }
+}
+
+// Новая функция для отправки данных в KV (через /track)
+async function trackUser(user) {
+    if (!user || !user.id) return;
+    try {
+        const tg = window.Telegram.WebApp;
+        // start_param содержит реферальный код, если Mini App открыт через ?startapp=REF
+        const ref = tg.initDataUnsafe?.start_param || null;
+
+        await fetch(TRACK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: user.id.toString(),
+                ref: ref,
+                firstName: user.first_name || '',
+                username: user.username || ''
+            })
+        });
+    } catch (err) {
+        console.error('Ошибка отправки трекинга:', err);
     }
 }
 

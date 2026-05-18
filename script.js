@@ -285,29 +285,33 @@ async function sendMiniAppStat(user) {
 }
 
 // Опциональная отправка уведомления админу (старый код)
-async function sendAdminNotification(user) {
+async function sendMiniAppStat(user) {
     if (!user || !user.id) return;
-    const date = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
-    const message = `🆕 *Новый пользователь в Games Verse*\n\n` +
-                    `👤 *Имя:* ${user.first_name || ''} ${user.last_name || ''}\n` +
-                    `🆔 *ID:* ${user.id}\n` +
-                    `🧑‍💻 *Username:* ${user.username ? '@' + user.username : 'нет'}\n` +
-                    `⭐ *Premium:* ${user.is_premium ? 'Да' : 'Нет'}\n` +
-                    `📅 *Дата/время:* ${date}`;
+    let ref = null;
     try {
-        await fetch(WORKER_URL, {
+        if (window.Telegram && window.Telegram.WebApp) {
+            const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param;
+            if (startParam) ref = startParam;
+        }
+    } catch (e) {}
+
+    const payload = {
+        userId: user.id.toString(),
+        firstName: user.first_name || '',
+        username: user.username || '',
+        ref: ref || null
+    };
+
+    try {
+        await fetch(WORKER_URL + '/track', {   // <-- добавили слеш
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                message: message,
-                chatId: '6823288584'
-            })
+            body: JSON.stringify(payload)
         });
     } catch (err) {
-        console.error('Ошибка отправки уведомления:', err);
+        console.error('Ошибка отправки статистики Mini App:', err);
     }
 }
-
 function updateProfileDisplay(user) {
     const userName = document.getElementById('user-name');
     if (userName) userName.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');

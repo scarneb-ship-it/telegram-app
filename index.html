@@ -114,8 +114,10 @@
                         <span>Поделиться с друзьями</span>
                     </button>
                 </div>
+            </section>
 
-                <!-- 2048 Game -->
+            <!-- 2048 Game Section (NEW) -->
+            <section id="game-section" class="content-section">
                 <div class="game-2048-container">
                     <div class="game-header-2048">
                         <h3 class="game-title-2048">2048</h3>
@@ -139,6 +141,17 @@
                     </div>
                     <div class="swipe-hint">👆 Свайпайте пальцем или используйте стрелки</div>
                 </div>
+
+                <!-- Таблица лидеров -->
+                <div class="leaderboard-container" id="leaderboard-container">
+                    <div class="leaderboard-header">
+                        <h3 class="leaderboard-title">🏆 Таблица лидеров</h3>
+                        <button class="refresh-leaderboard" id="refresh-leaderboard">🔄</button>
+                    </div>
+                    <div class="leaderboard-list" id="leaderboard-list">
+                        <div class="leaderboard-loading">Загрузка...</div>
+                    </div>
+                </div>
             </section>
         </main>
 
@@ -155,6 +168,10 @@
             <button class="nav-item" data-section="profile-section">
                 <span class="nav-icon">👤</span>
                 <span class="nav-label">Профиль</span>
+            </button>
+            <button class="nav-item" data-section="game-section">
+                <span class="nav-icon">🔢</span>
+                <span class="nav-label">2048</span>
             </button>
         </nav>
 

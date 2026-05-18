@@ -274,7 +274,7 @@ async function sendMiniAppStat(user) {
     };
 
     try {
-        await fetch(WORKER_URL + 'track', {
+       await fetch(WORKER_URL + '/track', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

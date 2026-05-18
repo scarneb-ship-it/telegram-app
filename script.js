@@ -2,7 +2,7 @@
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 
-const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/';
+const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev';
 
 const GAMES_DATA = [
     {

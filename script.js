@@ -2,8 +2,10 @@
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 
-const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/'; // старый воркер для уведомлений (не трогаем)
-const TRACK_URL = 'https://gamesverse-bot.scarneb.workers.dev/track'; // новый воркер для статистики и рефералов
+const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/';
+
+// Минимальное время показа заставки (мс)
+const MIN_SPLASH_TIME = 1500;
 
 const GAMES_DATA = [
     {
@@ -131,25 +133,31 @@ function vibrate() {
 }
 
 function initializeApp() {
+    const splashStartTime = Date.now();
+
     initializeTelegramWebApp();
     setupNavigation();
     initializeGames();
     initializeExchanges();
     setupSettingsPanel();
     loadThemePreference();
-    setLanguage(); // Применяем русский текст ко всем элементам data-i18n
+    setLanguage();
     loadUserData();
     setupShareButton();
     setTimeout(() => document.body.style.opacity = '1', 100);
 
-    // 🔥 Скрываем splash screen после загрузки
-    const splash = document.getElementById('splash-screen');
-    if (splash) {
-        splash.style.opacity = '0';
-        setTimeout(() => {
-            if (splash) splash.style.display = 'none';
-        }, 500);
-    }
+    // Скрываем splash screen с задержкой
+    const elapsed = Date.now() - splashStartTime;
+    const remainingDelay = Math.max(0, MIN_SPLASH_TIME - elapsed);
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                if (splash) splash.style.display = 'none';
+            }, 500);
+        }
+    }, remainingDelay);
 }
 
 function initializeTelegramWebApp() {
@@ -233,17 +241,19 @@ function initializeExchanges() {
     setupExchangeButtons();
 }
 
+// ==================== ЗАГРУЗКА ПОЛЬЗОВАТЕЛЯ И ОТПРАВКА СТАТИСТИКИ ====================
 function loadUserData() {
     if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
-        const user = tg.initDataUnsafe?.user;
+        const user = window.Telegram.WebApp.initDataUnsafe?.user;
         if (user) {
             updateProfileDisplay(user);
             currentUserId = user.id;
-            sendUserStat(user); // старая отправка уведомления
 
-            // 🔥 НОВОЕ: Отправляем статистику в новый воркер (рефералы, уникальные пользователи)
-            trackUser(user);
+            // Отправляем правильную статистику Mini App на /track
+            sendMiniAppStat(user);
+
+            // Опциональное уведомление админу (старый код)
+            sendAdminNotification(user);
         } else {
             showFallbackProfile();
             currentUserId = null;
@@ -254,26 +264,60 @@ function loadUserData() {
     }
 }
 
-// Новая функция для отправки данных в KV (через /track)
-async function trackUser(user) {
+// Главная функция отправки статистики Mini App
+async function sendMiniAppStat(user) {
     if (!user || !user.id) return;
-    try {
-        const tg = window.Telegram.WebApp;
-        // start_param содержит реферальный код, если Mini App открыт через ?startapp=REF
-        const ref = tg.initDataUnsafe?.start_param || null;
 
-        await fetch(TRACK_URL, {
+    // Пытаемся извлечь ref из startapp параметра, переданного в Mini App
+    let ref = null;
+    try {
+        if (window.Telegram && window.Telegram.WebApp) {
+            const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param;
+            if (startParam) {
+                ref = startParam;
+            }
+        }
+    } catch (e) {}
+
+    const payload = {
+        userId: user.id.toString(),
+        firstName: user.first_name || '',
+        username: user.username || '',
+        ref: ref || null
+    };
+
+    try {
+        await fetch(WORKER_URL + 'track', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                userId: user.id.toString(),
-                ref: ref,
-                firstName: user.first_name || '',
-                username: user.username || ''
+            body: JSON.stringify(payload)
+        });
+    } catch (err) {
+        console.error('Ошибка отправки статистики Mini App:', err);
+    }
+}
+
+// Опциональная отправка уведомления админу (старый код)
+async function sendAdminNotification(user) {
+    if (!user || !user.id) return;
+    const date = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+    const message = `🆕 *Новый пользователь в Games Verse*\n\n` +
+                    `👤 *Имя:* ${user.first_name || ''} ${user.last_name || ''}\n` +
+                    `🆔 *ID:* ${user.id}\n` +
+                    `🧑‍💻 *Username:* ${user.username ? '@' + user.username : 'нет'}\n` +
+                    `⭐ *Premium:* ${user.is_premium ? 'Да' : 'Нет'}\n` +
+                    `📅 *Дата/время:* ${date}`;
+    try {
+        await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                message: message,
+                chatId: '6823288584'
             })
         });
     } catch (err) {
-        console.error('Ошибка отправки трекинга:', err);
+        console.error('Ошибка отправки уведомления:', err);
     }
 }
 
@@ -324,29 +368,6 @@ function showFallbackProfile() {
     if (userName) userName.textContent = 'Telegram User';
     if (userUsername) userUsername.textContent = 'Открой в Telegram';
     if (avatarFallback) { avatarFallback.textContent = 'T'; avatarFallback.style.display = 'flex'; }
-}
-
-async function sendUserStat(user) {
-    if (!user || !user.id) return;
-    const date = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
-    const message = `🆕 *Новый пользователь в Games Verse*\n\n` +
-                    `👤 *Имя:* ${user.first_name || ''} ${user.last_name || ''}\n` +
-                    `🆔 *ID:* ${user.id}\n` +
-                    `🧑‍💻 *Username:* ${user.username ? '@' + user.username : 'нет'}\n` +
-                    `⭐ *Premium:* ${user.is_premium ? 'Да' : 'Нет'}\n` +
-                    `📅 *Дата/время:* ${date}`;
-    try {
-        await fetch(WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                message: message,
-                chatId: '6823288584'
-            })
-        });
-    } catch (err) {
-        console.error('Ошибка отправки статистики:', err);
-    }
 }
 
 // ==================== НАВИГАЦИЯ ====================
@@ -512,7 +533,7 @@ function showNotification(customMessage) {
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
 
-// ==================== 2048 GAME (улучшенная анимация) ====================
+// ==================== 2048 GAME ====================
 class Game2048 {
     constructor(boardElement, scoreElement, bestScoreElement, statusElement) {
         this.boardElement = boardElement;

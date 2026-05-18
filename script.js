@@ -130,10 +130,9 @@ function vibrate() {
 }
 
 function initializeApp() {
-    // Мгновенно скрываем splash screen, если он ещё существует в HTML
+    // Мгновенно скрываем splash screen
     const splash = document.getElementById('splash-screen');
     if (splash) splash.style.display = 'none';
-    // Делаем body видимым сразу
     document.body.style.opacity = '1';
 
     initializeTelegramWebApp();
@@ -145,6 +144,8 @@ function initializeApp() {
     setLanguage();
     loadUserData();
     setupShareButton();
+    initGame2048();
+    setupLeaderboardRefresh();
 }
 
 function initializeTelegramWebApp() {
@@ -235,12 +236,7 @@ function loadUserData() {
         if (user) {
             updateProfileDisplay(user);
             currentUserId = user.id;
-
-            // Отправляем правильную статистику Mini App на /track
             sendMiniAppStat(user);
-
-            // Опциональное уведомление админу (старый код)
-            sendAdminNotification(user);
         } else {
             showFallbackProfile();
             currentUserId = null;
@@ -251,40 +247,6 @@ function loadUserData() {
     }
 }
 
-// Главная функция отправки статистики Mini App
-async function sendMiniAppStat(user) {
-    if (!user || !user.id) return;
-
-    // Пытаемся извлечь ref из startapp параметра, переданного в Mini App
-    let ref = null;
-    try {
-        if (window.Telegram && window.Telegram.WebApp) {
-            const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param;
-            if (startParam) {
-                ref = startParam;
-            }
-        }
-    } catch (e) {}
-
-    const payload = {
-        userId: user.id.toString(),
-        firstName: user.first_name || '',
-        username: user.username || '',
-        ref: ref || null
-    };
-
-    try {
-       await fetch(WORKER_URL + '/track', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-    } catch (err) {
-        console.error('Ошибка отправки статистики Mini App:', err);
-    }
-}
-
-// Опциональная отправка уведомления админу (старый код)
 async function sendMiniAppStat(user) {
     if (!user || !user.id) return;
     let ref = null;
@@ -303,7 +265,7 @@ async function sendMiniAppStat(user) {
     };
 
     try {
-        await fetch(WORKER_URL + '/track', {   // <-- добавили слеш
+        await fetch(WORKER_URL + '/track', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -312,6 +274,7 @@ async function sendMiniAppStat(user) {
         console.error('Ошибка отправки статистики Mini App:', err);
     }
 }
+
 function updateProfileDisplay(user) {
     const userName = document.getElementById('user-name');
     if (userName) userName.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
@@ -367,7 +330,7 @@ const mainContent = document.querySelector('.main-content');
 
 function toggleHeaderForSection(sectionId) {
     if (!headerElement) return;
-    if (sectionId === 'profile-section') {
+    if (sectionId === 'profile-section' || sectionId === 'game-section') {
         headerElement.style.display = 'none';
         if (mainContent) mainContent.style.paddingTop = '8px';
     } else {
@@ -390,9 +353,19 @@ function setupNavigation() {
                 if (section.id === targetSection) section.classList.add('active');
             });
             toggleHeaderForSection(targetSection);
+
+            // Загружаем лидеров при заходе во вкладку игры
+            if (targetSection === 'game-section') {
+                fetchLeaderboard();
+            }
         });
     });
+
+    // Сразу подгружаем лидеров, если вкладка активна по умолчанию
     const activeSection = document.querySelector('.content-section.active');
+    if (activeSection && activeSection.id === 'game-section') {
+        fetchLeaderboard();
+    }
     if (activeSection) toggleHeaderForSection(activeSection.id);
 }
 
@@ -709,8 +682,10 @@ class Game2048 {
             this.render();
             if (this.checkWin()) {
                 this.statusElement.textContent = translations.gameWin;
+                this.submitScoreToLeaderboard();
             } else if (this.checkLose()) {
                 this.statusElement.textContent = translations.gameLose;
+                this.submitScoreToLeaderboard();
             }
         } else {
             this.moveMap = null;
@@ -798,6 +773,28 @@ class Game2048 {
         return true;
     }
 
+    // Отправка счёта на сервер
+    submitScoreToLeaderboard() {
+        if (!currentUserId) return;
+        const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+        if (!user) return;
+        const payload = {
+            userId: currentUserId.toString(),
+            firstName: user.first_name || 'Игрок',
+            username: user.username || '',
+            score: this.score,
+            avatarUrl: user.photo_url || ''
+        };
+        fetch(WORKER_URL + '/submit-score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            // Обновляем таблицу лидеров
+            fetchLeaderboard();
+        }).catch(err => console.error('Ошибка отправки счёта:', err));
+    }
+
     setupSwipeEvents() {
         let touchStartX = 0, touchStartY = 0;
         this.boardElement.addEventListener('touchstart', (e) => {
@@ -824,7 +821,7 @@ class Game2048 {
 
     setupKeyboardEvents() {
         window.addEventListener('keydown', (e) => {
-            if (document.querySelector('#profile-section.active')) {
+            if (document.querySelector('#game-section.active')) {
                 const key = e.key;
                 if (key === 'ArrowLeft') { this.move('left'); e.preventDefault(); vibrate(); }
                 else if (key === 'ArrowRight') { this.move('right'); e.preventDefault(); vibrate(); }
@@ -858,6 +855,71 @@ function initGame2048() {
     }
 }
 
-setTimeout(() => {
-    initGame2048();
-}, 300);
+// ==================== LEADERBOARD ====================
+async function fetchLeaderboard() {
+    const list = document.getElementById('leaderboard-list');
+    if (!list) return;
+    list.innerHTML = '<div class="leaderboard-loading">Загрузка...</div>';
+
+    try {
+        const res = await fetch(WORKER_URL + '/leaderboard');
+        const data = await res.json();
+        renderLeaderboard(data.leaderboard || []);
+    } catch (err) {
+        console.error('Ошибка загрузки лидеров:', err);
+        list.innerHTML = '<div class="leaderboard-loading">Не удалось загрузить таблицу</div>';
+    }
+}
+
+function renderLeaderboard(leaderboard) {
+    const list = document.getElementById('leaderboard-list');
+    if (!list) return;
+    if (!leaderboard.length) {
+        list.innerHTML = '<div class="leaderboard-loading">Пока нет результатов</div>';
+        return;
+    }
+
+    list.innerHTML = leaderboard.map((player, index) => {
+        const isCurrentUser = currentUserId && player.userId.toString() === currentUserId.toString();
+        const rank = index + 1;
+        const avatarContent = player.avatarUrl
+            ? `<img src="${player.avatarUrl}" alt="${player.firstName}" onerror="this.style.display='none'; this.parentElement.textContent='${player.firstName.charAt(0).toUpperCase()}';" />`
+            : player.firstName.charAt(0).toUpperCase();
+
+        return `
+            <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''}">
+                <div class="leaderboard-rank">#${rank}</div>
+                <div class="leaderboard-avatar">
+                    ${avatarContent}
+                </div>
+                <div class="leaderboard-info">
+                    <div class="leaderboard-name">${escapeHtml(player.firstName)}</div>
+                </div>
+                <div class="leaderboard-score">
+                    ${player.score} <span>очк.</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+function setupLeaderboardRefresh() {
+    const refreshBtn = document.getElementById('refresh-leaderboard');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            vibrate();
+            fetchLeaderboard();
+        });
+    }
+}

@@ -10,7 +10,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <!-- 🔥 Splash Screen (обложка при загрузке) -->
+    <!-- Splash Screen -->
     <div id="splash-screen">
         <img src="oblochka.jpg" alt="Загрузка..." id="splash-img">
     </div>
@@ -28,7 +28,6 @@
         <div class="settings-panel" id="settings-panel">
             <div class="settings-content">
                 <h3 class="settings-title">Настройки</h3>
-                
                 <div class="setting-item">
                     <span class="setting-label">Тема</span>
                     <div class="theme-switcher">
@@ -36,7 +35,6 @@
                         <button class="theme-option" data-theme="dark">Темная</button>
                     </div>
                 </div>
-                
                 <button class="close-settings" id="close-settings">Готово</button>
             </div>
         </div>
@@ -49,10 +47,7 @@
                     <h2>Игры</h2>
                     <span class="section-subtitle">Лучшие игры Telegram</span>
                 </div>
-                
-                <div class="games-grid" id="games-grid">
-                    <!-- Games will be loaded dynamically -->
-                </div>
+                <div class="games-grid" id="games-grid"></div>
             </section>
 
             <!-- Exchanges Section -->
@@ -61,7 +56,6 @@
                     <h2>Крипто-биржи</h2>
                     <span class="section-subtitle">Торгуйте криптовалютами безопасно</span>
                 </div>
-
                 <div class="gamefi-banner">
                     <img src="images/gamefi.jpg" alt="GameFi Trading" class="gamefi-image">
                     <div class="gamefi-overlay">
@@ -81,9 +75,41 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="exchanges-list" id="exchanges-list">
-                    <!-- Exchanges will be loaded dynamically -->
+                <div class="exchanges-list" id="exchanges-list"></div>
+            </section>
+
+            <!-- 2048 Game Section (перемещена сюда) -->
+            <section id="game-section" class="content-section game-fullscreen">
+                <div class="game-2048-container">
+                    <div class="game-header-2048">
+                        <h3 class="game-title-2048">2048</h3>
+                        <div class="game-scores">
+                            <div class="score-box">
+                                <div class="score-label">Счёт</div>
+                                <div class="score-value" id="game-score">0</div>
+                            </div>
+                            <div class="score-box">
+                                <div class="score-label">Лучший</div>
+                                <div class="score-value" id="best-score">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="game-board-2048" id="game-board-2048"></div>
+                    <div class="game-controls">
+                        <button class="new-game-btn" id="new-game-btn">Новая игра</button>
+                        <div class="game-status" id="game-status"></div>
+                    </div>
+                    <div class="swipe-hint">👆 Свайпайте пальцем или используйте стрелки</div>
+                </div>
+                <!-- Таблица лидеров -->
+                <div class="leaderboard-container" id="leaderboard-container">
+                    <div class="leaderboard-header">
+                        <h3 class="leaderboard-title">🏆 Таблица лидеров</h3>
+                        <button class="refresh-leaderboard" id="refresh-leaderboard">🔄</button>
+                    </div>
+                    <div class="leaderboard-list" id="leaderboard-list">
+                        <div class="leaderboard-loading">Загрузка...</div>
+                    </div>
                 </div>
             </section>
 
@@ -99,7 +125,6 @@
                         <p id="user-username">Открой в Telegram</p>
                     </div>
                 </div>
-
                 <div class="profile-actions">
                     <button class="share-friends-button" id="share-friends-button">
                         <div class="share-icon">
@@ -115,47 +140,9 @@
                     </button>
                 </div>
             </section>
-
-            <!-- 2048 Game Section (NEW) -->
-            <section id="game-section" class="content-section">
-                <div class="game-2048-container">
-                    <div class="game-header-2048">
-                        <h3 class="game-title-2048">2048</h3>
-                        <div class="game-scores">
-                            <div class="score-box">
-                                <div class="score-label">Счёт</div>
-                                <div class="score-value" id="game-score">0</div>
-                            </div>
-                            <div class="score-box">
-                                <div class="score-label">Лучший</div>
-                                <div class="score-value" id="best-score">0</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="game-board-2048" id="game-board-2048">
-                        <!-- 4x4 grid will be generated by JS -->
-                    </div>
-                    <div class="game-controls">
-                        <button class="new-game-btn" id="new-game-btn">Новая игра</button>
-                        <div class="game-status" id="game-status"></div>
-                    </div>
-                    <div class="swipe-hint">👆 Свайпайте пальцем или используйте стрелки</div>
-                </div>
-
-                <!-- Таблица лидеров -->
-                <div class="leaderboard-container" id="leaderboard-container">
-                    <div class="leaderboard-header">
-                        <h3 class="leaderboard-title">🏆 Таблица лидеров</h3>
-                        <button class="refresh-leaderboard" id="refresh-leaderboard">🔄</button>
-                    </div>
-                    <div class="leaderboard-list" id="leaderboard-list">
-                        <div class="leaderboard-loading">Загрузка...</div>
-                    </div>
-                </div>
-            </section>
         </main>
 
-        <!-- Bottom Navigation -->
+        <!-- Bottom Navigation (новый порядок) -->
         <nav class="bottom-nav">
             <button class="nav-item active" data-section="games-section">
                 <span class="nav-icon">🎮</span>
@@ -165,17 +152,16 @@
                 <span class="nav-icon">📊</span>
                 <span class="nav-label">Биржи</span>
             </button>
+            <button class="nav-item" data-section="game-section">
+                <span class="nav-icon">🎲</span>
+                <span class="nav-label">2048</span>
+            </button>
             <button class="nav-item" data-section="profile-section">
                 <span class="nav-icon">👤</span>
                 <span class="nav-label">Профиль</span>
             </button>
-            <button class="nav-item" data-section="game-section">
-                <span class="nav-icon">🔢</span>
-                <span class="nav-label">2048</span>
-            </button>
         </nav>
 
-        <!-- Notification -->
         <div id="notification" class="notification">Ссылка скопирована в буфер обмена!</div>
     </div>
 

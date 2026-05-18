@@ -1,4 +1,4 @@
-// ==================== КОНФИГУРАЦИЯ ====================
+// script.js
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 
@@ -58,6 +58,7 @@ const GAMES_DATA = [
         fallback: "💰"
     }
 ];
+
 const EXCHANGES_DATA = [
     {
         id: 1,
@@ -93,7 +94,6 @@ const EXCHANGES_DATA = [
     }
 ];
 
-// ==================== ПЕРЕВОДЫ (только русский) ====================
 const translations = {
     appTitle: "Games Verse",
     settings: "Настройки",
@@ -120,7 +120,6 @@ const translations = {
     gameLose: "Игра окончена! 😔"
 };
 
-// ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
@@ -130,7 +129,6 @@ function vibrate() {
 }
 
 function initializeApp() {
-    // Мгновенно скрываем splash screen
     const splash = document.getElementById('splash-screen');
     if (splash) splash.style.display = 'none';
     document.body.style.opacity = '1';
@@ -146,6 +144,7 @@ function initializeApp() {
     setupShareButton();
     initGame2048();
     setupLeaderboardRefresh();
+    setupLeaderboardShare();
 }
 
 function initializeTelegramWebApp() {
@@ -229,7 +228,6 @@ function initializeExchanges() {
     setupExchangeButtons();
 }
 
-// ==================== ЗАГРУЗКА ПОЛЬЗОВАТЕЛЯ И ОТПРАВКА СТАТИСТИКИ ====================
 function loadUserData() {
     if (window.Telegram && window.Telegram.WebApp) {
         const user = window.Telegram.WebApp.initDataUnsafe?.user;
@@ -324,7 +322,6 @@ function showFallbackProfile() {
     if (avatarFallback) { avatarFallback.textContent = 'T'; avatarFallback.style.display = 'flex'; }
 }
 
-// ==================== НАВИГАЦИЯ ====================
 const headerElement = document.querySelector('.header');
 const mainContent = document.querySelector('.main-content');
 
@@ -354,14 +351,12 @@ function setupNavigation() {
             });
             toggleHeaderForSection(targetSection);
 
-            // Загружаем лидеров при заходе во вкладку игры
             if (targetSection === 'game-section') {
                 fetchLeaderboard();
             }
         });
     });
 
-    // Сразу подгружаем лидеров, если вкладка активна по умолчанию
     const activeSection = document.querySelector('.content-section.active');
     if (activeSection && activeSection.id === 'game-section') {
         fetchLeaderboard();
@@ -438,7 +433,6 @@ function loadThemePreference() {
     });
 }
 
-// ==================== ШАРИНГ ====================
 function setupShareButton() {
     const shareButton = document.getElementById('share-friends-button');
     if (shareButton) {
@@ -497,7 +491,7 @@ function showNotification(customMessage) {
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
 
-// ==================== 2048 GAME ====================
+/* 2048 Game */
 class Game2048 {
     constructor(boardElement, scoreElement, bestScoreElement, statusElement) {
         this.boardElement = boardElement;
@@ -773,7 +767,6 @@ class Game2048 {
         return true;
     }
 
-    // Отправка счёта на сервер
     submitScoreToLeaderboard() {
         if (!currentUserId) return;
         const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
@@ -790,7 +783,6 @@ class Game2048 {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         }).then(() => {
-            // Обновляем таблицу лидеров
             fetchLeaderboard();
         }).catch(err => console.error('Ошибка отправки счёта:', err));
     }
@@ -855,7 +847,7 @@ function initGame2048() {
     }
 }
 
-// ==================== LEADERBOARD ====================
+/* Leaderboard */
 async function fetchLeaderboard() {
     const list = document.getElementById('leaderboard-list');
     if (!list) return;
@@ -897,6 +889,9 @@ function renderLeaderboard(leaderboard) {
                 </div>
                 <div class="leaderboard-score">
                     ${player.score} <span>очк.</span>
+                    <button class="leaderboard-share-btn" aria-label="Поделиться результатом" data-share-name="${escapeHtml(player.firstName)}" data-share-score="${player.score}">
+                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+                    </button>
                 </div>
             </div>
         `;
@@ -921,5 +916,34 @@ function setupLeaderboardRefresh() {
             vibrate();
             fetchLeaderboard();
         });
+    }
+}
+
+function setupLeaderboardShare() {
+    const leaderboardList = document.getElementById('leaderboard-list');
+    if (!leaderboardList) return;
+    leaderboardList.addEventListener('click', (e) => {
+        const shareBtn = e.target.closest('.leaderboard-share-btn');
+        if (!shareBtn) return;
+        e.stopPropagation();
+        const name = shareBtn.dataset.shareName;
+        const score = shareBtn.dataset.shareScore;
+        if (name && score) shareLeaderboardScore(name, parseInt(score, 10));
+    });
+}
+
+function shareLeaderboardScore(name, score) {
+    const shareText = `🏆 ${name} набрал ${score} очков в 2048! Сможешь побить рекорд? Играй в Games Verse: https://t.me/${BOT_USERNAME}`;
+    if (window.Telegram?.WebApp) {
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/' + BOT_USERNAME)}&text=${encodeURIComponent(shareText)}`;
+        window.Telegram.WebApp.openTelegramLink(shareUrl);
+    } else if (navigator.share) {
+        navigator.share({
+            title: 'Games Verse',
+            text: shareText,
+            url: 'https://t.me/' + BOT_USERNAME
+        }).catch(() => fallbackCopyToClipboard(shareText));
+    } else {
+        fallbackCopyToClipboard(shareText);
     }
 }

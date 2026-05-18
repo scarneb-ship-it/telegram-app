@@ -4,9 +4,6 @@ let currentUserId = null;
 
 const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/';
 
-// Минимальное время показа заставки (мс)
-const MIN_SPLASH_TIME = 1500;
-
 const GAMES_DATA = [
     {
         id: 0,
@@ -133,7 +130,11 @@ function vibrate() {
 }
 
 function initializeApp() {
-    const splashStartTime = Date.now();
+    // Мгновенно скрываем splash screen, если он ещё существует в HTML
+    const splash = document.getElementById('splash-screen');
+    if (splash) splash.style.display = 'none';
+    // Делаем body видимым сразу
+    document.body.style.opacity = '1';
 
     initializeTelegramWebApp();
     setupNavigation();
@@ -144,20 +145,6 @@ function initializeApp() {
     setLanguage();
     loadUserData();
     setupShareButton();
-    setTimeout(() => document.body.style.opacity = '1', 100);
-
-    // Скрываем splash screen с задержкой
-    const elapsed = Date.now() - splashStartTime;
-    const remainingDelay = Math.max(0, MIN_SPLASH_TIME - elapsed);
-    setTimeout(() => {
-        const splash = document.getElementById('splash-screen');
-        if (splash) {
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                if (splash) splash.style.display = 'none';
-            }, 500);
-        }
-    }, remainingDelay);
 }
 
 function initializeTelegramWebApp() {

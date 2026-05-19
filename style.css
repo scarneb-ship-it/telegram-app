@@ -156,52 +156,6 @@ body.dark-theme {
   text-align: center;
 }
 
-.setting-item {
-  margin-bottom: 20px;
-}
-
-.setting-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.theme-switcher {
-  display: flex;
-  background: var(--card-light);
-  border-radius: 10px;
-  padding: 4px;
-  border: 1px solid var(--border-light);
-}
-
-.dark-theme .theme-switcher {
-  background: var(--surface-dark);
-  border-color: var(--border-dark);
-}
-
-.theme-option {
-  flex: 1;
-  padding: 8px 12px;
-  border: none;
-  background: transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  font-size: 13px;
-}
-
-.theme-option.active {
-  background: var(--primary-gradient);
-  color: white;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-}
-
-.dark-theme .theme-option.active {
-  background: var(--primary-dark);
-}
-
 .close-settings {
   width: 100%;
   padding: 12px;
@@ -956,9 +910,41 @@ body.dark-theme {
   opacity: 1;
 }
 
+/* ==================== GAME TABS ==================== */
+.game-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.game-tab {
+  padding: 8px 24px;
+  border-radius: 40px;
+  border: 1px solid var(--border-light);
+  background: var(--card-light);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-primary-light);
+}
+
+.dark-theme .game-tab {
+  background: var(--card-dark);
+  border-color: var(--border-dark);
+  color: var(--text-primary-dark);
+}
+
+.game-tab.active {
+  background: var(--primary-gradient);
+  color: white;
+  border-color: transparent;
+}
+
 /* ==================== 2048 GAME STYLES ==================== */
 .game-2048-container {
-    margin-top: 10px;
+    margin-top: 0;
     background: var(--card-light);
     border-radius: 20px;
     padding: 12px;
@@ -1134,7 +1120,7 @@ body.dark-theme {
 
 /* ==================== LEADERBOARD STYLES ==================== */
 .leaderboard-container {
-    margin-top: 25px;
+    margin-top: 0;
     background: var(--card-light);
     border-radius: 20px;
     padding: 12px;

@@ -9,31 +9,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body>
+<body class="dark-theme">
+    <!-- Splash Screen -->
     <div id="splash-screen">
         <img src="oblochka.jpg" alt="Загрузка..." id="splash-img">
     </div>
+
     <div class="app-container">
+        <!-- Header -->
         <header class="header">
             <div class="header-content">
                 <h1 class="app-title">Games Verse</h1>
                 <button class="settings-button" id="settings-button" aria-label="Настройки">⚙️</button>
             </div>
         </header>
+
+        <!-- Settings Panel -->
         <div class="settings-panel" id="settings-panel">
             <div class="settings-content">
                 <h3 class="settings-title">Настройки</h3>
-                <div class="setting-item">
-                    <span class="setting-label">Тема</span>
-                    <div class="theme-switcher">
-                        <button class="theme-option active" data-theme="light">Светлая</button>
-                        <button class="theme-option" data-theme="dark">Темная</button>
-                    </div>
-                </div>
+                <!-- Переключатель темы убран, всегда тёмная -->
                 <button class="close-settings" id="close-settings">Готово</button>
             </div>
         </div>
+
+        <!-- Main Content -->
         <main class="main-content">
+            <!-- Games Section -->
             <section id="games-section" class="content-section active">
                 <div class="section-header">
                     <h2>Игры</h2>
@@ -41,6 +43,8 @@
                 </div>
                 <div class="games-grid" id="games-grid"></div>
             </section>
+
+            <!-- Exchanges Section -->
             <section id="exchanges-section" class="content-section">
                 <div class="section-header">
                     <h2>Крипто-биржи</h2>
@@ -67,8 +71,17 @@
                 </div>
                 <div class="exchanges-list" id="exchanges-list"></div>
             </section>
+
+            <!-- 2048 Game Section -->
             <section id="game-section" class="content-section game-fullscreen">
-                <div class="game-2048-container">
+                <!-- Новые кнопки переключения Игра / Топы -->
+                <div class="game-tabs">
+                    <button class="game-tab active" id="tab-game-btn">Игра</button>
+                    <button class="game-tab" id="tab-leaderboard-btn">Топы</button>
+                </div>
+
+                <!-- Контейнер с самой игрой -->
+                <div class="game-2048-container" id="game-2048-container">
                     <div class="game-header-2048">
                         <h3 class="game-title-2048">2048</h3>
                         <div class="game-scores">
@@ -89,7 +102,8 @@
                     </div>
                     <div class="swipe-hint">👆 Свайпайте пальцем или используйте стрелки</div>
                 </div>
-                <div class="leaderboard-container" id="leaderboard-container">
+                <!-- Таблица лидеров (изначально скрыта) -->
+                <div class="leaderboard-container" id="leaderboard-container" style="display: none;">
                     <div class="leaderboard-header">
                         <h3 class="leaderboard-title">🏆 Таблица лидеров</h3>
                         <button class="refresh-leaderboard" id="refresh-leaderboard">🔄</button>
@@ -99,6 +113,8 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Profile Section -->
             <section id="profile-section" class="content-section">
                 <div class="profile-header">
                     <div class="profile-avatar" id="user-avatar">
@@ -126,6 +142,8 @@
                 </div>
             </section>
         </main>
+
+        <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <button class="nav-item active" data-section="games-section">
                 <span class="nav-icon">🎮</span>
@@ -144,8 +162,10 @@
                 <span class="nav-label">Профиль</span>
             </button>
         </nav>
+
         <div id="notification" class="notification">Ссылка скопирована в буфер обмена!</div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

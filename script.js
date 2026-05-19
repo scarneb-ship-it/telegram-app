@@ -138,13 +138,14 @@ function initializeApp() {
     initializeGames();
     initializeExchanges();
     setupSettingsPanel();
-    loadThemePreference();
+    // Тема теперь всегда тёмная, функция загрузки темы удалена
     setLanguage();
     loadUserData();
     setupShareButton();
     initGame2048();
     setupLeaderboardRefresh();
     setupLeaderboardShare();
+    setupGameTabs();
 }
 
 function initializeTelegramWebApp() {
@@ -352,7 +353,17 @@ function setupNavigation() {
             toggleHeaderForSection(targetSection);
 
             if (targetSection === 'game-section') {
-                fetchLeaderboard();
+                // По умолчанию показываем игру, но если активна вкладка топов – показываем топы
+                const leaderboardContainer = document.getElementById('leaderboard-container');
+                const gameContainer = document.getElementById('game-2048-container');
+                const tabGame = document.getElementById('tab-game-btn');
+                const tabLeaderboard = document.getElementById('tab-leaderboard-btn');
+                if (gameContainer.style.display !== 'none') {
+                    // Игра видна – обновлять лидерборд не нужно
+                } else {
+                    // Показаны топы – подгружаем
+                    fetchLeaderboard();
+                }
             }
         });
     });
@@ -404,32 +415,13 @@ function setupSettingsPanel() {
     if (closeSettings) closeSettings.addEventListener('click', () => { vibrate(); settingsPanel.classList.remove('active'); });
     if (settingsPanel) settingsPanel.addEventListener('click', (e) => { if (e.target === settingsPanel) settingsPanel.classList.remove('active'); });
 
-    document.querySelectorAll('.theme-option').forEach(option => {
-        option.addEventListener('click', function() {
-            vibrate();
-            const theme = this.getAttribute('data-theme');
-            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            if (theme === 'dark') document.body.classList.add('dark-theme');
-            else document.body.classList.remove('dark-theme');
-            localStorage.setItem('theme', theme);
-        });
-    });
+    // Переключатель темы удалён, всегда тёмная
 }
 
 function setLanguage() {
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
         if (translations[key]) element.textContent = translations[key];
-    });
-}
-
-function loadThemePreference() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    if (savedTheme === 'dark') document.body.classList.add('dark-theme');
-    document.querySelectorAll('.theme-option').forEach(opt => {
-        opt.classList.remove('active');
-        if (opt.getAttribute('data-theme') === savedTheme) opt.classList.add('active');
     });
 }
 
@@ -491,7 +483,7 @@ function showNotification(customMessage) {
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
 
-/* 2048 Game */
+/* =============== 2048 Game =============== */
 class Game2048 {
     constructor(boardElement, scoreElement, bestScoreElement, statusElement) {
         this.boardElement = boardElement;
@@ -847,7 +839,40 @@ function initGame2048() {
     }
 }
 
-/* Leaderboard */
+/* =============== Переключение Игра / Топы =============== */
+function setupGameTabs() {
+    const tabGameBtn = document.getElementById('tab-game-btn');
+    const tabLeaderboardBtn = document.getElementById('tab-leaderboard-btn');
+    const gameContainer = document.getElementById('game-2048-container');
+    const leaderboardContainer = document.getElementById('leaderboard-container');
+
+    if (!tabGameBtn || !tabLeaderboardBtn || !gameContainer || !leaderboardContainer) return;
+
+    tabGameBtn.addEventListener('click', () => {
+        vibrate();
+        gameContainer.style.display = 'block';
+        leaderboardContainer.style.display = 'none';
+        tabGameBtn.classList.add('active');
+        tabLeaderboardBtn.classList.remove('active');
+    });
+
+    tabLeaderboardBtn.addEventListener('click', () => {
+        vibrate();
+        gameContainer.style.display = 'none';
+        leaderboardContainer.style.display = 'block';
+        tabLeaderboardBtn.classList.add('active');
+        tabGameBtn.classList.remove('active');
+        fetchLeaderboard();
+    });
+
+    // Инициализация: при первом заходе показываем игру
+    gameContainer.style.display = 'block';
+    leaderboardContainer.style.display = 'none';
+    tabGameBtn.classList.add('active');
+    tabLeaderboardBtn.classList.remove('active');
+}
+
+/* =============== Leaderboard =============== */
 async function fetchLeaderboard() {
     const list = document.getElementById('leaderboard-list');
     if (!list) return;

@@ -1,7 +1,7 @@
 // script.js
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
-const WORKER_URL = 'https://gamesverse-bot.scarneb.workers.dev';
+const WORKER_URL = 'https://gamesverse-bot.scarneb.workers.dev'; // ← замените на ваш URL
 
 // Глобальные данные реферальной программы
 let referralInfo = {

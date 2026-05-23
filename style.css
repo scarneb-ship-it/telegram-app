@@ -18,6 +18,7 @@
   --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   --highlight-gradient: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+  --neon-glow: 0 0 8px currentColor;
 }
 
 * {
@@ -177,10 +178,6 @@ body.dark-theme {
 .close-settings:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.dark-theme .close-settings:hover {
-  box-shadow: 0 4px 12px rgba(74, 85, 104, 0.4);
 }
 
 /* Main Content */
@@ -758,11 +755,6 @@ body.dark-theme {
   box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
-.dark-theme .play-button:hover,
-.dark-theme .exchange-button:hover {
-  box-shadow: 0 6px 16px rgba(74, 85, 104, 0.4);
-}
-
 /* Share Button */
 .share-friends-button {
   display: flex;
@@ -807,10 +799,6 @@ body.dark-theme {
 .share-friends-button:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
-}
-
-.dark-theme .share-friends-button:hover {
-  box-shadow: 0 12px 30px rgba(74, 85, 104, 0.5);
 }
 
 .share-friends-button:active {
@@ -1076,9 +1064,10 @@ body.dark-theme {
     align-items: center;
     gap: 12px;
     margin-top: 4px;
+    flex-wrap: wrap;
 }
 
-.new-game-btn {
+.new-game-btn, .undo-move-btn {
     background: linear-gradient(135deg, #8f7a66, #776e65);
     border: none;
     padding: 8px 16px;
@@ -1090,8 +1079,11 @@ body.dark-theme {
     transition: all 0.2s;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-.new-game-btn:active {
+.new-game-btn:active, .undo-move-btn:active {
     transform: scale(0.96);
+}
+.undo-move-btn {
+    background: linear-gradient(135deg, #e67e22, #d35400);
 }
 
 .game-status {
@@ -1190,8 +1182,22 @@ body.dark-theme {
     color: white;
 }
 
-.dark-theme .leaderboard-item.current-user {
-    background: var(--primary-dark);
+/* Рамка для рефералов (3+ друзей) */
+.leaderboard-item.has-frame {
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+}
+.leaderboard-item.has-frame::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    border-radius: inherit;
+    z-index: -1;
+}
+.dark-theme .leaderboard-item.has-frame::before {
+    background: linear-gradient(45deg, #ffd700, #ff8c00, #ff0080, #7928ca);
 }
 
 .leaderboard-rank {
@@ -1250,7 +1256,6 @@ body.dark-theme {
     opacity: 0.8;
 }
 
-/* Share button in leaderboard */
 .leaderboard-share-btn {
     background: none;
     border: none;
@@ -1286,6 +1291,195 @@ body.dark-theme {
     padding: 20px;
     color: var(--text-secondary-light);
 }
+
+/* ==================== REFERRAL PROGRAM STYLES ==================== */
+.referral-program {
+    margin: 20px 0;
+    background: var(--card-light);
+    border-radius: 18px;
+    padding: 16px;
+    border: 1px solid var(--border-light);
+}
+
+.dark-theme .referral-program {
+    background: var(--card-dark);
+    border-color: var(--border-dark);
+}
+
+.referral-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: var(--text-primary-light);
+}
+
+.dark-theme .referral-title {
+    color: var(--text-primary-dark);
+}
+
+.referral-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary-light);
+    margin-bottom: 14px;
+}
+
+.dark-theme .referral-subtitle {
+    color: var(--text-secondary-dark);
+}
+
+.referral-count {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.referral-number {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #f5af19, #f12711);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.referral-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary-light);
+}
+
+.progress-bar-container {
+    position: relative;
+    margin-bottom: 18px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
+.dark-theme .progress-bar {
+    background: #374151;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: var(--progress, 0%);
+    background: linear-gradient(90deg, #f5af19, #f12711);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    padding: 0 2px;
+}
+
+.step {
+    font-size: 10px;
+    font-weight: 600;
+    color: #a0aec0;
+    position: relative;
+}
+
+.step.reached {
+    color: #f12711;
+}
+
+.rewards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.reward-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: var(--surface-light);
+    border-radius: 14px;
+    border: 1px solid var(--border-light);
+    opacity: 0.5;
+    transition: all 0.2s;
+}
+
+.dark-theme .reward-card {
+    background: var(--surface-dark);
+    border-color: var(--border-dark);
+}
+
+.reward-card.unlocked {
+    opacity: 1;
+    border-color: #f5af19;
+    box-shadow: 0 0 12px rgba(245, 175, 25, 0.3);
+}
+
+.reward-icon {
+    font-size: 28px;
+    width: 40px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.reward-info {
+    flex-grow: 1;
+}
+
+.reward-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.reward-desc {
+    font-size: 11px;
+    color: var(--text-secondary-light);
+}
+
+.dark-theme .reward-desc {
+    color: var(--text-secondary-dark);
+}
+
+.reward-status {
+    font-size: 18px;
+}
+
+/* Неоновый дизайн для 2048 */
+.game-2048-container.neon-theme .game-board-2048 {
+    background: #0d0d0d;
+    box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff;
+}
+
+.game-2048-container.neon-theme .tile-cell {
+    background: rgba(0, 255, 255, 0.1);
+    color: #fff;
+    text-shadow: 0 0 6px currentColor;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.game-2048-container.neon-theme .tile-2 { background: #1a1a2e; color: #e94560; }
+.game-2048-container.neon-theme .tile-4 { background: #16213e; color: #f5af19; }
+.game-2048-container.neon-theme .tile-8 { background: #0f3460; color: #00b4d8; }
+.game-2048-container.neon-theme .tile-16 { background: #533483; color: #e2b0ff; }
+.game-2048-container.neon-theme .tile-32 { background: #5a189a; color: #ff6d00; }
+.game-2048-container.neon-theme .tile-64 { background: #3c096c; color: #fca311; }
+.game-2048-container.neon-theme .tile-128 { background: #240046; color: #ff5400; }
+.game-2048-container.neon-theme .tile-256 { background: #10002b; color: #ff0054; }
+.game-2048-container.neon-theme .tile-512 { background: #2d00f7; color: #00f5d4; }
+.game-2048-container.neon-theme .tile-1024 { background: #7209b7; color: #f72585; }
+.game-2048-container.neon-theme .tile-2048 { background: #b5179e; color: #4cc9f0; }
+.game-2048-container.neon-theme .tile-super { background: #f72585; color: #fff; }
 
 /* Responsive */
 @media (max-width: 480px) {
@@ -1382,7 +1576,7 @@ body.dark-theme {
   .game-title-2048 {
     font-size: 20px;
   }
-  .new-game-btn {
+  .new-game-btn, .undo-move-btn {
     padding: 6px 14px;
     font-size: 12px;
   }
@@ -1390,23 +1584,13 @@ body.dark-theme {
 
 /* Animations */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 ::selection {

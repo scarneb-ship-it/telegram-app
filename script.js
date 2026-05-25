@@ -1,4 +1,4 @@
-// script.js
+// script.js – полностью обновлённый файл
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 const WORKER_URL = 'https://gamesverse-bot.scarneb.workers.dev'; // ← замените на ваш URL
@@ -151,6 +151,8 @@ function initializeApp() {
     setupLeaderboardRefresh();
     setupLeaderboardShare();
     setupGameTabs();
+    setupClanBanner();        // ← новый вызов
+    setupSubscriptionModal(); // ← новый вызов
 }
 
 function initializeTelegramWebApp() {
@@ -782,6 +784,8 @@ class Game2048 {
             } else if (this.checkLose()) {
                 this.statusElement.textContent = translations.gameLose;
                 this.submitScoreToLeaderboard();
+                // Новый функционал: предложение подписаться при проигрыше
+                showSubscriptionModal();
             }
         } else {
             this.history.pop(); // убираем сохранение, если ход не состоялся
@@ -1093,4 +1097,67 @@ function shareLeaderboardScore(name, score) {
     } else {
         fallbackCopyToClipboard(shareText);
     }
+}
+
+/* =============== CLAN BANNER (Pixel World) =============== */
+function setupClanBanner() {
+    const banner = document.getElementById('clan-banner');
+    if (!banner) return;
+    banner.addEventListener('click', () => {
+        const clanLink = 'https://t.me/pixelworld/play?startapp=eyJ0ZWFtIjoyN30';
+        if (window.Telegram?.WebApp) {
+            window.Telegram.WebApp.openTelegramLink(clanLink);
+        } else {
+            window.open(clanLink, '_blank');
+        }
+        vibrate();
+    });
+}
+
+/* =============== SUBSCRIPTION MODAL (HADRON Channel) =============== */
+function showSubscriptionModal() {
+    const modal = document.getElementById('subscription-modal');
+    if (!modal || !currentUserId) return;
+    modal.style.display = 'flex';
+}
+
+function setupSubscriptionModal() {
+    const modal = document.getElementById('subscription-modal');
+    if (!modal) return;
+
+    const closeBtn = document.getElementById('modal-close-btn');
+    const checkBtn = document.getElementById('modal-check-btn');
+    const statusEl = document.getElementById('modal-status');
+
+    // Закрытие по крестику или клику вне контента
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+
+    // Кнопка "Проверить подписку"
+    if (checkBtn) {
+        checkBtn.addEventListener('click', async () => {
+            statusEl.textContent = 'Проверяем...';
+            try {
+                const res = await fetch(`${WORKER_URL}/check-subscription?userId=${currentUserId}`);
+                const data = await res.json();
+                if (data.subscribed) {
+                    statusEl.textContent = '✅ Вы подписаны! Спасибо!';
+                    setTimeout(() => { modal.style.display = 'none'; }, 1500);
+                } else {
+                    statusEl.textContent = '❌ Подписка не найдена. Пожалуйста, подпишитесь на канал.';
+                }
+            } catch (err) {
+                console.error(err);
+                statusEl.textContent = 'Ошибка проверки. Попробуйте позже.';
+            }
+        });
+    }
+
+    // Кнопка "Подписаться" — просто открывает ссылку (уже в HTML как <a>)
 }

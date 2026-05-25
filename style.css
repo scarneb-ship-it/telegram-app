@@ -1,4 +1,4 @@
-/* style.css – полностью обновлённый файл */
+/* style.css – без стилей для удалённого header */
 :root {
   --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --primary-light: #667eea;
@@ -65,122 +65,7 @@ body.dark-theme {
   background: var(--surface-dark);
 }
 
-/* Header */
-.header {
-  background: var(--primary-gradient);
-  color: white;
-  padding: 20px 16px;
-  border-radius: 0 0 20px 20px;
-  box-shadow: var(--shadow-light);
-  position: relative;
-  z-index: 10;
-}
-
-.dark-theme .header {
-  box-shadow: var(--shadow-dark);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.app-title {
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.settings-button {
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  backdrop-filter: blur(10px);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 18px;
-}
-
-.settings-button:hover {
-  transform: rotate(30deg);
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Settings Panel */
-.settings-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 100;
-  display: none;
-  justify-content: flex-end;
-  align-items: flex-start;
-  padding: 70px 16px 0 0;
-}
-
-.settings-panel.active {
-  display: flex;
-}
-
-.settings-content {
-  background: var(--surface-light);
-  width: 280px;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: var(--shadow-light);
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
-}
-
-.dark-theme .settings-content {
-  background: var(--card-dark);
-  box-shadow: var(--shadow-dark);
-}
-
-.settings-panel.active .settings-content {
-  transform: translateX(0);
-}
-
-.settings-title {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.close-settings {
-  width: 100%;
-  padding: 12px;
-  background: var(--primary-gradient);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: all 0.3s ease;
-  font-size: 14px;
-}
-
-.dark-theme .close-settings {
-  background: var(--primary-dark);
-}
-
-.close-settings:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-/* Main Content */
+/* Main Content – одинаковый отступ для всех разделов */
 .main-content {
   padding: 20px 16px;
 }
@@ -215,7 +100,7 @@ body.dark-theme {
   color: var(--text-secondary-dark);
 }
 
-/* ========== CLAN BANNER (новый) ========== */
+/* ========== CLAN BANNER ========== */
 .clan-banner {
   background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
   background-size: 400% 400%;
@@ -1532,7 +1417,7 @@ body.dark-theme {
 .game-2048-container.neon-theme .tile-2048 { background: #b5179e; color: #4cc9f0; }
 .game-2048-container.neon-theme .tile-super { background: #f72585; color: #fff; }
 
-/* ==================== MODAL (новый) ==================== */
+/* ==================== MODAL ==================== */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -1630,10 +1515,6 @@ body.dark-theme {
     padding-bottom: 70px;
   }
   
-  .header {
-    padding: 16px 12px;
-  }
-  
   .main-content {
     padding: 16px 12px;
   }
@@ -1690,15 +1571,6 @@ body.dark-theme {
     font-size: 14px;
   }
   
-  .settings-content {
-    width: 260px;
-    padding: 16px;
-  }
-  
-  .settings-panel {
-    padding: 60px 12px 0 0;
-  }
-
   .game-board-2048 {
     gap: 6px;
     padding: 6px;

@@ -1,4 +1,4 @@
-// script.js – полностью обновлённый файл
+// script.js – удалены header и связанные функции
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 const WORKER_URL = 'https://gamesverse-bot.scarneb.workers.dev'; // ← замените на ваш URL
@@ -144,15 +144,14 @@ function initializeApp() {
     setupNavigation();
     initializeGames();
     initializeExchanges();
-    setupSettingsPanel();
     loadUserData();
     setupShareButton();
     initGame2048();
     setupLeaderboardRefresh();
     setupLeaderboardShare();
     setupGameTabs();
-    setupClanBanner();        // ← новый вызов
-    setupSubscriptionModal(); // ← новый вызов
+    setupClanBanner();
+    setupSubscriptionModal();
 }
 
 function initializeTelegramWebApp() {
@@ -423,19 +422,7 @@ function showFallbackProfile() {
     if (avatarFallback) { avatarFallback.textContent = 'T'; avatarFallback.style.display = 'flex'; }
 }
 
-const headerElement = document.querySelector('.header');
-const mainContent = document.querySelector('.main-content');
-
-function toggleHeaderForSection(sectionId) {
-    if (!headerElement) return;
-    if (sectionId === 'profile-section' || sectionId === 'game-section') {
-        headerElement.style.display = 'none';
-        if (mainContent) mainContent.style.paddingTop = '8px';
-    } else {
-        headerElement.style.display = 'block';
-        if (mainContent) mainContent.style.paddingTop = '';
-    }
-}
+// Удалена глобальная переменная headerElement и функция toggleHeaderForSection
 
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
@@ -450,10 +437,9 @@ function setupNavigation() {
                 section.classList.remove('active');
                 if (section.id === targetSection) section.classList.add('active');
             });
-            toggleHeaderForSection(targetSection);
+            // Заголовок больше не скрывается, отступы одинаковые
 
             if (targetSection === 'game-section') {
-                const leaderboardContainer = document.getElementById('leaderboard-container');
                 const gameContainer = document.getElementById('game-2048-container');
                 if (gameContainer.style.display !== 'none') {
                     // ничего
@@ -471,7 +457,6 @@ function setupNavigation() {
     if (activeSection && activeSection.id === 'game-section') {
         fetchLeaderboard();
     }
-    if (activeSection) toggleHeaderForSection(activeSection.id);
 }
 
 function setupGameButtons() {
@@ -506,14 +491,7 @@ function setupExchangeButtons() {
     });
 }
 
-function setupSettingsPanel() {
-    const settingsButton = document.getElementById('settings-button');
-    const settingsPanel = document.getElementById('settings-panel');
-    const closeSettings = document.getElementById('close-settings');
-    if (settingsButton) settingsButton.addEventListener('click', () => { vibrate(); settingsPanel.classList.add('active'); });
-    if (closeSettings) closeSettings.addEventListener('click', () => { vibrate(); settingsPanel.classList.remove('active'); });
-    if (settingsPanel) settingsPanel.addEventListener('click', (e) => { if (e.target === settingsPanel) settingsPanel.classList.remove('active'); });
-}
+// Удалена функция setupSettingsPanel (не нужна)
 
 function setupShareButton() {
     const shareButton = document.getElementById('share-friends-button');
@@ -587,7 +565,7 @@ class Game2048 {
         this.lastAddedTile = null;
         this.mergedPositions = new Set();
         this.moveMap = null;
-        this.history = []; // для отмены хода
+        this.history = [];
 
         this.updateBestScoreUI();
         this.init();
@@ -645,7 +623,7 @@ class Game2048 {
     }
 
     move(direction) {
-        this.saveState(); // сохраняем состояние до хода
+        this.saveState();
         const oldGrid = JSON.parse(JSON.stringify(this.grid));
         let totalScoreGain = 0;
         this.mergedPositions.clear();
@@ -784,11 +762,10 @@ class Game2048 {
             } else if (this.checkLose()) {
                 this.statusElement.textContent = translations.gameLose;
                 this.submitScoreToLeaderboard();
-                // Новый функционал: предложение подписаться при проигрыше
                 showSubscriptionModal();
             }
         } else {
-            this.history.pop(); // убираем сохранение, если ход не состоялся
+            this.history.pop();
             this.moveMap = null;
         }
     }
@@ -1129,7 +1106,6 @@ function setupSubscriptionModal() {
     const checkBtn = document.getElementById('modal-check-btn');
     const statusEl = document.getElementById('modal-status');
 
-    // Закрытие по крестику или клику вне контента
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.style.display = 'none';
     });
@@ -1139,7 +1115,6 @@ function setupSubscriptionModal() {
         });
     }
 
-    // Кнопка "Проверить подписку"
     if (checkBtn) {
         checkBtn.addEventListener('click', async () => {
             statusEl.textContent = 'Проверяем...';
@@ -1158,6 +1133,4 @@ function setupSubscriptionModal() {
             }
         });
     }
-
-    // Кнопка "Подписаться" — просто открывает ссылку (уже в HTML как <a>)
 }

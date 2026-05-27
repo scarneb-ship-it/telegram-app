@@ -328,7 +328,8 @@ const mainContent = document.querySelector('.main-content');
 
 function toggleHeaderForSection(sectionId) {
     if (!headerElement) return;
-    if (sectionId === 'profile-section' || sectionId === 'game-section') {
+    // Показываем верхнюю панель везде, кроме вкладки профиля
+    if (sectionId === 'profile-section') {
         headerElement.style.display = 'none';
         if (mainContent) mainContent.style.paddingTop = '8px';
     } else {

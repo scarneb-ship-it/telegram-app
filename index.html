@@ -9,17 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body class="dark-theme">
-    <!-- Splash Screen -->
-    <div id="splash-screen">
-        <img src="oblochka.jpg" alt="Загрузка..." id="splash-img">
-    </div>
-
+<body>
     <div class="app-container">
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1 class="app-title">Games Verse</h1>
+                <h1 class="app-title" data-i18n="appTitle">Games Verse</h1>
                 <button class="settings-button" id="settings-button" aria-label="Настройки">⚙️</button>
             </div>
         </header>
@@ -27,9 +22,25 @@
         <!-- Settings Panel -->
         <div class="settings-panel" id="settings-panel">
             <div class="settings-content">
-                <h3 class="settings-title">Настройки</h3>
-                <!-- Переключатель темы убран, всегда тёмная -->
-                <button class="close-settings" id="close-settings">Готово</button>
+                <h3 class="settings-title" data-i18n="settings">Настройки</h3>
+                
+                <div class="setting-item">
+                    <span class="setting-label" data-i18n="theme">Тема</span>
+                    <div class="theme-switcher">
+                        <button class="theme-option active" data-theme="light" data-i18n="lightTheme">Светлая</button>
+                        <button class="theme-option" data-theme="dark" data-i18n="darkTheme">Темная</button>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <span class="setting-label" data-i18n="language">Язык</span>
+                    <div class="language-switcher">
+                        <button class="language-option active" data-lang="ru" data-i18n="russian">Русский</button>
+                        <button class="language-option" data-lang="en" data-i18n="english">English</button>
+                    </div>
+                </div>
+                
+                <button class="close-settings" id="close-settings" data-i18n="done">Готово</button>
             </div>
         </div>
 
@@ -38,18 +49,23 @@
             <!-- Games Section -->
             <section id="games-section" class="content-section active">
                 <div class="section-header">
-                    <h2>Игры</h2>
-                    <span class="section-subtitle">Лучшие игры Telegram</span>
+                    <h2 data-i18n="games">Игры</h2>
+                    <span class="section-subtitle" data-i18n="bestGames">Лучшие игры Telegram</span>
                 </div>
-                <div class="games-grid" id="games-grid"></div>
+                
+                <div class="games-grid" id="games-grid">
+                    <!-- Games will be loaded dynamically -->
+                </div>
             </section>
 
             <!-- Exchanges Section -->
             <section id="exchanges-section" class="content-section">
                 <div class="section-header">
-                    <h2>Крипто-биржи</h2>
-                    <span class="section-subtitle">Торгуйте криптовалютами безопасно</span>
+                    <h2 data-i18n="exchanges">Крипто-биржи</h2>
+                    <span class="section-subtitle" data-i18n="exchangesDesc">Торгуйте криптовалютами безопасно</span>
                 </div>
+
+                <!-- GameFi Banner Card -->
                 <div class="gamefi-banner">
                     <img src="images/gamefi.jpg" alt="GameFi Trading" class="gamefi-image">
                     <div class="gamefi-overlay">
@@ -69,48 +85,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="exchanges-list" id="exchanges-list"></div>
-            </section>
-
-            <!-- 2048 Game Section -->
-            <section id="game-section" class="content-section game-fullscreen">
-                <!-- Новые кнопки переключения Игра / Топы -->
-                <div class="game-tabs">
-                    <button class="game-tab active" id="tab-game-btn">Игра</button>
-                    <button class="game-tab" id="tab-leaderboard-btn">Топы</button>
-                </div>
-
-                <!-- Контейнер с самой игрой -->
-                <div class="game-2048-container" id="game-2048-container">
-                    <div class="game-header-2048">
-                        <h3 class="game-title-2048">2048</h3>
-                        <div class="game-scores">
-                            <div class="score-box">
-                                <div class="score-label">Счёт</div>
-                                <div class="score-value" id="game-score">0</div>
-                            </div>
-                            <div class="score-box">
-                                <div class="score-label">Лучший</div>
-                                <div class="score-value" id="best-score">0</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="game-board-2048" id="game-board-2048"></div>
-                    <div class="game-controls">
-                        <button class="new-game-btn" id="new-game-btn">Новая игра</button>
-                        <div class="game-status" id="game-status"></div>
-                    </div>
-                    <div class="swipe-hint">👆 Свайпайте пальцем или используйте стрелки</div>
-                </div>
-                <!-- Таблица лидеров (изначально скрыта) -->
-                <div class="leaderboard-container" id="leaderboard-container" style="display: none;">
-                    <div class="leaderboard-header">
-                        <h3 class="leaderboard-title">🏆 Таблица лидеров</h3>
-                        <button class="refresh-leaderboard" id="refresh-leaderboard">🔄</button>
-                    </div>
-                    <div class="leaderboard-list" id="leaderboard-list">
-                        <div class="leaderboard-loading">Загрузка...</div>
-                    </div>
+                
+                <div class="exchanges-list" id="exchanges-list">
+                    <!-- Exchanges will be loaded dynamically -->
                 </div>
             </section>
 
@@ -122,10 +99,11 @@
                         <span id="avatar-fallback">T</span>
                     </div>
                     <div class="profile-info">
-                        <h2 id="user-name">Пользователь</h2>
+                        <h2 id="user-name" data-i18n="user">Пользователь</h2>
                         <p id="user-username">Открой в Telegram</p>
                     </div>
                 </div>
+
                 <div class="profile-actions">
                     <button class="share-friends-button" id="share-friends-button">
                         <div class="share-icon">
@@ -137,8 +115,33 @@
                                 <path d="M15.41 6.51L8.59 10.49" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </div>
-                        <span>Поделиться с друзьями</span>
+                        <span data-i18n="shareWithFriends">Поделиться с друзьями</span>
                     </button>
+                </div>
+
+                <!-- 2048 Game -->
+                <div class="game-2048-container">
+                    <div class="game-header-2048">
+                        <h3 class="game-title-2048" data-i18n="game2048">2048</h3>
+                        <div class="game-scores">
+                            <div class="score-box">
+                                <div class="score-label" data-i18n="score">Счёт</div>
+                                <div class="score-value" id="game-score">0</div>
+                            </div>
+                            <div class="score-box">
+                                <div class="score-label" data-i18n="best">Лучший</div>
+                                <div class="score-value" id="best-score">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="game-board-2048" id="game-board-2048">
+                        <!-- 4x4 grid will be generated by JS -->
+                    </div>
+                    <div class="game-controls">
+                        <button class="new-game-btn" id="new-game-btn" data-i18n="newGame">Новая игра</button>
+                        <div class="game-status" id="game-status"></div>
+                    </div>
+                    <div class="swipe-hint" data-i18n="swipeHint">👆 Свайпайте пальцем или используйте стрелки</div>
                 </div>
             </section>
         </main>
@@ -147,23 +150,20 @@
         <nav class="bottom-nav">
             <button class="nav-item active" data-section="games-section">
                 <span class="nav-icon">🎮</span>
-                <span class="nav-label">Игры</span>
+                <span class="nav-label" data-i18n="games">Игры</span>
             </button>
             <button class="nav-item" data-section="exchanges-section">
                 <span class="nav-icon">📊</span>
-                <span class="nav-label">Биржи</span>
-            </button>
-            <button class="nav-item" data-section="game-section">
-                <span class="nav-icon">🎲</span>
-                <span class="nav-label">2048</span>
+                <span class="nav-label" data-i18n="exchanges">Биржи</span>
             </button>
             <button class="nav-item" data-section="profile-section">
                 <span class="nav-icon">👤</span>
-                <span class="nav-label">Профиль</span>
+                <span class="nav-label" data-i18n="profile">Профиль</span>
             </button>
         </nav>
 
-        <div id="notification" class="notification">Ссылка скопирована в буфер обмена!</div>
+        <!-- Notification -->
+        <div id="notification" class="notification" data-i18n="linkCopied">Ссылка скопирована в буфер обмена!</div>
     </div>
 
     <script src="script.js"></script>

@@ -1,9 +1,8 @@
-// ==================== КОНФИГУРАЦИЯ ====================
+// script.js
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 
-// Адрес вашего Cloudflare Worker (замените на свой, если отличается)
-const WORKER_URL = 'https://misty-poetry-f4b2.scarneb.workers.dev/';
+const WORKER_URL = 'https://gamesverse-bot.scarneb.workers.dev';
 
 const GAMES_DATA = [
     {
@@ -59,6 +58,7 @@ const GAMES_DATA = [
         fallback: "💰"
     }
 ];
+
 const EXCHANGES_DATA = [
     {
         id: 1,
@@ -94,67 +94,32 @@ const EXCHANGES_DATA = [
     }
 ];
 
-// ==================== ПЕРЕВОДЫ ====================
 const translations = {
-    ru: {
-        appTitle: "Games Verse",
-        settings: "Настройки",
-        theme: "Тема",
-        lightTheme: "Светлая",
-        darkTheme: "Темная",
-        language: "Язык",
-        russian: "Русский",
-        english: "English",
-        done: "Готово",
-        games: "Игры",
-        bestGames: "Лучшие игры Telegram",
-        play: "Играть",
-        exchanges: "Биржи",
-        exchangesDesc: "Торгуйте криптовалютами безопасно",
-        user: "Пользователь",
-        shareWithFriends: "Поделиться с друзьями",
-        profile: "Профиль",
-        linkCopied: "Ссылка скопирована в буфер обмена!",
-        go: "Перейти",
-        game2048: "2048",
-        score: "Счёт",
-        best: "Лучший",
-        newGame: "Новая игра",
-        swipeHint: "👆 Свайпайте пальцем или используйте стрелки",
-        gameWin: "Вы победили! 🎉",
-        gameLose: "Игра окончена! 😔"
-    },
-    en: {
-        appTitle: "Games Verse",
-        settings: "Settings",
-        theme: "Theme",
-        lightTheme: "Light",
-        darkTheme: "Dark",
-        language: "Language",
-        russian: "Russian",
-        english: "English",
-        done: "Done",
-        games: "Games",
-        bestGames: "Best Telegram Games",
-        play: "Play",
-        exchanges: "Exchanges",
-        exchangesDesc: "Trade cryptocurrencies safely",
-        user: "User",
-        shareWithFriends: "Share with friends",
-        profile: "Profile",
-        linkCopied: "Link copied to clipboard!",
-        go: "Go",
-        game2048: "2048",
-        score: "Score",
-        best: "Best",
-        newGame: "New Game",
-        swipeHint: "👆 Swipe or use arrow keys",
-        gameWin: "You win! 🎉",
-        gameLose: "Game over! 😔"
-    }
+    appTitle: "Games Verse",
+    settings: "Настройки",
+    theme: "Тема",
+    lightTheme: "Светлая",
+    darkTheme: "Темная",
+    done: "Готово",
+    games: "Игры",
+    bestGames: "Лучшие игры Telegram",
+    play: "Играть",
+    exchanges: "Биржи",
+    exchangesDesc: "Торгуйте криптовалютами безопасно",
+    user: "Пользователь",
+    shareWithFriends: "Поделиться с друзьями",
+    profile: "Профиль",
+    linkCopied: "Ссылка скопирована в буфер обмена!",
+    go: "Перейти",
+    game2048: "2048",
+    score: "Счёт",
+    best: "Лучший",
+    newGame: "Новая игра",
+    swipeHint: "👆 Свайпайте пальцем или используйте стрелки",
+    gameWin: "Вы победили! 🎉",
+    gameLose: "Игра окончена! 😔"
 };
 
-// ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
@@ -164,16 +129,23 @@ function vibrate() {
 }
 
 function initializeApp() {
+    const splash = document.getElementById('splash-screen');
+    if (splash) splash.style.display = 'none';
+    document.body.style.opacity = '1';
+
     initializeTelegramWebApp();
     setupNavigation();
     initializeGames();
     initializeExchanges();
     setupSettingsPanel();
     loadThemePreference();
-    loadLanguagePreference();
+    setLanguage();
     loadUserData();
     setupShareButton();
-    setTimeout(() => document.body.style.opacity = '1', 100);
+    initGame2048();
+    setupLeaderboardRefresh();
+    setupLeaderboardShare();
+    setupGameTabs();  // <-- НОВАЯ ФУНКЦИЯ
 }
 
 function initializeTelegramWebApp() {
@@ -188,9 +160,6 @@ function initializeTelegramWebApp() {
             if (themeParams.button_color) document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color);
             if (themeParams.button_text_color) document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color);
         }
-        console.log('✅ Telegram WebApp инициализирован');
-    } else {
-        console.log('⚠️ Telegram WebApp недоступен');
     }
 }
 
@@ -220,8 +189,8 @@ function initializeGames() {
                     </div>
                 </div>
             </div>
-            <button class="play-button" data-link="${game.fullLink || (game.bot ? 'https://t.me/' + game.bot + '?start=app' : '')}">
-                ${getTranslation('play')}
+            <button class="play-button" data-link="${game.fullLink || ''}">
+                Играть
             </button>
         </div>
     `).join('');
@@ -253,7 +222,7 @@ function initializeExchanges() {
                 <p>${exchange.description}</p>
             </div>
             <button class="exchange-button" data-url="${exchange.url}">
-                ${getTranslation('go')}
+                Перейти
             </button>
         </div>
     `).join('');
@@ -266,10 +235,7 @@ function loadUserData() {
         if (user) {
             updateProfileDisplay(user);
             currentUserId = user.id;
-            console.log('🔍 Telegram User Data:', user);
-            console.log('✅ Реферальный ID установлен:', currentUserId);
-            // ОТПРАВКА СТАТИСТИКИ
-            sendUserStat(user);
+            sendMiniAppStat(user);
         } else {
             showFallbackProfile();
             currentUserId = null;
@@ -277,6 +243,34 @@ function loadUserData() {
     } else {
         showFallbackProfile();
         currentUserId = null;
+    }
+}
+
+async function sendMiniAppStat(user) {
+    if (!user || !user.id) return;
+    let ref = null;
+    try {
+        if (window.Telegram && window.Telegram.WebApp) {
+            const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param;
+            if (startParam) ref = startParam;
+        }
+    } catch (e) {}
+
+    const payload = {
+        userId: user.id.toString(),
+        firstName: user.first_name || '',
+        username: user.username || '',
+        ref: ref || null
+    };
+
+    try {
+        await fetch(WORKER_URL + '/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+    } catch (err) {
+        console.error('Ошибка отправки статистики Mini App:', err);
     }
 }
 
@@ -329,38 +323,12 @@ function showFallbackProfile() {
     if (avatarFallback) { avatarFallback.textContent = 'T'; avatarFallback.style.display = 'flex'; }
 }
 
-// ==================== СТАТИСТИКА ЧЕРЕЗ WORKER ====================
-async function sendUserStat(user) {
-    if (!user || !user.id) return;
-    const date = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
-    const message = `🆕 *Новый пользователь в Games Verse*\n\n` +
-                    `👤 *Имя:* ${user.first_name || ''} ${user.last_name || ''}\n` +
-                    `🆔 *ID:* ${user.id}\n` +
-                    `🧑‍💻 *Username:* ${user.username ? '@' + user.username : 'нет'}\n` +
-                    `⭐ *Premium:* ${user.is_premium ? 'Да' : 'Нет'}\n` +
-                    `📅 *Дата/время:* ${date}`;
-    try {
-        await fetch(WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                message: message,
-                chatId: '6823288584'   // ваш Telegram ID
-            })
-        });
-        console.log('✅ Статистика отправлена');
-    } catch (err) {
-        console.error('❌ Ошибка отправки статистики:', err);
-    }
-}
-
-// ==================== НАВИГАЦИЯ С СКРЫТИЕМ HEADER ====================
 const headerElement = document.querySelector('.header');
 const mainContent = document.querySelector('.main-content');
 
 function toggleHeaderForSection(sectionId) {
     if (!headerElement) return;
-    if (sectionId === 'profile-section') {
+    if (sectionId === 'profile-section' || sectionId === 'game-section') {
         headerElement.style.display = 'none';
         if (mainContent) mainContent.style.paddingTop = '8px';
     } else {
@@ -383,15 +351,25 @@ function setupNavigation() {
                 if (section.id === targetSection) section.classList.add('active');
             });
             toggleHeaderForSection(targetSection);
+
+            if (targetSection === 'game-section') {
+                // если перешли на вкладку 2048, показываем игру по умолчанию и обновляем лидерборд при необходимости
+                resetGameTabsToDefault();
+                fetchLeaderboard();
+            }
         });
     });
+
     const activeSection = document.querySelector('.content-section.active');
+    if (activeSection && activeSection.id === 'game-section') {
+        resetGameTabsToDefault();
+        fetchLeaderboard();
+    }
     if (activeSection) toggleHeaderForSection(activeSection.id);
 }
 
 function setupGameButtons() {
-    const playButtons = document.querySelectorAll('.play-button');
-    playButtons.forEach(button => {
+    document.querySelectorAll('.play-button').forEach(button => {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             vibrate();
@@ -409,8 +387,7 @@ function setupGameButtons() {
 }
 
 function setupExchangeButtons() {
-    const exchangeButtons = document.querySelectorAll('.exchange-button');
-    exchangeButtons.forEach(button => {
+    document.querySelectorAll('.exchange-button').forEach(button => {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             vibrate();
@@ -430,73 +407,36 @@ function setupSettingsPanel() {
     if (settingsButton) settingsButton.addEventListener('click', () => { vibrate(); settingsPanel.classList.add('active'); });
     if (closeSettings) closeSettings.addEventListener('click', () => { vibrate(); settingsPanel.classList.remove('active'); });
     if (settingsPanel) settingsPanel.addEventListener('click', (e) => { if (e.target === settingsPanel) settingsPanel.classList.remove('active'); });
-    const themeOptions = document.querySelectorAll('.theme-option');
-    themeOptions.forEach(option => {
+
+    document.querySelectorAll('.theme-option').forEach(option => {
         option.addEventListener('click', function() {
             vibrate();
             const theme = this.getAttribute('data-theme');
-            themeOptions.forEach(opt => opt.classList.remove('active'));
+            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
             if (theme === 'dark') document.body.classList.add('dark-theme');
             else document.body.classList.remove('dark-theme');
             localStorage.setItem('theme', theme);
         });
     });
-    const languageOptions = document.querySelectorAll('.language-option');
-    languageOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            vibrate();
-            const lang = this.getAttribute('data-lang');
-            languageOptions.forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            setLanguage(lang);
-            localStorage.setItem('language', lang);
-        });
-    });
 }
 
-function setLanguage(lang) {
-    const elements = document.querySelectorAll('[data-i18n]');
-    elements.forEach(element => {
+function setLanguage() {
+    document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) element.textContent = translations[lang][key];
+        if (translations[key]) element.textContent = translations[key];
     });
-}
-
-function getTranslation(key) {
-    const currentLang = localStorage.getItem('language') || 'ru';
-    return translations[currentLang]?.[key] || key;
 }
 
 function loadThemePreference() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     if (savedTheme === 'dark') document.body.classList.add('dark-theme');
-    updateSettingsThemeOptions(savedTheme);
-}
-
-function loadLanguagePreference() {
-    const savedLang = localStorage.getItem('language') || 'ru';
-    setLanguage(savedLang);
-    updateSettingsLanguageOptions(savedLang);
-}
-
-function updateSettingsThemeOptions(theme) {
-    const themeOptions = document.querySelectorAll('.theme-option');
-    themeOptions.forEach(option => {
-        option.classList.remove('active');
-        if (option.getAttribute('data-theme') === theme) option.classList.add('active');
+    document.querySelectorAll('.theme-option').forEach(opt => {
+        opt.classList.remove('active');
+        if (opt.getAttribute('data-theme') === savedTheme) opt.classList.add('active');
     });
 }
 
-function updateSettingsLanguageOptions(lang) {
-    const languageOptions = document.querySelectorAll('.language-option');
-    languageOptions.forEach(option => {
-        option.classList.remove('active');
-        if (option.getAttribute('data-lang') === lang) option.classList.add('active');
-    });
-}
-
-// ==================== ШАРИНГ ====================
 function setupShareButton() {
     const shareButton = document.getElementById('share-friends-button');
     if (shareButton) {
@@ -543,7 +483,6 @@ function fallbackCopyToClipboard(text) {
         document.body.removeChild(textArea);
         showNotification();
     } catch (err) {
-        console.error('Copy failed:', err);
         showNotification('Не удалось скопировать ссылку');
     }
 }
@@ -551,16 +490,12 @@ function fallbackCopyToClipboard(text) {
 function showNotification(customMessage) {
     const notification = document.getElementById('notification');
     if (!notification) return;
-    if (customMessage) notification.textContent = customMessage;
-    else {
-        const currentLang = localStorage.getItem('language') || 'ru';
-        notification.textContent = translations[currentLang].linkCopied;
-    }
+    notification.textContent = customMessage || translations.linkCopied;
     notification.classList.add('show');
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
 
-// ==================== 2048 GAME ====================
+/* ========== GAME 2048 ========== */
 class Game2048 {
     constructor(boardElement, scoreElement, bestScoreElement, statusElement) {
         this.boardElement = boardElement;
@@ -571,6 +506,10 @@ class Game2048 {
         this.grid = [];
         this.score = 0;
         this.bestScore = localStorage.getItem('bestScore2048') ? parseInt(localStorage.getItem('bestScore2048')) : 0;
+        this.lastAddedTile = null;
+        this.mergedPositions = new Set();
+        this.moveMap = null;
+
         this.updateBestScoreUI();
         this.init();
         this.setupSwipeEvents();
@@ -582,6 +521,9 @@ class Game2048 {
         this.score = 0;
         this.updateScoreUI();
         this.statusElement.textContent = '';
+        this.lastAddedTile = null;
+        this.mergedPositions.clear();
+        this.moveMap = null;
         this.addRandomTile();
         this.addRandomTile();
         this.render();
@@ -603,8 +545,163 @@ class Game2048 {
         return false;
     }
 
+    move(direction) {
+        const oldGrid = JSON.parse(JSON.stringify(this.grid));
+        let totalScoreGain = 0;
+        this.mergedPositions.clear();
+        this.moveMap = {};
+
+        const slideWithTracking = (row, isColumn, index, reverse) => {
+            let arr = row.filter(v => v !== 0);
+            let newRow = [];
+            let scoreGain = 0;
+            let merged = new Array(arr.length).fill(false);
+
+            for (let i = 0; i < arr.length; i++) {
+                if (i + 1 < arr.length && arr[i] === arr[i + 1] && !merged[i] && !merged[i+1]) {
+                    let mergedVal = arr[i] * 2;
+                    newRow.push(mergedVal);
+                    scoreGain += mergedVal;
+                    merged[i] = merged[i+1] = true;
+                    i++;
+                } else {
+                    newRow.push(arr[i]);
+                }
+            }
+            while (newRow.length < this.size) newRow.push(0);
+
+            let oldVals = arr;
+            let oldPtr = 0;
+            for (let newPos = 0; newPos < this.size; newPos++) {
+                if (newRow[newPos] === 0) continue;
+                if (oldPtr < oldVals.length && oldVals[oldPtr] * 2 === newRow[newPos] &&
+                    oldPtr + 1 < oldVals.length && oldVals[oldPtr] === oldVals[oldPtr + 1]) {
+                    this.recordMove(oldPtr, oldVals, newPos, isColumn, index, reverse, true, false);
+                    this.recordMove(oldPtr + 1, oldVals, newPos, isColumn, index, reverse, true, true);
+                    oldPtr += 2;
+                } else if (oldPtr < oldVals.length && oldVals[oldPtr] === newRow[newPos]) {
+                    this.recordMove(oldPtr, oldVals, newPos, isColumn, index, reverse, false, false);
+                    oldPtr++;
+                }
+            }
+            return {newRow, scoreGain};
+        };
+
+        this.recordMove = (oldIdx, oldVals, newIdx, isColumn, lineIdx, reverse, merged, isSecond) => {
+            const originalLine = [];
+            if (!isColumn) {
+                originalLine.push(...this.grid[lineIdx]);
+            } else {
+                for (let r = 0; r < this.size; r++) originalLine.push(this.grid[r][lineIdx]);
+            }
+            if (reverse) originalLine.reverse();
+
+            let skip = 0;
+            let sourceIdx = -1;
+            for (let i = 0; i < originalLine.length; i++) {
+                if (originalLine[i] !== 0) {
+                    if (skip === oldIdx) { sourceIdx = i; break; }
+                    skip++;
+                }
+            }
+            if (sourceIdx === -1) return;
+
+            if (reverse) sourceIdx = this.size - 1 - sourceIdx;
+
+            let fromRow, fromCol;
+            if (!isColumn) {
+                fromRow = lineIdx;
+                fromCol = sourceIdx;
+            } else {
+                fromRow = sourceIdx;
+                fromCol = lineIdx;
+            }
+
+            let targetIdx = newIdx;
+            if (reverse) targetIdx = this.size - 1 - targetIdx;
+
+            let toRow, toCol;
+            if (!isColumn) {
+                toRow = lineIdx;
+                toCol = targetIdx;
+            } else {
+                toRow = targetIdx;
+                toCol = lineIdx;
+            }
+
+            const key = `${toRow},${toCol}`;
+            if (!this.moveMap[key]) {
+                this.moveMap[key] = { fromRow, fromCol, merged };
+            }
+            if (merged) this.mergedPositions.add(key);
+        };
+
+        if (direction === 'left') {
+            for (let i = 0; i < this.size; i++) {
+                const {newRow, scoreGain} = slideWithTracking(this.grid[i], false, i, false);
+                this.grid[i] = newRow;
+                totalScoreGain += scoreGain;
+            }
+        } else if (direction === 'right') {
+            for (let i = 0; i < this.size; i++) {
+                const reversed = [...this.grid[i]].reverse();
+                const {newRow, scoreGain} = slideWithTracking(reversed, false, i, true);
+                totalScoreGain += scoreGain;
+                this.grid[i] = newRow.reverse();
+            }
+        } else if (direction === 'up') {
+            for (let j = 0; j < this.size; j++) {
+                const column = [];
+                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
+                const {newRow, scoreGain} = slideWithTracking(column, true, j, false);
+                totalScoreGain += scoreGain;
+                for (let i = 0; i < this.size; i++) this.grid[i][j] = newRow[i];
+            }
+        } else if (direction === 'down') {
+            for (let j = 0; j < this.size; j++) {
+                const column = [];
+                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
+                const reversed = column.reverse();
+                const {newRow, scoreGain} = slideWithTracking(reversed, true, j, true);
+                totalScoreGain += scoreGain;
+                const finalArr = newRow.reverse();
+                for (let i = 0; i < this.size; i++) this.grid[i][j] = finalArr[i];
+            }
+        }
+
+        if (totalScoreGain > 0) {
+            this.score += totalScoreGain;
+            this.updateScoreUI();
+        }
+
+        const changed = !this.gridsAreEqual(oldGrid, this.grid);
+        if (changed) {
+            this.addRandomTile();
+            this.render();
+            if (this.checkWin()) {
+                this.statusElement.textContent = translations.gameWin;
+                this.submitScoreToLeaderboard();
+            } else if (this.checkLose()) {
+                this.statusElement.textContent = translations.gameLose;
+                this.submitScoreToLeaderboard();
+            }
+        } else {
+            this.moveMap = null;
+        }
+    }
+
+    gridsAreEqual(a, b) {
+        for (let i = 0; i < this.size; i++)
+            for (let j = 0; j < this.size; j++)
+                if (a[i][j] !== b[i][j]) return false;
+        return true;
+    }
+
     render() {
-        this.boardElement.innerHTML = '';
+        const board = this.boardElement;
+        board.innerHTML = '';
+        const tileSize = board.clientWidth / this.size;
+
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
                 const value = this.grid[i][j];
@@ -615,17 +712,33 @@ class Game2048 {
                     if (value > 2048) tileClass = 'tile-super';
                     tile.classList.add(tileClass);
                     tile.textContent = value;
+
+                    const key = `${i},${j}`;
+                    if (this.moveMap && this.moveMap[key]) {
+                        const { fromRow, fromCol, merged } = this.moveMap[key];
+                        const deltaX = (fromCol - j) * tileSize;
+                        const deltaY = (fromRow - i) * tileSize;
+                        tile.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                        tile.offsetHeight;
+                        tile.style.transform = '';
+                        if (merged) {
+                            tile.classList.add('tile-merge');
+                            tile.addEventListener('animationend', () => tile.classList.remove('tile-merge'), { once: true });
+                        }
+                    }
+
                     if (this.lastAddedTile && this.lastAddedTile.x === i && this.lastAddedTile.y === j) {
                         tile.classList.add('tile-new');
-                        setTimeout(() => tile.classList.remove('tile-new'), 200);
+                        tile.addEventListener('animationend', () => tile.classList.remove('tile-new'), { once: true });
                     }
                 } else {
                     tile.textContent = '';
                 }
-                this.boardElement.appendChild(tile);
+                board.appendChild(tile);
             }
         }
         this.lastAddedTile = null;
+        this.moveMap = null;
     }
 
     updateScoreUI() {
@@ -641,107 +754,41 @@ class Game2048 {
         this.bestScoreElement.textContent = this.bestScore;
     }
 
-    slide(row) {
-        let arr = row.filter(v => v !== 0);
-        let newRow = [];
-        let scoreGain = 0;
-        for (let i = 0; i < arr.length; i++) {
-            if (i + 1 < arr.length && arr[i] === arr[i + 1]) {
-                let merged = arr[i] * 2;
-                newRow.push(merged);
-                scoreGain += merged;
-                i++;
-            } else {
-                newRow.push(arr[i]);
-            }
-        }
-        while (newRow.length < this.size) newRow.push(0);
-        return {newRow, scoreGain};
-    }
-
-    move(direction) {
-        let oldGrid = JSON.parse(JSON.stringify(this.grid));
-        let totalScoreGain = 0;
-
-        if (direction === 'left') {
-            for (let i = 0; i < this.size; i++) {
-                let {newRow, scoreGain} = this.slide(this.grid[i]);
-                this.grid[i] = newRow;
-                totalScoreGain += scoreGain;
-            }
-        } else if (direction === 'right') {
-            for (let i = 0; i < this.size; i++) {
-                let reversed = [...this.grid[i]].reverse();
-                let {newRow, scoreGain} = this.slide(reversed);
-                totalScoreGain += scoreGain;
-                this.grid[i] = newRow.reverse();
-            }
-        } else if (direction === 'up') {
-            for (let j = 0; j < this.size; j++) {
-                let column = [];
-                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
-                let {newRow, scoreGain} = this.slide(column);
-                totalScoreGain += scoreGain;
-                for (let i = 0; i < this.size; i++) this.grid[i][j] = newRow[i];
-            }
-        } else if (direction === 'down') {
-            for (let j = 0; j < this.size; j++) {
-                let column = [];
-                for (let i = 0; i < this.size; i++) column.push(this.grid[i][j]);
-                let reversed = column.reverse();
-                let {newRow, scoreGain} = this.slide(reversed);
-                totalScoreGain += scoreGain;
-                let final = newRow.reverse();
-                for (let i = 0; i < this.size; i++) this.grid[i][j] = final[i];
-            }
-        }
-
-        if (totalScoreGain > 0) {
-            this.score += totalScoreGain;
-            this.updateScoreUI();
-        }
-
-        let changed = false;
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
-                if (oldGrid[i][j] !== this.grid[i][j]) changed = true;
-            }
-        }
-
-        if (changed) {
-            this.addRandomTile();
-            this.render();
-            if (this.checkWin()) {
-                this.statusElement.textContent = getTranslation('gameWin');
-            } else if (this.checkLose()) {
-                this.statusElement.textContent = getTranslation('gameLose');
-            }
-        }
-    }
-
     checkWin() {
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
-                if (this.grid[i][j] === 2048) return true;
-            }
-        }
-        return false;
+        return this.grid.some(row => row.includes(2048));
     }
 
     checkLose() {
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
+        for (let i = 0; i < this.size; i++)
+            for (let j = 0; j < this.size; j++)
                 if (this.grid[i][j] === 0) return false;
-            }
-        }
-        for (let i = 0; i < this.size; i++) {
+        for (let i = 0; i < this.size; i++)
             for (let j = 0; j < this.size; j++) {
-                let val = this.grid[i][j];
+                const val = this.grid[i][j];
                 if (j < this.size-1 && val === this.grid[i][j+1]) return false;
                 if (i < this.size-1 && val === this.grid[i+1][j]) return false;
             }
-        }
         return true;
+    }
+
+    submitScoreToLeaderboard() {
+        if (!currentUserId) return;
+        const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+        if (!user) return;
+        const payload = {
+            userId: currentUserId.toString(),
+            firstName: user.first_name || 'Игрок',
+            username: user.username || '',
+            score: this.score,
+            avatarUrl: user.photo_url || ''
+        };
+        fetch(WORKER_URL + '/submit-score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            fetchLeaderboard();
+        }).catch(err => console.error('Ошибка отправки счёта:', err));
     }
 
     setupSwipeEvents() {
@@ -770,7 +817,7 @@ class Game2048 {
 
     setupKeyboardEvents() {
         window.addEventListener('keydown', (e) => {
-            if (document.querySelector('#profile-section.active')) {
+            if (document.querySelector('#game-section.active')) {
                 const key = e.key;
                 if (key === 'ArrowLeft') { this.move('left'); e.preventDefault(); vibrate(); }
                 else if (key === 'ArrowRight') { this.move('right'); e.preventDefault(); vibrate(); }
@@ -804,19 +851,149 @@ function initGame2048() {
     }
 }
 
-// Обновление перевода для статуса игры
-const originalSetLanguage = setLanguage;
-setLanguage = function(lang) {
-    originalSetLanguage(lang);
-    if (game2048 && game2048.statusElement) {
-        const currentText = game2048.statusElement.textContent;
-        if (currentText.includes('Победили') || currentText.includes('Win') || currentText.includes('Окончена') || currentText.includes('Lose')) {
-            if (game2048.checkWin()) game2048.statusElement.textContent = getTranslation('gameWin');
-            else if (game2048.checkLose()) game2048.statusElement.textContent = getTranslation('gameLose');
-        }
-    }
-};
+/* ========== УПРАВЛЕНИЕ ВКЛАДКАМИ "ИГРА" И "ТОПЫ" ========== */
+function setupGameTabs() {
+    const tabs = document.querySelectorAll('.game-tab');
+    const gameContainer = document.querySelector('.game-2048-container');
+    const leaderboardContainer = document.querySelector('.leaderboard-container');
 
-setTimeout(() => {
-    initGame2048();
-}, 300);
+    if (!tabs.length || !gameContainer || !leaderboardContainer) return;
+
+    // Устанавливаем начальное состояние: игра видна, топы скрыты
+    gameContainer.style.display = 'block';
+    leaderboardContainer.style.display = 'none';
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            vibrate();
+            // Убираем active у всех, добавляем текущей
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const tabName = tab.dataset.tab;
+            if (tabName === 'game') {
+                gameContainer.style.display = 'block';
+                leaderboardContainer.style.display = 'none';
+            } else if (tabName === 'leaderboard') {
+                gameContainer.style.display = 'none';
+                leaderboardContainer.style.display = 'block';
+                fetchLeaderboard(); // загружаем/обновляем топы при открытии
+            }
+        });
+    });
+}
+
+/** Сброс на вкладку «Игра» при переходе в раздел 2048 */
+function resetGameTabsToDefault() {
+    const gameContainer = document.querySelector('.game-2048-container');
+    const leaderboardContainer = document.querySelector('.leaderboard-container');
+    const tabs = document.querySelectorAll('.game-tab');
+    if (gameContainer && leaderboardContainer && tabs.length) {
+        gameContainer.style.display = 'block';
+        leaderboardContainer.style.display = 'none';
+        tabs.forEach(t => t.classList.remove('active'));
+        const gameTab = document.querySelector('.game-tab[data-tab="game"]');
+        if (gameTab) gameTab.classList.add('active');
+    }
+}
+
+/* ========== LEADERBOARD ========== */
+async function fetchLeaderboard() {
+    const list = document.getElementById('leaderboard-list');
+    if (!list) return;
+    list.innerHTML = '<div class="leaderboard-loading">Загрузка...</div>';
+
+    try {
+        const res = await fetch(WORKER_URL + '/leaderboard');
+        const data = await res.json();
+        renderLeaderboard(data.leaderboard || []);
+    } catch (err) {
+        console.error('Ошибка загрузки лидеров:', err);
+        list.innerHTML = '<div class="leaderboard-loading">Не удалось загрузить таблицу</div>';
+    }
+}
+
+function renderLeaderboard(leaderboard) {
+    const list = document.getElementById('leaderboard-list');
+    if (!list) return;
+    if (!leaderboard.length) {
+        list.innerHTML = '<div class="leaderboard-loading">Пока нет результатов</div>';
+        return;
+    }
+
+    list.innerHTML = leaderboard.map((player, index) => {
+        const isCurrentUser = currentUserId && player.userId.toString() === currentUserId.toString();
+        const rank = index + 1;
+        const avatarContent = player.avatarUrl
+            ? `<img src="${player.avatarUrl}" alt="${player.firstName}" onerror="this.style.display='none'; this.parentElement.textContent='${player.firstName.charAt(0).toUpperCase()}';" />`
+            : player.firstName.charAt(0).toUpperCase();
+
+        return `
+            <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''}">
+                <div class="leaderboard-rank">#${rank}</div>
+                <div class="leaderboard-avatar">
+                    ${avatarContent}
+                </div>
+                <div class="leaderboard-info">
+                    <div class="leaderboard-name">${escapeHtml(player.firstName)}</div>
+                </div>
+                <div class="leaderboard-score">
+                    ${player.score} <span>очк.</span>
+                    <button class="leaderboard-share-btn" aria-label="Поделиться результатом" data-share-name="${escapeHtml(player.firstName)}" data-share-score="${player.score}">
+                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+function setupLeaderboardRefresh() {
+    const refreshBtn = document.getElementById('refresh-leaderboard');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            vibrate();
+            fetchLeaderboard();
+        });
+    }
+}
+
+function setupLeaderboardShare() {
+    const leaderboardList = document.getElementById('leaderboard-list');
+    if (!leaderboardList) return;
+    leaderboardList.addEventListener('click', (e) => {
+        const shareBtn = e.target.closest('.leaderboard-share-btn');
+        if (!shareBtn) return;
+        e.stopPropagation();
+        const name = shareBtn.dataset.shareName;
+        const score = shareBtn.dataset.shareScore;
+        if (name && score) shareLeaderboardScore(name, parseInt(score, 10));
+    });
+}
+
+function shareLeaderboardScore(name, score) {
+    const shareText = `🏆 ${name} набрал ${score} очков в 2048! Сможешь побить рекорд? Играй в Games Verse: https://t.me/${BOT_USERNAME}`;
+    if (window.Telegram?.WebApp) {
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/' + BOT_USERNAME)}&text=${encodeURIComponent(shareText)}`;
+        window.Telegram.WebApp.openTelegramLink(shareUrl);
+    } else if (navigator.share) {
+        navigator.share({
+            title: 'Games Verse',
+            text: shareText,
+            url: 'https://t.me/' + BOT_USERNAME
+        }).catch(() => fallbackCopyToClipboard(shareText));
+    } else {
+        fallbackCopyToClipboard(shareText);
+    }
+}

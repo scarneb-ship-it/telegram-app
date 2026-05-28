@@ -12,7 +12,24 @@
 <body>
     <!-- Splash Screen -->
     <div id="splash-screen">
-        <img src="oblochka.jpg" alt="Загрузка..." id="splash-img">
+        <!-- Можно заменить src="oblochka.jpg" на свою картинку, или оставить текст -->
+        <div class="splash-content">
+            <h1 class="splash-title">Games Verse</h1>
+            <p class="splash-subtitle">Загрузка...</p>
+            <!-- <img src="oblochka.jpg" alt="Загрузка..." id="splash-img"> -->
+        </div>
+    </div>
+
+    <!-- Подписка на канал HADRON -->
+    <div id="subscribe-modal" class="subscribe-modal">
+        <div class="subscribe-content">
+            <h2 class="subscribe-title">🔥 Подпишись на HADRON</h2>
+            <p class="subscribe-text">Лучшие новости, розыгрыши и эксклюзивные гайды в нашем Telegram‑канале.</p>
+            <div class="subscribe-buttons">
+                <button class="subscribe-btn" id="subscribe-ok">Подписаться</button>
+                <button class="subscribe-later" id="subscribe-later">Позже</button>
+            </div>
+        </div>
     </div>
 
     <div class="app-container">
@@ -35,6 +52,14 @@
                         <button class="theme-option" data-theme="dark">Темная</button>
                     </div>
                 </div>
+                <!-- Вибрация -->
+                <div class="setting-item">
+                    <span class="setting-label">Вибрация</span>
+                    <div class="theme-switcher" id="vibration-switcher">
+                        <button class="theme-option active" data-vibration="on">Вкл</button>
+                        <button class="theme-option" data-vibration="off">Выкл</button>
+                    </div>
+                </div>
                 <button class="close-settings" id="close-settings">Готово</button>
             </div>
         </div>
@@ -50,32 +75,13 @@
                 <div class="games-grid" id="games-grid"></div>
             </section>
 
-            <!-- Exchanges Section -->
-            <section id="exchanges-section" class="content-section">
+            <!-- Services Section (бывшие Биржи) -->
+            <section id="services-section" class="content-section">
                 <div class="section-header">
-                    <h2>Крипто-биржи</h2>
-                    <span class="section-subtitle">Торгуйте криптовалютами безопасно</span>
+                    <h2>Полезные сервисы</h2>
+                    <span class="section-subtitle">Биржи, подарки, покупка звёзд</span>
                 </div>
-                <div class="gamefi-banner">
-                    <img src="images/gamefi.jpg" alt="GameFi Trading" class="gamefi-image">
-                    <div class="gamefi-overlay">
-                        <div class="gamefi-content">
-                            <h3 class="gamefi-title">Торгуйте монетами GameFi</h3>
-                            <p class="gamefi-description">На популярных криптобиржах с лучшими условиями</p>
-                            <div class="gamefi-stats">
-                                <div class="stat">
-                                    <span class="stat-number">100+</span>
-                                    <span class="stat-label">GameFi токенов</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-number">24/7</span>
-                                    <span class="stat-label">Торговля</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="exchanges-list" id="exchanges-list"></div>
+                <div class="services-list" id="services-list"></div>
             </section>
 
             <!-- 2048 Game Section -->
@@ -156,9 +162,9 @@
                 <span class="nav-icon">🎮</span>
                 <span class="nav-label">Игры</span>
             </button>
-            <button class="nav-item" data-section="exchanges-section">
-                <span class="nav-icon">📊</span>
-                <span class="nav-label">Биржи</span>
+            <button class="nav-item" data-section="services-section">
+                <span class="nav-icon">🛠️</span>
+                <span class="nav-label">Сервисы</span>
             </button>
             <button class="nav-item" data-section="game-section">
                 <span class="nav-icon">🎲</span>

@@ -76,7 +76,7 @@ const SERVICES_DATA = [
         name: "Portals",
         url: "https://t.me/portals/market?startapp=xr9tzm",
         description: "Маркет подарков Telegram",
-        image: "images/portals.jpg",   // исправлено: ваша картинка portals.jpg
+        image: "images/portals.jpg",
         fallback: "🎁"
     },
     {
@@ -84,7 +84,7 @@ const SERVICES_DATA = [
         name: "StarsShip",
         url: "http://t.me/StarsShipBot?start=r6823288584",
         description: "Покупка Telegram Stars",
-        image: "images/starship.jpg",  // исправлено: ваша картинка starship.jpg (без лишней s)
+        image: "images/starship.jpg",
         fallback: "⭐"
     }
 ];
@@ -126,8 +126,17 @@ function vibrate() {
 }
 
 function initializeApp() {
+    // Splash screen: показываем 3 секунды, затем плавно скрываем
     const splash = document.getElementById('splash-screen');
-    if (splash) splash.style.display = 'none';
+    if (splash) {
+        setTimeout(() => {
+            splash.classList.add('splash-fade-out');
+            splash.addEventListener('transitionend', () => {
+                splash.style.display = 'none';
+            }, { once: true });
+        }, 3000);
+    }
+
     document.body.style.opacity = '1';
 
     initializeTelegramWebApp();
@@ -446,7 +455,7 @@ function setupSettingsPanel() {
     if (closeSettings) closeSettings.addEventListener('click', () => { vibrate(); settingsPanel.classList.remove('active'); });
     if (settingsPanel) settingsPanel.addEventListener('click', (e) => { if (e.target === settingsPanel) settingsPanel.classList.remove('active'); });
 
-    // Переключатель темы (уже был)
+    // Переключатель темы
     document.querySelectorAll('.theme-option[data-theme]').forEach(option => {
         option.addEventListener('click', function() {
             vibrate();
@@ -459,23 +468,21 @@ function setupSettingsPanel() {
         });
     });
 
-    // Переключатель вибрации (новый)
+    // Переключатель вибрации
     const vibrationOptions = document.querySelectorAll('.theme-option[data-vibration]');
     vibrationOptions.forEach(option => {
         option.addEventListener('click', function() {
-            vibrate();  // короткий отклик при переключении (если вибрация включена)
-            const state = this.getAttribute('data-vibration'); // 'on' или 'off'
+            vibrate();
+            const state = this.getAttribute('data-vibration');
             vibrationEnabled = (state === 'on');
             localStorage.setItem('vibration', state);
             updateVibrationSwitcherUI();
         });
     });
 
-    // При открытии настроек синхронизируем положение переключателя вибрации
     updateVibrationSwitcherUI();
 }
 
-// Обновление активной кнопки вибрации в соответствии с текущим состоянием
 function updateVibrationSwitcherUI() {
     const vibrationOptions = document.querySelectorAll('.theme-option[data-vibration]');
     if (!vibrationOptions.length) return;
@@ -492,7 +499,7 @@ function loadVibrationPreference() {
     if (saved === 'off') {
         vibrationEnabled = false;
     } else {
-        vibrationEnabled = true; // по умолчанию вкл.
+        vibrationEnabled = true;
     }
     updateVibrationSwitcherUI();
 }

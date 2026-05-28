@@ -1,8 +1,11 @@
-// script.js
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 
 const WORKER_URL = 'https://gamesverse-bot.scarneb.workers.dev';
+const HADRON_CHANNEL = 'https://t.me/+GNfQDYSAYc4wNDBi';
+
+// Глобальная настройка вибрации
+let vibrationEnabled = true;
 
 const GAMES_DATA = [
     {
@@ -59,7 +62,7 @@ const GAMES_DATA = [
     }
 ];
 
-const EXCHANGES_DATA = [
+const SERVICES_DATA = [
     {
         id: 1,
         name: "Bybit",
@@ -70,27 +73,19 @@ const EXCHANGES_DATA = [
     },
     {
         id: 2,
-        name: "BingX",
-        url: "https://bingxdao.com/referral-program/V2TZVA?activityId=g_1529293499868241925",
-        description: "Социальная торговля и копирование",
-        image: "images/bingx.jpg",
-        fallback: "📈"
+        name: "Portals",
+        url: "https://t.me/portals/market?startapp=xr9tzm",
+        description: "Маркет подарков Telegram",
+        image: "images/portals.jpg",   // исправлено: ваша картинка portals.jpg
+        fallback: "🎁"
     },
     {
         id: 3,
-        name: "Bitget",
-        url: "https://www.bitgetapps.com/ru/referral/register?clacCode=40FSP70H&from=%2Fru%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter",
-        description: "Инновационная торговая платформа",
-        image: "images/bitget.jpg",
-        fallback: "⚡"
-    },
-    {
-        id: 4,
-        name: "MEXC",
-        url: "https://promote.mexc.com/r/aTSLfdm54W",
-        description: "Глобальная биржа с низкими комиссиями",
-        image: "images/mexc.jpg",
-        fallback: "🌍"
+        name: "StarsShip",
+        url: "http://t.me/StarsShipBot?start=r6823288584",
+        description: "Покупка Telegram Stars",
+        image: "images/starship.jpg",  // исправлено: ваша картинка starship.jpg (без лишней s)
+        fallback: "⭐"
     }
 ];
 
@@ -124,8 +119,10 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
 
+// Обновлённая функция вибрации: уменьшенная длительность + проверка настройки
 function vibrate() {
-    if (navigator.vibrate) navigator.vibrate(50);
+    if (!vibrationEnabled) return;
+    if (navigator.vibrate) navigator.vibrate(30); // было 50, стало 30 мс
 }
 
 function initializeApp() {
@@ -136,16 +133,50 @@ function initializeApp() {
     initializeTelegramWebApp();
     setupNavigation();
     initializeGames();
-    initializeExchanges();
+    initializeServices();
     setupSettingsPanel();
     loadThemePreference();
+    loadVibrationPreference();   // загружаем настройку вибрации
     setLanguage();
     loadUserData();
     setupShareButton();
     initGame2048();
     setupLeaderboardRefresh();
     setupLeaderboardShare();
-    setupGameTabs();  // <-- НОВАЯ ФУНКЦИЯ
+    setupGameTabs();
+    setupSubscribeModal();
+    showSubscribeModal();
+}
+
+function showSubscribeModal() {
+    const modal = document.getElementById('subscribe-modal');
+    if (modal) modal.classList.add('active');
+}
+function hideSubscribeModal() {
+    const modal = document.getElementById('subscribe-modal');
+    if (modal) modal.classList.remove('active');
+}
+
+function setupSubscribeModal() {
+    const okBtn = document.getElementById('subscribe-ok');
+    const laterBtn = document.getElementById('subscribe-later');
+    if (okBtn) {
+        okBtn.addEventListener('click', () => {
+            vibrate();
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.openTelegramLink(HADRON_CHANNEL);
+            } else {
+                window.open(HADRON_CHANNEL, '_blank');
+            }
+            hideSubscribeModal();
+        });
+    }
+    if (laterBtn) {
+        laterBtn.addEventListener('click', () => {
+            vibrate();
+            hideSubscribeModal();
+        });
+    }
 }
 
 function initializeTelegramWebApp() {
@@ -208,25 +239,25 @@ function generateStars(rating) {
     return stars;
 }
 
-function initializeExchanges() {
-    const exchangesList = document.getElementById('exchanges-list');
-    if (!exchangesList) return;
-    exchangesList.innerHTML = EXCHANGES_DATA.map(exchange => `
-        <div class="exchange-card" data-exchange-id="${exchange.id}">
+function initializeServices() {
+    const servicesList = document.getElementById('services-list');
+    if (!servicesList) return;
+    servicesList.innerHTML = SERVICES_DATA.map(service => `
+        <div class="exchange-card" data-service-id="${service.id}">
             <div class="exchange-logo">
-                <img src="${exchange.image}" alt="${exchange.name}" class="exchange-img" onerror="this.style.display='none'">
-                <div class="image-fallback">${exchange.fallback}</div>
+                <img src="${service.image}" alt="${service.name}" class="exchange-img" onerror="this.style.display='none'">
+                <div class="image-fallback">${service.fallback}</div>
             </div>
             <div class="exchange-info">
-                <h3>${exchange.name}</h3>
-                <p>${exchange.description}</p>
+                <h3>${service.name}</h3>
+                <p>${service.description}</p>
             </div>
-            <button class="exchange-button" data-url="${exchange.url}">
+            <button class="exchange-button" data-url="${service.url}">
                 Перейти
             </button>
         </div>
     `).join('');
-    setupExchangeButtons();
+    setupServiceButtons();
 }
 
 function loadUserData() {
@@ -328,7 +359,6 @@ const mainContent = document.querySelector('.main-content');
 
 function toggleHeaderForSection(sectionId) {
     if (!headerElement) return;
-    // Показываем верхнюю панель везде, кроме вкладки профиля
     if (sectionId === 'profile-section') {
         headerElement.style.display = 'none';
         if (mainContent) mainContent.style.paddingTop = '8px';
@@ -352,9 +382,9 @@ function setupNavigation() {
                 if (section.id === targetSection) section.classList.add('active');
             });
             toggleHeaderForSection(targetSection);
+            hideSubscribeModal();
 
             if (targetSection === 'game-section') {
-                // если перешли на вкладку 2048, показываем игру по умолчанию и обновляем лидерборд при необходимости
                 resetGameTabsToDefault();
                 fetchLeaderboard();
             }
@@ -387,15 +417,22 @@ function setupGameButtons() {
     });
 }
 
-function setupExchangeButtons() {
+function setupServiceButtons() {
     document.querySelectorAll('.exchange-button').forEach(button => {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             vibrate();
-            const exchangeUrl = this.getAttribute('data-url');
-            if (exchangeUrl) {
-                if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.openLink(exchangeUrl);
-                else window.open(exchangeUrl, '_blank');
+            const url = this.getAttribute('data-url');
+            if (url) {
+                if (window.Telegram && window.Telegram.WebApp) {
+                    if (url.startsWith('https://t.me/') || url.startsWith('http://t.me/')) {
+                        window.Telegram.WebApp.openTelegramLink(url);
+                    } else {
+                        window.Telegram.WebApp.openLink(url);
+                    }
+                } else {
+                    window.open(url, '_blank');
+                }
             }
         });
     });
@@ -409,17 +446,55 @@ function setupSettingsPanel() {
     if (closeSettings) closeSettings.addEventListener('click', () => { vibrate(); settingsPanel.classList.remove('active'); });
     if (settingsPanel) settingsPanel.addEventListener('click', (e) => { if (e.target === settingsPanel) settingsPanel.classList.remove('active'); });
 
-    document.querySelectorAll('.theme-option').forEach(option => {
+    // Переключатель темы (уже был)
+    document.querySelectorAll('.theme-option[data-theme]').forEach(option => {
         option.addEventListener('click', function() {
             vibrate();
             const theme = this.getAttribute('data-theme');
-            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelectorAll('.theme-option[data-theme]').forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
             if (theme === 'dark') document.body.classList.add('dark-theme');
             else document.body.classList.remove('dark-theme');
             localStorage.setItem('theme', theme);
         });
     });
+
+    // Переключатель вибрации (новый)
+    const vibrationOptions = document.querySelectorAll('.theme-option[data-vibration]');
+    vibrationOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            vibrate();  // короткий отклик при переключении (если вибрация включена)
+            const state = this.getAttribute('data-vibration'); // 'on' или 'off'
+            vibrationEnabled = (state === 'on');
+            localStorage.setItem('vibration', state);
+            updateVibrationSwitcherUI();
+        });
+    });
+
+    // При открытии настроек синхронизируем положение переключателя вибрации
+    updateVibrationSwitcherUI();
+}
+
+// Обновление активной кнопки вибрации в соответствии с текущим состоянием
+function updateVibrationSwitcherUI() {
+    const vibrationOptions = document.querySelectorAll('.theme-option[data-vibration]');
+    if (!vibrationOptions.length) return;
+    vibrationOptions.forEach(opt => {
+        opt.classList.remove('active');
+        if (opt.getAttribute('data-vibration') === (vibrationEnabled ? 'on' : 'off')) {
+            opt.classList.add('active');
+        }
+    });
+}
+
+function loadVibrationPreference() {
+    const saved = localStorage.getItem('vibration');
+    if (saved === 'off') {
+        vibrationEnabled = false;
+    } else {
+        vibrationEnabled = true; // по умолчанию вкл.
+    }
+    updateVibrationSwitcherUI();
 }
 
 function setLanguage() {
@@ -432,7 +507,7 @@ function setLanguage() {
 function loadThemePreference() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     if (savedTheme === 'dark') document.body.classList.add('dark-theme');
-    document.querySelectorAll('.theme-option').forEach(opt => {
+    document.querySelectorAll('.theme-option[data-theme]').forEach(opt => {
         opt.classList.remove('active');
         if (opt.getAttribute('data-theme') === savedTheme) opt.classList.add('active');
     });
@@ -860,14 +935,12 @@ function setupGameTabs() {
 
     if (!tabs.length || !gameContainer || !leaderboardContainer) return;
 
-    // Устанавливаем начальное состояние: игра видна, топы скрыты
     gameContainer.style.display = 'block';
     leaderboardContainer.style.display = 'none';
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             vibrate();
-            // Убираем active у всех, добавляем текущей
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
 
@@ -878,13 +951,12 @@ function setupGameTabs() {
             } else if (tabName === 'leaderboard') {
                 gameContainer.style.display = 'none';
                 leaderboardContainer.style.display = 'block';
-                fetchLeaderboard(); // загружаем/обновляем топы при открытии
+                fetchLeaderboard();
             }
         });
     });
 }
 
-/** Сброс на вкладку «Игра» при переходе в раздел 2048 */
 function resetGameTabsToDefault() {
     const gameContainer = document.querySelector('.game-2048-container');
     const leaderboardContainer = document.querySelector('.leaderboard-container');

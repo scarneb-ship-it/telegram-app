@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#111827">
+    <title>Админ-панель Games Verse</title>
+    <!-- Chart.js для графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Supabase JS клиент -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --border: #334155;
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #8b5cf6;
+            --accent-light: #a78bfa;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius: 16px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Форма входа */
+        .login-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .login-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .login-card h2 {
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .login-card p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent);
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--accent-light);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            width: auto;
+            border-radius: 8px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background: #1e293b;
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* Панель после входа */
+        .dashboard {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+            width: 100%;
+        }
+
+        .dashboard.active {
+            display: flex;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Метрики */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* График */
+        .chart-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-card h3 {
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .chart-controls button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .chart-controls button.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 400px;
+        }
+
+        /* Таблицы */
+        .table-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            overflow-x: auto;
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .rank {
+            font-weight: 700;
+            color: var(--accent-light);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .metric-value {
+                font-size: 1.5rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .chart-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Экран входа -->
+    <div id="loginScreen" class="login-wrapper">
+        <div class="login-card">
+            <h2>🔐 Вход в админку</h2>
+            <p>Введите пароль для доступа к статистике</p>
+            <div class="input-group">
+                <input type="password" id="adminPassword" placeholder="Пароль" autocomplete="off">
+            </div>
+            <button class="btn" id="loginBtn">Войти</button>
+            <p id="loginError" class="error-text">Неверный пароль</p>
+        </div>
+    </div>
+
+    <!-- Панель статистики (изначально скрыта) -->
+    <div id="dashboard" class="container dashboard">
+        <div class="header">
+            <h1>📊 Статистика Games Verse</h1>
+            <button class="logout-btn" id="logoutBtn">Выйти</button>
+        </div>
+
+        <!-- Метрики -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">👥 Всего пользователей</div>
+                <div class="metric-value" id="totalUsers">—</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">▶️ Нажали Start</div>
+                <div class="metric-value" id="startCount">—</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">📱 Вошли в Mini App</div>
+                <div class="metric-value" id="miniAppCount">—</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">🔗 Всего рефералов</div>
+                <div class="metric-value" id="totalReferrals">—</div>
+            </div>
+        </div>
+
+        <!-- График -->
+        <div class="chart-card">
+            <h3>Активность пользователей</h3>
+            <div class="chart-controls" id="chartPeriodBtns">
+                <button data-period="day" class="active">День</button>
+                <button data-period="week">Неделя</button>
+                <button data-period="month">Месяц</button>
+            </div>
+            <canvas id="activityChart" width="400" height="200"></canvas>
+        </div>
+
+        <!-- Топ рефералов -->
+        <div class="table-card">
+            <h3 style="margin-bottom: 16px;">🏆 Топ рефералов</h3>
+            <table id="referralTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Пользователь</th>
+                        <th>Рефералов</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ⚠️ Замените на свои данные Supabase
+            const SUPABASE_URL = 'https://your-project.supabase.co';
+            const SUPABASE_ANON_KEY = 'your-anon-key'; // или сервисный ключ для админских запросов (service_role)
+            const ADMIN_PASSWORD = 'hadron2024'; // смените пароль
+
+            let supabase;
+            let currentChart = null;
+
+            // DOM элементы
+            const loginScreen = document.getElementById('loginScreen');
+            const dashboard = document.getElementById('dashboard');
+            const loginBtn = document.getElementById('loginBtn');
+            const adminPassword = document.getElementById('adminPassword');
+            const loginError = document.getElementById('loginError');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            // Проверка сессии
+            if (sessionStorage.getItem('admin_authenticated') === 'true') {
+                showDashboard();
+            }
+
+            // Вход
+            loginBtn.addEventListener('click', () => {
+                if (adminPassword.value === ADMIN_PASSWORD) {
+                    sessionStorage.setItem('admin_authenticated', 'true');
+                    showDashboard();
+                } else {
+                    loginError.style.display = 'block';
+                }
+            });
+
+            adminPassword.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') loginBtn.click();
+            });
+
+            logoutBtn.addEventListener('click', () => {
+                sessionStorage.removeItem('admin_authenticated');
+                hideDashboard();
+            });
+
+            function showDashboard() {
+                loginScreen.style.display = 'none';
+                dashboard.classList.add('active');
+                initSupabase();
+                loadAllData();
+                // Период по умолчанию — день
+                updateChart('day');
+                setupPeriodButtons();
+            }
+
+            function hideDashboard() {
+                loginScreen.style.display = 'flex';
+                dashboard.classList.remove('active');
+                adminPassword.value = '';
+                loginError.style.display = 'none';
+            }
+
+            function initSupabase() {
+                supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+
+            // Загрузка данных и обновление метрик
+            async function loadAllData() {
+                try {
+                    // 1. Всего пользователей
+                    const { count: totalUsers } = await supabase
+                        .from('users')
+                        .select('*', { count: 'exact', head: true });
+
+                    document.getElementById('totalUsers').textContent = totalUsers || 0;
+
+                    // 2. Количество start
+                    const { count: startCount } = await supabase
+                        .from('events')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('action', 'start');
+
+                    document.getElementById('startCount').textContent = startCount || 0;
+
+                    // 3. Количество mini_app
+                    const { count: miniAppCount } = await supabase
+                        .from('events')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('action', 'mini_app');
+
+                    document.getElementById('miniAppCount').textContent = miniAppCount || 0;
+
+                    // 4. Общее количество рефералов (где referrer_id не null)
+                    const { count: totalReferrals } = await supabase
+                        .from('users')
+                        .select('*', { count: 'exact', head: true })
+                        .not('referrer_id', 'is', null);
+
+                    document.getElementById('totalReferrals').textContent = totalReferrals || 0;
+
+                    // 5. Топ рефералов
+                    await loadReferralLeaderboard();
+                } catch (error) {
+                    console.error('Ошибка загрузки данных:', error);
+                    alert('Не удалось загрузить статистику. Проверьте консоль и настройки Supabase.');
+                }
+            }
+
+            // Таблица лидеров по рефералам
+            async function loadReferralLeaderboard() {
+                const { data, error } = await supabase
+                    .from('referral_counts') // можно создать view или использовать агрегацию
+                    .select('referrer_id, count')
+                    .order('count', { ascending: false })
+                    .limit(20);
+
+                // Если view нет, делаем запрос напрямую с группировкой через raw SQL
+                // Запасной вариант: выполнить rpc или использовать .rpc
+                if (error || !data) {
+                    // Попробуем через прямой SQL вызов (RPC)
+                    const { data: rpcData, error: rpcError } = await supabase
+                        .rpc('get_referral_counts'); // предполагаемая функция
+                    if (!rpcError && rpcData) {
+                        renderReferralTable(rpcData);
+                    } else {
+                        document.querySelector('#referralTable tbody').innerHTML =
+                            '<tr><td colspan="3">Нет данных или создайте представление `referral_counts`</td></tr>';
+                    }
+                } else {
+                    renderReferralTable(data);
+                }
+            }
+
+            function renderReferralTable(data) {
+                const tbody = document.querySelector('#referralTable tbody');
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3">Нет рефералов</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map((item, index) => {
+                    const userName = item.username || item.first_name || 'user_' + item.referrer_id?.slice(0, 8);
+                    return `
+                        <tr>
+                            <td class="rank">#${index + 1}</td>
+                            <td>${escapeHtml(userName)}</td>
+                            <td>${item.count}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // График активности
+            async function updateChart(period) {
+                const chartCanvas = document.getElementById('activityChart');
+                const ctx = chartCanvas.getContext('2d');
+
+                // Уничтожаем предыдущий график
+                if (currentChart) {
+                    currentChart.destroy();
+                }
+
+                // Определяем временной диапазон
+                const now = new Date();
+                let startDate;
+                switch (period) {
+                    case 'day':
+                        startDate = new Date(now);
+                        startDate.setHours(0, 0, 0, 0);
+                        break;
+                    case 'week':
+                        startDate = new Date(now);
+                        startDate.setDate(now.getDate() - 7);
+                        break;
+                    case 'month':
+                        startDate = new Date(now);
+                        startDate.setMonth(now.getMonth() - 1);
+                        break;
+                }
+
+                const startISO = startDate.toISOString();
+                const endISO = now.toISOString();
+
+                // Запрос событий start и mini_app за период
+                const [startData, miniAppData] = await Promise.all([
+                    supabase
+                        .from('events')
+                        .select('created_at')
+                        .eq('action', 'start')
+                        .gte('created_at', startISO)
+                        .lte('created_at', endISO),
+                    supabase
+                        .from('events')
+                        .select('created_at')
+                        .eq('action', 'mini_app')
+                        .gte('created_at', startISO)
+                        .lte('created_at', endISO)
+                ]);
+
+                // Формируем набор дат (ключи) в зависимости от периода
+                const dates = [];
+                const current = new Date(startDate);
+                while (current <= now) {
+                    dates.push(current.toISOString().slice(0, 10)); // YYYY-MM-DD
+                    current.setDate(current.getDate() + 1);
+                }
+
+                // Подсчёт событий по дням
+                const startCounts = {};
+                const miniAppCounts = {};
+
+                (startData.data || []).forEach(e => {
+                    const day = e.created_at.slice(0, 10);
+                    startCounts[day] = (startCounts[day] || 0) + 1;
+                });
+                (miniAppData.data || []).forEach(e => {
+                    const day = e.created_at.slice(0, 10);
+                    miniAppCounts[day] = (miniAppCounts[day] || 0) + 1;
+                });
+
+                const startValues = dates.map(d => startCounts[d] || 0);
+                const miniAppValues = dates.map(d => miniAppCounts[d] || 0);
+
+                // Строим график
+                currentChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates.map(d => {
+                            const date = new Date(d);
+                            return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+                        }),
+                        datasets: [
+                            {
+                                label: 'Нажали Start',
+                                data: startValues,
+                                borderColor: '#8b5cf6',
+                                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 3,
+                            },
+                            {
+                                label: 'Вошли в Mini App',
+                                data: miniAppValues,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 3,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#94a3b8'
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: '#334155' }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#94a3b8', stepSize: 1 },
+                                grid: { color: '#334155' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Переключение периодов
+            function setupPeriodButtons() {
+                const buttons = document.querySelectorAll('#chartPeriodBtns button');
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        buttons.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        updateChart(this.dataset.period);
+                    });
+                });
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, m => map[m]);
+            }
+        })();
+    </script>
+</body>
+</html>

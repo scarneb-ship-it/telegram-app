@@ -90,7 +90,7 @@ const SERVICES_DATA = [
 ];
 
 const translations = {
-    appTitle: "Games Verse",
+    appTitle: "Hadron Verse",
     settings: "Настройки",
     theme: "Тема",
     lightTheme: "Светлая",
@@ -554,7 +554,7 @@ function loadThemePreference() {
     });
 }
 
-// ===== Поделиться =====
+// ===== Поделиться (общее) =====
 function setupShareButton() {
     const shareButton = document.getElementById('share-friends-button');
     if (shareButton) {
@@ -577,7 +577,7 @@ function setupShareButton() {
             } else {
                 if (navigator.share) {
                     navigator.share({
-                        title: 'Games Verse',
+                        title: 'Hadron Verse',
                         text: shareText,
                         url: botUrl,
                     }).catch(() => fallbackCopyToClipboard(botUrl));
@@ -1012,7 +1012,7 @@ function resetGameTabsToDefault() {
     }
 }
 
-// ========== LEADERBOARD (исправлено) ==========
+// ========== LEADERBOARD (ФИНАЛЬНАЯ ВЕРСИЯ) ==========
 async function fetchLeaderboard() {
     const list = document.getElementById('leaderboard-list');
     if (!list) return;
@@ -1049,6 +1049,12 @@ function renderLeaderboard(leaderboard) {
             ? `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(firstName)}" onerror="this.style.display='none'; this.parentElement.textContent='${escapeHtml(firstName.charAt(0).toUpperCase())}';" />`
             : firstName.charAt(0).toUpperCase();
 
+        // Кнопка "Поделиться" только для своего результата
+        const shareButtonHTML = isCurrentUser ? `
+            <button class="leaderboard-share-btn" aria-label="Поделиться своим результатом" data-share-name="${escapeHtml(firstName)}" data-share-score="${score}">
+                <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+            </button>` : '';
+
         return `
             <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''}">
                 <div class="leaderboard-rank">#${rank}</div>
@@ -1058,9 +1064,7 @@ function renderLeaderboard(leaderboard) {
                 </div>
                 <div class="leaderboard-score">
                     ${score} <span>очк.</span>
-                    <button class="leaderboard-share-btn" data-share-name="${escapeHtml(firstName)}" data-share-score="${score}">
-                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
-                    </button>
+                    ${shareButtonHTML}
                 </div>
             </div>
         `;
@@ -1097,22 +1101,43 @@ function setupLeaderboardShare() {
         e.stopPropagation();
         const name = shareBtn.dataset.shareName;
         const score = shareBtn.dataset.shareScore;
-        if (name && score) shareLeaderboardScore(name, parseInt(score, 10));
+        if (name && score) shareMyScore(name, parseInt(score, 10));
     });
 }
 
-function shareLeaderboardScore(name, score) {
-    const shareText = `🏆 ${name} набрал ${score} очков в 2048! Сможешь побить рекорд? Играй в Games Verse: https://t.me/${BOT_USERNAME}`;
-    if (window.Telegram?.WebApp) {
-        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/' + BOT_USERNAME)}&text=${encodeURIComponent(shareText)}`;
+// Новая функция: поделиться своим результатом в историю
+function shareMyScore(name, score) {
+    vibrate();
+
+    const shareText = `🏆 Мой рекорд в 2048: ${score} очков!`;
+    const fullDescription = `${shareText}\n\n🎮 Играй в Hadron Verse и попади в топ!`;
+    const botUrl = `https://t.me/${BOT_USERNAME}`;
+    const miniAppUrl = `https://t.me/${BOT_USERNAME}/app`; // если бот настроил кнопку для Mini App
+
+    // Если доступен метод историй (Telegram WebApp версии 6.9+)
+    if (window.Telegram?.WebApp?.shareToStory) {
+        // media_url – можно поставить картинку (заглушку), позже заменить на свою
+        const mediaUrl = 'https://i.ibb.co/CWn0SJh/hadron-verse-story.jpg'; // любая твоя картинка 720x1280
+        window.Telegram.WebApp.shareToStory(mediaUrl, {
+            text: fullDescription,
+            widget_link: {
+                url: miniAppUrl,
+                name: 'Играть в Hadron Verse'
+            }
+        });
+    } else if (window.Telegram?.WebApp?.openTelegramLink) {
+        // Fallback: открыть шеринг в чат (если истории нет)
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(miniAppUrl)}&text=${encodeURIComponent(shareText)}`;
         window.Telegram.WebApp.openTelegramLink(shareUrl);
     } else if (navigator.share) {
         navigator.share({
-            title: 'Games Verse',
-            text: shareText,
-            url: 'https://t.me/' + BOT_USERNAME
-        }).catch(() => fallbackCopyToClipboard(shareText));
+            title: 'Hadron Verse',
+            text: shareText + ' Попробуй: ' + botUrl,
+            url: miniAppUrl
+        }).catch(() => {
+            fallbackCopyToClipboard(shareText + ' ' + botUrl);
+        });
     } else {
-        fallbackCopyToClipboard(shareText);
+        fallbackCopyToClipboard(shareText + ' ' + botUrl);
     }
 }

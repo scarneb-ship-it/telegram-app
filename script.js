@@ -2,7 +2,7 @@ const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 
 // 👇 Воркер, который вы создали на Cloudflare
-const WORKER_URL = 'https://gamesverse-bot.scarneb.workers.dev';
+const WORKER_URL = 'https://games-verse.scarneb.workers.dev';
 const HADRON_CHANNEL = 'https://t.me/+GNfQDYSAYc4wNDBi';
 
 // Глобальная настройка вибрации

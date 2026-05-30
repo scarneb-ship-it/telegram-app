@@ -34,7 +34,7 @@ const GAMES_DATA = [
         id: 2,
         name: "Hamster King",
         fullLink: "https://t.me/hamsterking_game_bot?startapp=6823288584",
-        description: "Стань королем хомяков",
+        description: "Стань королём хомяков",
         rating: 4.2,
         players: "188K",
         image: "images/hamster-king.jpg",
@@ -125,7 +125,7 @@ function vibrate() {
 }
 
 function initializeApp() {
-    // Splash screen
+    // Splash screen — показываем 3.2с потом плавно скрываем
     const splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(() => {
@@ -133,7 +133,7 @@ function initializeApp() {
             splash.addEventListener('transitionend', () => {
                 splash.style.display = 'none';
             }, { once: true });
-        }, 3000);
+        }, 3200);
     }
 
     document.body.style.opacity = '1';
@@ -152,7 +152,6 @@ function initializeApp() {
     setupLeaderboardRefresh();
     setupGameTabs();
     setupSubscribeModal();
-    // Модалка подписки теперь управляется через проверку подписки
 }
 
 // ===== Подписка на канал =====
@@ -304,12 +303,11 @@ function loadUserData() {
             updateProfileDisplay(user);
             currentUserId = user.id;
             sendMiniAppStat(user);
-            // После получения ID проверяем подписку
             checkSubscriptionAndShowModal();
         } else {
             showFallbackProfile();
             currentUserId = null;
-            showSubscribeModal(); // fallback: показываем, т.к. не знаем подписку
+            showSubscribeModal();
         }
     } else {
         showFallbackProfile();
@@ -553,7 +551,7 @@ function loadThemePreference() {
     });
 }
 
-// ===== Поделиться (общее) =====
+// ===== Поделиться =====
 function setupShareButton() {
     const shareButton = document.getElementById('share-friends-button');
     if (shareButton) {
@@ -1011,7 +1009,7 @@ function resetGameTabsToDefault() {
     }
 }
 
-// ========== LEADERBOARD (без кнопок "Поделиться") ==========
+// ========== LEADERBOARD ==========
 async function fetchLeaderboard() {
     const list = document.getElementById('leaderboard-list');
     if (!list) return;

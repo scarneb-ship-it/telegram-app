@@ -1,7 +1,6 @@
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 
-// 👇 Воркер, который вы создали на Cloudflare
 const WORKER_URL = 'https://games-verse.scarneb.workers.dev';
 const HADRON_CHANNEL = 'https://t.me/+GNfQDYSAYc4wNDBi';
 
@@ -120,14 +119,13 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
 
-// Обновлённая функция вибрации: уменьшенная длительность + проверка настройки
 function vibrate() {
     if (!vibrationEnabled) return;
-    if (navigator.vibrate) navigator.vibrate(30); // было 50, стало 30 мс
+    if (navigator.vibrate) navigator.vibrate(30);
 }
 
 function initializeApp() {
-    // Splash screen: показываем 3 секунды, затем плавно скрываем
+    // Splash screen
     const splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(() => {
@@ -146,7 +144,7 @@ function initializeApp() {
     initializeServices();
     setupSettingsPanel();
     loadThemePreference();
-    loadVibrationPreference();   // загружаем настройку вибрации
+    loadVibrationPreference();
     setLanguage();
     loadUserData();
     setupShareButton();
@@ -155,9 +153,10 @@ function initializeApp() {
     setupLeaderboardShare();
     setupGameTabs();
     setupSubscribeModal();
-    showSubscribeModal();
+    // Модалка подписки теперь управляется через проверку подписки
 }
 
+// ===== Подписка на канал =====
 function showSubscribeModal() {
     const modal = document.getElementById('subscribe-modal');
     if (modal) modal.classList.add('active');
@@ -165,6 +164,31 @@ function showSubscribeModal() {
 function hideSubscribeModal() {
     const modal = document.getElementById('subscribe-modal');
     if (modal) modal.classList.remove('active');
+}
+
+async function checkSubscriptionAndShowModal() {
+    if (!currentUserId) return;
+
+    try {
+        const res = await fetch(WORKER_URL + '/check-subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUserId.toString() })
+        });
+        if (!res.ok) {
+            showSubscribeModal();
+            return;
+        }
+        const data = await res.json();
+        if (data.subscribed) {
+            hideSubscribeModal();
+        } else {
+            showSubscribeModal();
+        }
+    } catch (err) {
+        console.error('Ошибка проверки подписки:', err);
+        showSubscribeModal();
+    }
 }
 
 function setupSubscribeModal() {
@@ -189,6 +213,7 @@ function setupSubscribeModal() {
     }
 }
 
+// ===== Telegram WebApp =====
 function initializeTelegramWebApp() {
     if (window.Telegram && window.Telegram.WebApp) {
         const tg = window.Telegram.WebApp;
@@ -204,6 +229,7 @@ function initializeTelegramWebApp() {
     }
 }
 
+// ===== Инициализация игр =====
 function initializeGames() {
     const gamesGrid = document.getElementById('games-grid');
     if (!gamesGrid) return;
@@ -249,6 +275,7 @@ function generateStars(rating) {
     return stars;
 }
 
+// ===== Инициализация сервисов =====
 function initializeServices() {
     const servicesList = document.getElementById('services-list');
     if (!servicesList) return;
@@ -270,6 +297,7 @@ function initializeServices() {
     setupServiceButtons();
 }
 
+// ===== Данные пользователя =====
 function loadUserData() {
     if (window.Telegram && window.Telegram.WebApp) {
         const user = window.Telegram.WebApp.initDataUnsafe?.user;
@@ -277,13 +305,17 @@ function loadUserData() {
             updateProfileDisplay(user);
             currentUserId = user.id;
             sendMiniAppStat(user);
+            // После получения ID проверяем подписку
+            checkSubscriptionAndShowModal();
         } else {
             showFallbackProfile();
             currentUserId = null;
+            showSubscribeModal(); // fallback: показываем, т.к. не знаем подписку
         }
     } else {
         showFallbackProfile();
         currentUserId = null;
+        showSubscribeModal();
     }
 }
 
@@ -378,6 +410,7 @@ function toggleHeaderForSection(sectionId) {
     }
 }
 
+// ===== Навигация =====
 function setupNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
     const sections = document.querySelectorAll('.content-section');
@@ -409,6 +442,7 @@ function setupNavigation() {
     if (activeSection) toggleHeaderForSection(activeSection.id);
 }
 
+// ===== Кнопки "Играть" =====
 function setupGameButtons() {
     document.querySelectorAll('.play-button').forEach(button => {
         button.addEventListener('click', function(e) {
@@ -448,6 +482,7 @@ function setupServiceButtons() {
     });
 }
 
+// ===== Настройки =====
 function setupSettingsPanel() {
     const settingsButton = document.getElementById('settings-button');
     const settingsPanel = document.getElementById('settings-panel');
@@ -456,7 +491,6 @@ function setupSettingsPanel() {
     if (closeSettings) closeSettings.addEventListener('click', () => { vibrate(); settingsPanel.classList.remove('active'); });
     if (settingsPanel) settingsPanel.addEventListener('click', (e) => { if (e.target === settingsPanel) settingsPanel.classList.remove('active'); });
 
-    // Переключатель темы
     document.querySelectorAll('.theme-option[data-theme]').forEach(option => {
         option.addEventListener('click', function() {
             vibrate();
@@ -469,7 +503,6 @@ function setupSettingsPanel() {
         });
     });
 
-    // Переключатель вибрации
     const vibrationOptions = document.querySelectorAll('.theme-option[data-vibration]');
     vibrationOptions.forEach(option => {
         option.addEventListener('click', function() {
@@ -521,6 +554,7 @@ function loadThemePreference() {
     });
 }
 
+// ===== Поделиться =====
 function setupShareButton() {
     const shareButton = document.getElementById('share-friends-button');
     if (shareButton) {
@@ -579,7 +613,7 @@ function showNotification(customMessage) {
     setTimeout(() => notification.classList.remove('show'), 2000);
 }
 
-/* ========== GAME 2048 ========== */
+// ========== GAME 2048 ==========
 class Game2048 {
     constructor(boardElement, scoreElement, bestScoreElement, statusElement) {
         this.boardElement = boardElement;
@@ -935,7 +969,7 @@ function initGame2048() {
     }
 }
 
-/* ========== УПРАВЛЕНИЕ ВКЛАДКАМИ "ИГРА" И "ТОПЫ" ========== */
+// ========== Вкладки "Игра" / "Топы" ==========
 function setupGameTabs() {
     const tabs = document.querySelectorAll('.game-tab');
     const gameContainer = document.querySelector('.game-2048-container');
@@ -978,7 +1012,7 @@ function resetGameTabsToDefault() {
     }
 }
 
-/* ========== LEADERBOARD (ИСПРАВЛЕНО) ========== */
+// ========== LEADERBOARD (исправлено) ==========
 async function fetchLeaderboard() {
     const list = document.getElementById('leaderboard-list');
     if (!list) return;
@@ -986,7 +1020,7 @@ async function fetchLeaderboard() {
 
     try {
         const res = await fetch(WORKER_URL + '/leaderboard');
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         renderLeaderboard(data.leaderboard || []);
     } catch (err) {
@@ -1004,7 +1038,6 @@ function renderLeaderboard(leaderboard) {
     }
 
     list.innerHTML = leaderboard.map((player, index) => {
-        // Используем поля из Supabase (snake_case)
         const userId = player.user_id;
         const firstName = player.first_name || 'Игрок';
         const avatarUrl = player.avatar_url;
@@ -1012,7 +1045,6 @@ function renderLeaderboard(leaderboard) {
         const isCurrentUser = currentUserId && userId && userId.toString() === currentUserId.toString();
         const rank = index + 1;
 
-        // Аватар: либо картинка, либо первая буква имени
         const avatarContent = avatarUrl
             ? `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(firstName)}" onerror="this.style.display='none'; this.parentElement.textContent='${escapeHtml(firstName.charAt(0).toUpperCase())}';" />`
             : firstName.charAt(0).toUpperCase();
@@ -1020,15 +1052,13 @@ function renderLeaderboard(leaderboard) {
         return `
             <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''}">
                 <div class="leaderboard-rank">#${rank}</div>
-                <div class="leaderboard-avatar">
-                    ${avatarContent}
-                </div>
+                <div class="leaderboard-avatar">${avatarContent}</div>
                 <div class="leaderboard-info">
                     <div class="leaderboard-name">${escapeHtml(firstName)}</div>
                 </div>
                 <div class="leaderboard-score">
                     ${score} <span>очк.</span>
-                    <button class="leaderboard-share-btn" aria-label="Поделиться результатом" data-share-name="${escapeHtml(firstName)}" data-share-score="${score}">
+                    <button class="leaderboard-share-btn" data-share-name="${escapeHtml(firstName)}" data-share-score="${score}">
                         <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
                     </button>
                 </div>

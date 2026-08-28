@@ -1,11 +1,6 @@
 const BOT_USERNAME = 'khadron_bot';
 let currentUserId = null;
 
-// Сплеш живёт 3200мс + 600мс fade = 3800мс до полного исчезновения
-const SPLASH_DURATION = 3800;
-// Promise, который резолвится когда сплеш полностью исчез
-const splashDone = new Promise(resolve => setTimeout(resolve, SPLASH_DURATION));
-
 const WORKER_URL = 'https://games-verse.scarneb.workers.dev';
 
 // Глобальная настройка вибрации
@@ -155,7 +150,6 @@ function initializeApp() {
     initGame2048();
     setupLeaderboardRefresh();
     setupGameTabs();
-    setupSubscribeModal();
 }
 
 // ===== Telegram WebApp =====
@@ -250,16 +244,13 @@ function loadUserData() {
             updateProfileDisplay(user);
             currentUserId = user.id;
             sendMiniAppStat(user);
-            splashDone.then(() => checkSubscriptionAndShowModal());
         } else {
             showFallbackProfile();
             currentUserId = null;
-            splashDone.then(() => showSubscribeModal());
         }
     } else {
         showFallbackProfile();
         currentUserId = null;
-        splashDone.then(() => showSubscribeModal());
     }
 }
 
@@ -369,7 +360,6 @@ function setupNavigation() {
                 if (section.id === targetSection) section.classList.add('active');
             });
             toggleHeaderForSection(targetSection);
-            hideSubscribeModal();
 
             if (targetSection === 'game-section') {
                 resetGameTabsToDefault();

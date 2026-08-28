@@ -50,16 +50,6 @@ const GAMES_DATA = [
         fallback: "🥊"
     },
     {
-        id: 4,
-        name: "BitQuest",
-        fullLink: "https://t.me/BitquestGameSBot/start?startapp=kentId_6823288584",
-        description: "Приключения в мире крипты",
-        rating: 3.8,
-        players: "281K",
-        image: "images/bitquest.jpg",
-        fallback: "💰"
-    },
-    {
         id: 5,
         name: "Underpaws",
         fullLink: "https://t.me/underpaws_game_bot?startapp=6823288584",

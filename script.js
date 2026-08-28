@@ -17,7 +17,6 @@ const GAMES_DATA = [
         image: "images/photo_2026-02-17_13-44-55.jpg",
         fallback: "🌍",
         badge: "Beta",
-        highlight: true
     },
     {
         id: 1,

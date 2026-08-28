@@ -58,9 +58,19 @@ const GAMES_DATA = [
         players: "281K",
         image: "images/bitquest.jpg",
         fallback: "💰"
+    },
+    {
+        id: 5,
+        name: "Underpaws",
+        fullLink: "https://t.me/underpaws_game_bot?startapp=6823288584",
+        description: "Приключения в мире зверей",
+        rating: 4.3,
+        players: "3,256",
+        image: "images/underpaws.jpg",
+        fallback: "🐾",
+        badge: "Beta"
     }
 ];
-
 const SERVICES_DATA = [
     {
         id: 1,

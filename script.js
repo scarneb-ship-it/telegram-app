@@ -7,7 +7,6 @@ const SPLASH_DURATION = 3800;
 const splashDone = new Promise(resolve => setTimeout(resolve, SPLASH_DURATION));
 
 const WORKER_URL = 'https://games-verse.scarneb.workers.dev';
-const HADRON_CHANNEL = 'https://t.me/+GNfQDYSAYc4wNDBi';
 
 // Глобальная настройка вибрации
 let vibrationEnabled = true;
@@ -157,63 +156,6 @@ function initializeApp() {
     setupLeaderboardRefresh();
     setupGameTabs();
     setupSubscribeModal();
-}
-
-// ===== Подписка на канал =====
-function showSubscribeModal() {
-    const modal = document.getElementById('subscribe-modal');
-    if (modal) modal.classList.add('active');
-}
-function hideSubscribeModal() {
-    const modal = document.getElementById('subscribe-modal');
-    if (modal) modal.classList.remove('active');
-}
-
-async function checkSubscriptionAndShowModal() {
-    if (!currentUserId) return;
-
-    try {
-        const res = await fetch(WORKER_URL + '/check-subscription', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: currentUserId.toString() })
-        });
-        if (!res.ok) {
-            showSubscribeModal();
-            return;
-        }
-        const data = await res.json();
-        if (data.subscribed) {
-            hideSubscribeModal();
-        } else {
-            showSubscribeModal();
-        }
-    } catch (err) {
-        console.error('Ошибка проверки подписки:', err);
-        showSubscribeModal();
-    }
-}
-
-function setupSubscribeModal() {
-    const okBtn = document.getElementById('subscribe-ok');
-    const laterBtn = document.getElementById('subscribe-later');
-    if (okBtn) {
-        okBtn.addEventListener('click', () => {
-            vibrate();
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.openTelegramLink(HADRON_CHANNEL);
-            } else {
-                window.open(HADRON_CHANNEL, '_blank');
-            }
-            hideSubscribeModal();
-        });
-    }
-    if (laterBtn) {
-        laterBtn.addEventListener('click', () => {
-            vibrate();
-            hideSubscribeModal();
-        });
-    }
 }
 
 // ===== Telegram WebApp =====

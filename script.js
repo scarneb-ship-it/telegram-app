@@ -8,16 +8,6 @@ let vibrationEnabled = true;
 
 const GAMES_DATA = [
     {
-        id: 0,
-        name: "Pixel World",
-        fullLink: "https://t.me/pixelworld/play?startapp=r6823288584",
-        description: "Первый 3D-шутер в Telegram",
-        rating: 4.9,
-        players: "65K",
-        image: "images/photo_2026-02-17_13-44-55.jpg",
-        fallback: "🌍",
-    },
-    {
         id: 1,
         name: "Hamster GameDev",
         fullLink: "https://t.me/Hamster_GAme_Dev_bot/start?startapp=kentId6823288584",
@@ -46,6 +36,16 @@ const GAMES_DATA = [
         players: "99K",
         image: "images/hamster-fightclub.jpg",
         fallback: "🥊"
+    },
+     {
+        id: 4,
+        name: "Pixel World",
+        fullLink: "https://t.me/pixelworld/play?startapp=r6823288584",
+        description: "Первый 3D-шутер в Telegram",
+        rating: 4.9,
+        players: "65K",
+        image: "images/photo_2026-02-17_13-44-55.jpg",
+        fallback: "🌍",
     },
     {
         id: 5,

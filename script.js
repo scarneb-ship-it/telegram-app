@@ -16,7 +16,6 @@ const GAMES_DATA = [
         players: "34K",
         image: "images/photo_2026-02-17_13-44-55.jpg",
         fallback: "🌍",
-        badge: "Beta",
     },
     {
         id: 1,

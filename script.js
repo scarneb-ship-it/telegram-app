@@ -55,7 +55,7 @@ const GAMES_DATA = [
         fullLink: "https://t.me/underpaws_game_bot?startapp=6823288584",
         description: "Приключения в мире зверей",
         rating: 4.3,
-        players: "3,256",
+        players: "3,2K",
         image: "images/underpaws.jpg",
         fallback: "🐾",
         badge: "Beta"

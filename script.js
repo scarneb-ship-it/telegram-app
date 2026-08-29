@@ -148,6 +148,9 @@ function initializeApp() {
     initGame2048();
     setupLeaderboardRefresh();
     setupGameTabs();
+
+    // Инициализация рекламного баннера
+    initAdBanner();
 }
 
 // ===== Telegram WebApp =====
@@ -164,6 +167,51 @@ function initializeTelegramWebApp() {
             if (themeParams.button_text_color) document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color);
         }
     }
+}
+
+// ===== Рекламный баннер =====
+function initAdBanner() {
+    const banner = document.getElementById('ad-banner');
+    const closeBtn = document.getElementById('ad-banner-close');
+    const goBtn = document.getElementById('ad-banner-btn');
+
+    if (!banner || !closeBtn || !goBtn) return;
+
+    // Проверяем, скрыт ли баннер на 24 часа
+    const hiddenUntil = localStorage.getItem('adBannerHiddenUntil');
+    if (hiddenUntil && Date.now() < parseInt(hiddenUntil)) {
+        banner.style.display = 'none';
+        return;
+    }
+
+    // Показываем баннер
+    banner.style.display = 'flex';
+
+    // Обработчик закрытия
+    closeBtn.addEventListener('click', () => {
+        hideAdBannerFor24Hours();
+    });
+
+    // Обработчик клика по кнопке
+    goBtn.addEventListener('click', () => {
+        // Открываем ссылку
+        const adUrl = 'https://one-vv5058.com/casino/list?open=register&p=wrih';
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.openLink(adUrl);
+        } else {
+            window.open(adUrl, '_blank');
+        }
+        // Скрываем баннер на 24 часа
+        hideAdBannerFor24Hours();
+    });
+}
+
+function hideAdBannerFor24Hours() {
+    const banner = document.getElementById('ad-banner');
+    if (banner) banner.style.display = 'none';
+    // Сохраняем время, до которого баннер скрыт
+    const hideUntil = Date.now() + 24 * 60 * 60 * 1000; // 24 часа
+    localStorage.setItem('adBannerHiddenUntil', hideUntil.toString());
 }
 
 // ===== Инициализация игр =====
